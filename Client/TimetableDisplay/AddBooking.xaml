@@ -1,0 +1,103 @@
+﻿<Window x:Class="Client.TimetableDisplay.AddBooking"
+        x:Name="Wnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:Client.Converters"
+        xmlns:local="clr-namespace:Client.TimetableDisplay"
+        mc:Ignorable="d"
+        Title="Add Booking" Height="400" Width="430"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <Window.Resources>
+        <converters:InverseNullableBooleanConverter x:Key="InverseNullableBooleanConverter"/>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Header="Rooms" Margin="5" Grid.Row="0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <ListView Name="List_Rooms" ItemsSource="{Binding Rooms}" Height="100" Grid.Column="0" Grid.ColumnSpan="2">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Width="30">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding Checked}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding Value.RoomName}" Width="80" Header="Room Name"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding Value.StandardSeats}" Width="90" Header="Standard Seats"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding Value.SpecialSeatsType}" Width="100" Header="Special seat type"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding Value.SpecialSeats}" Width="80" Header="Special seats"/>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="Time slot" Margin="5" Grid.Row="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <RadioButton Name="Time_Radio_Period" Content="Existing period" IsChecked="{Binding ExistingPeriod, Mode=TwoWay}" Margin="5,5,5,0" Grid.Row="0" Grid.Column="0"/>
+                <Grid Name="Time_Grid_Existing" IsEnabled="{Binding IsChecked, ElementName=Time_Radio_Period}" Grid.Row="1" Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Slot: " Margin="5,8,0,0" Grid.Column="0"/>
+                    <ComboBox Name="Time_Existing_Combo_Time" ItemsSource="{Binding Periods}" Margin="5,5,5,0" Grid.Column="1"/>
+                </Grid>
+
+                <GridSplitter Grid.Column="1" Grid.ColumnSpan="1000"/>
+
+                <RadioButton Name="Time_Radio_New" Content="New time slot" IsChecked="False" Margin="5,5,5,0" Grid.Row="0" Grid.Column="2"/>
+                <Grid Name="Time_Grid_New" IsEnabled="{Binding Time_Radio_New.IsChecked}" Margin="0,0,0,5" Grid.Row="1" Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Start: " Margin="5,8,0,0" Grid.Row="0" Grid.Column="0"/>
+                    <local:TimePicker x:Name="Time_New_Date_Start" Time="9:00" TimePickerType="HoursMinutes" Margin="5,5,5,0" Grid.Row="0" Grid.Column="1"/>
+
+                    <TextBlock Text="End: " Margin="5,8,0,0" Grid.Row="1" Grid.Column="0"/>
+                    <local:TimePicker x:Name="Time_New_Date_End" Time="10:00" TimePickerType="HoursMinutes" Margin="5,5,5,0" Grid.Row="1" Grid.Column="1"/>
+                </Grid>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>

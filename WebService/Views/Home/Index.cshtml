@@ -1,0 +1,11 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+
+<div>Logged in as a @WebService.Authentication.GetAuthentication()</div>
+
+<h2>Home</h2>
+
+<div>
+    @{ Html.RenderAction("Timetable", "Timetable"); }
+</div>

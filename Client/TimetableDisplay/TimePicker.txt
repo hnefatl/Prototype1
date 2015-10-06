@@ -1,0 +1,254 @@
+using System;
+using System.CodeDom.Compiler;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Markup;
+
+namespace Client.TimetableDisplay
+{
+	public class TimePicker : UserControl, INotifyPropertyChanged, IComponentConnector
+	{
+		public static readonly DependencyProperty TimeProperty = DependencyProperty.Register("Time", typeof(TimeSpan), typeof(TimePicker), new FrameworkPropertyMetadata(new PropertyChangedCallback(TimePicker.OnTimePropertyChanged))
+		{
+			BindsTwoWayByDefault = true
+		});
+
+		internal TimePicker Ctrl;
+
+		internal TextBox Text_Hours;
+
+		internal TextBlock Colon1;
+
+		internal TextBox Text_Minutes;
+
+		internal TextBlock Colon2;
+
+		internal TextBox Text_Seconds;
+
+		private bool _contentLoaded;
+
+		[method: CompilerGenerated]
+		[DebuggerBrowsable(DebuggerBrowsableState.Never), CompilerGenerated]
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		public int Hours
+		{
+			get
+			{
+				return this.Time.Hours;
+			}
+			set
+			{
+				this.Time = this.Time.Add(new TimeSpan(value, 0, 0));
+			}
+		}
+
+		public int Minutes
+		{
+			get
+			{
+				return this.Time.Minutes;
+			}
+			set
+			{
+				this.Time = this.Time.Add(new TimeSpan(0, value, 0));
+			}
+		}
+
+		public int Seconds
+		{
+			get
+			{
+				return this.Time.Seconds;
+			}
+			set
+			{
+				this.Time = this.Time.Add(new TimeSpan(0, 0, value));
+			}
+		}
+
+		public TimeSpan Time
+		{
+			get
+			{
+				return (TimeSpan)base.GetValue(TimePicker.TimeProperty);
+			}
+			set
+			{
+				base.SetValue(TimePicker.TimeProperty, value);
+			}
+		}
+
+		public TimePickerType TimePickerType
+		{
+			get
+			{
+				return ((this.Text_Hours.Visibility == Visibility.Visible) ? TimePickerType.Hours : TimePickerType.None) | ((this.Text_Minutes.Visibility == Visibility.Visible) ? TimePickerType.Minutes : TimePickerType.None) | ((this.Text_Seconds.Visibility == Visibility.Visible) ? TimePickerType.Seconds : TimePickerType.None);
+			}
+			set
+			{
+				this.Text_Hours.Visibility = (((value & TimePickerType.Hours) == TimePickerType.Hours) ? Visibility.Visible : Visibility.Collapsed);
+				this.Text_Minutes.Visibility = (((value & TimePickerType.Minutes) == TimePickerType.Minutes) ? Visibility.Visible : Visibility.Collapsed);
+				this.Text_Seconds.Visibility = (((value & TimePickerType.Seconds) == TimePickerType.Seconds) ? Visibility.Visible : Visibility.Collapsed);
+				bool flag = this.Text_Hours.Visibility == Visibility.Visible && (this.Text_Minutes.Visibility == Visibility.Visible || this.Text_Seconds.Visibility == Visibility.Visible);
+				if (flag)
+				{
+					this.Colon1.Visibility = Visibility.Visible;
+				}
+				else
+				{
+					this.Colon1.Visibility = Visibility.Collapsed;
+				}
+				bool flag2 = this.Text_Minutes.Visibility == Visibility.Visible && this.Text_Seconds.Visibility == Visibility.Visible;
+				if (flag2)
+				{
+					this.Colon2.Visibility = Visibility.Visible;
+				}
+				else
+				{
+					this.Colon2.Visibility = Visibility.Collapsed;
+				}
+			}
+		}
+
+		private static void OnTimePropertyChanged(object sender, DependencyPropertyChangedEventArgs e)
+		{
+			TimePicker timePicker = sender as TimePicker;
+			bool flag = timePicker != null;
+			if (flag)
+			{
+				timePicker.OnPropertyChanged("Time");
+				timePicker.OnPropertyChanged("Hours");
+				timePicker.OnPropertyChanged("Minutes");
+				timePicker.OnPropertyChanged("Seconds");
+			}
+		}
+
+		public TimePicker()
+		{
+			this.InitializeComponent();
+			this.TimePickerType = TimePickerType.HoursMinutesSeconds;
+		}
+
+		private void Text_Hours_PreviewKeyDown(object sender, KeyEventArgs e)
+		{
+			bool flag = e.Key == Key.Up;
+			if (flag)
+			{
+				int hours = this.Hours;
+				this.Hours = hours + 1;
+			}
+			else
+			{
+				bool flag2 = e.Key == Key.Down;
+				if (flag2)
+				{
+					int hours = this.Hours;
+					this.Hours = hours - 1;
+				}
+			}
+			bool flag3 = e.Key == Key.Space;
+			if (flag3)
+			{
+				e.Handled = true;
+			}
+		}
+
+		private void Text_Minutes_PreviewKeyDown(object sender, KeyEventArgs e)
+		{
+			bool flag = e.Key == Key.Up;
+			if (flag)
+			{
+				int minutes = this.Minutes;
+				this.Minutes = minutes + 1;
+			}
+			else
+			{
+				bool flag2 = e.Key == Key.Down;
+				if (flag2)
+				{
+					int minutes = this.Minutes;
+					this.Minutes = minutes - 1;
+				}
+			}
+			bool flag3 = e.Key == Key.Space;
+			if (flag3)
+			{
+				e.Handled = true;
+			}
+		}
+
+		private void Text_Seconds_PreviewKeyDown(object sender, KeyEventArgs e)
+		{
+			bool flag = e.Key == Key.Up;
+			if (flag)
+			{
+				int seconds = this.Seconds;
+				this.Seconds = seconds + 1;
+			}
+			else
+			{
+				bool flag2 = e.Key == Key.Down;
+				if (flag2)
+				{
+					int seconds = this.Seconds;
+					this.Seconds = seconds - 1;
+				}
+			}
+			bool flag3 = e.Key == Key.Space;
+			if (flag3)
+			{
+				e.Handled = true;
+			}
+		}
+
+		private void Text_Hours_TextInput(object sender, TextCompositionEventArgs e)
+		{
+			TextBox textBox = (TextBox)e.OriginalSource;
+			string s = textBox.Text.Remove(textBox.SelectionStart, textBox.SelectionLength).Insert(textBox.CaretIndex, e.Text);
+			int num;
+			bool flag = !int.TryParse(s, out num) || num < 0 || num > 23;
+			if (flag)
+			{
+				e.Handled = true;
+			}
+		}
+
+		private void Text_Minutes_TextInput(object sender, TextCompositionEventArgs e)
+		{
+			TextBox textBox = (TextBox)e.OriginalSource;
+			string s = textBox.Text.Remove(textBox.SelectionStart, textBox.SelectionLength).Insert(textBox.CaretIndex, e.Text);
+			int num;
+			bool flag = !int.TryParse(s, out num) || num < 0 || num > 23;
+			if (flag)
+			{
+				e.Handled = true;
+			}
+		}
+
+		private void Text_Seconds_TextInput(object sender, TextCompositionEventArgs e)
+		{
+			TextBox textBox = (TextBox)e.OriginalSource;
+			string s = textBox.Text.Remove(textBox.SelectionStart, textBox.SelectionLength).Insert(textBox.CaretIndex, e.Text);
+			int num;
+			bool flag = !int.TryParse(s, out num) || num < 0 || num > 23;
+			if (flag)
+			{
+				e.Handled = true;
+			}
+		}
+
+		protected void OnPropertyChanged(string PropertyName)
+		{
+			bool flag = this.PropertyChanged != null;
+			if (flag)
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
+			}
+		}
+	}
+}

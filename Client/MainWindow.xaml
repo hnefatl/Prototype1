@@ -1,0 +1,9 @@
+﻿<Window x:Class="Client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:TimetableDisplay="clr-namespace:Client.TimetableDisplay"
+        Title="Room Booking System" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+    <Grid>
+        <TimetableDisplay:TimetableDisplay x:Name="Timetable" TileClicked="Timetable_TileClicked" />
+    </Grid>
+</Window>

@@ -1,0 +1,92 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data;
+using System.Data.Entity;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+using Shared;
+
+namespace Data.Models
+{
+    [Table("Teachers")]
+    public class Teacher
+        : User
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        
+        public string Title { get; set; }
+        
+        public override AccessMode Access { get { return AccessMode.Teacher; } }
+
+        public virtual Department Department { get; set; }
+
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public bool Admin { get; set; }
+
+        /// <summary>
+        /// The bookings this teacher is teaching during
+        /// </summary>
+        public virtual List<Booking> TeachingBookings { get; set; }
+        /// <summary>
+        /// The bookings this teacher is assisting during (TA)
+        /// </summary>
+        public virtual List<Booking> AssistingBookings { get; set; }
+
+        public Teacher()
+        {
+            Department = new Department();
+            TeachingBookings = new List<Booking>();
+            AssistingBookings = new List<Booking>();
+
+            Title = string.Empty;
+            Email = string.Empty;
+            Password = string.Empty;
+        }
+
+        public override void Serialise(IWriter Out)
+        {
+            base.Serialise(Out);
+
+            Out.Write(Id);
+            Out.Write(Title);
+            Out.Write(Department.Id);
+            Out.Write(Email);
+            Out.Write(""); // Don't send the password
+            Out.Write(Admin);
+
+            Out.Write(TeachingBookings.Count);
+            TeachingBookings.ForEach(b => Out.Write(b.Id));
+
+            Out.Write(AssistingBookings.Count);
+            AssistingBookings.ForEach(b => Out.Write(b.Id));
+        }
+        public override void Deserialise(IReader In)
+        {
+            base.Deserialise(In);
+
+            Id = In.ReadInt32();
+            Title = In.ReadString();
+            Department.Id = In.ReadInt32();
+            Email = In.ReadString();
+            Password = In.ReadString();
+            Admin = In.ReadBool();
+
+            TeachingBookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
+            TeachingBookings.ForEach(b => b.Id = In.ReadInt32());
+
+            AssistingBookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
+            AssistingBookings.ForEach(b => b.Id = In.ReadInt32());
+        }
+
+        public override string ToString()
+        {
+            return Title + " " + LastName;
+        }
+    }
+}

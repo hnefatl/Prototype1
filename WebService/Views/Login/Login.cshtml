@@ -1,0 +1,67 @@
+﻿@model WebService.Models.LoginModel
+@using Data.DataContext
+@{
+    ViewBag.Title = "Login";
+}
+
+<!--Removes the left padding and ul list formatting from the validation summary on a failed logon-->
+<style>
+    .ValidationList ul {
+        padding-left: 0;
+        list-style-type: none;
+        font-weight: normal;
+    }
+
+    .LoginFieldset {
+        display: inline-block;
+        margin: 5px;
+        height: 100%;
+    }
+</style>
+
+<div class="ValidationList">
+    <div>@Html.ValidationSummary(true)</div>
+    <div>@Html.ValidationMessageFor(user => user.Student.Password)</div>
+    <div>@Html.ValidationMessageFor(user => user.Teacher.EmailAddress)</div>
+    <div>@Html.ValidationMessageFor(user => user.Teacher.Password)</div>
+</div>
+
+<div class="LoginFieldset">
+    @using (Html.BeginForm("LoginStudent", "Login"))
+    {
+        <fieldset>
+            <legend>Student Login</legend>
+            <p>
+                @Html.LabelFor(user => user.Student.Password)
+                @Html.EditorFor(user => user.Student.Password)
+            </p>
+            @Html.HiddenFor(model => model.LoginType, new { Value = AuthenticationRole.Student })
+
+            <input type="submit" value="Log In" />
+        </fieldset>
+    }
+</div>
+<div class="LoginFieldset">
+    @using (Html.BeginForm("LoginTeacher", "Login"))
+    {
+        <fieldset>
+            <legend>Teacher Login</legend>
+
+            <table>
+                <tr>
+                    <td>@Html.LabelFor(user => user.Teacher.EmailAddress)</td>
+                    <td>@Html.EditorFor(user => user.Teacher.EmailAddress)</td>
+                </tr>
+
+                <tr>
+                    <td>@Html.LabelFor(user => user.Teacher.Password)</td>
+                    <td>@Html.EditorFor(user => user.Teacher.Password)</td>
+                </tr>
+            </table>
+
+            @Html.HiddenFor(model => model.LoginType, new { Value = AuthenticationRole.Teacher })
+
+            <input type="submit" value="Log In" />
+        </fieldset>
+    }
+</div>

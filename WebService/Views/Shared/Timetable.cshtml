@@ -1,0 +1,98 @@
+﻿@using WebService.Models;
+@using Data;
+
+@model TimetableModel
+
+<style type="text/css">
+    table.no-spacing {
+        border-spacing: 0;
+        border-collapse: collapse;
+    }
+    table.timetable {
+        table-layout: fixed;
+    }
+    table.timetable td div {        
+        max-width: 100px;
+        white-space: nowrap;
+        overflow: hidden;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+    }
+    table.timetable > thead > tr > td {
+        width: 100px;
+        height: 50px;
+        border: 2px solid;
+        text-align: center;
+    }
+
+    table.timetable > tbody > tr > td.room {
+        border: 2px solid;
+    }
+
+    table.timetable > tbody > tr > td.slot-empty {
+
+    }
+
+    table.timetable > tbody > tr > td {
+        border: 1px solid;
+    }
+
+    table.timetable > tbody > tr> td.slot-booked > div {
+        display: inline-block;
+        background: #ff7878;
+        border-radius: 10px;
+        padding: 5px;
+        max-width: 82px;
+        margin: 4px;
+    }
+</style>
+
+@if (Model.ValidTimetable)
+{
+    <table class="timetable no-spacing">
+        <thead>
+            <tr>
+                <td /> <!--Blank data slot for the top left corner-->
+                @foreach (TimeSlot t in Model.Times)
+                {
+                    <td>
+                        <div>@t.ToShortTimeSpan()</div>
+                        <div>@t.Name</div>
+                    </td>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @for (int y = 0; y < Model.Rooms.Count; y++)
+            {
+                <tr>
+                    <td class="room">@Model.Rooms[y].RoomName</td>
+
+                    @for (int x = 0; x < Model.Times.Count; x++)
+                    {
+                        if (Model.Bookings[y, x] == null) // No booking
+                        {
+                            <td class="slot-empty" />
+                        }
+                        else // Booking
+                        {
+                            <td class="slot-booked">
+                                <div>
+                                    <div>@string.Concat(Model.Bookings[y, x].Teacher.Title, " ", Model.Bookings[y, x].Teacher.LastName)</div>
+                                    <div>@Model.Bookings[y, x].Subject.SubjectName</div>
+                                </div>
+                            </td>
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div>
+        Invalid timetable. Inform an administrator.
+    </div>
+}
