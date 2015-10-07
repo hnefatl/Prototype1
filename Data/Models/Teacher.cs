@@ -13,7 +13,7 @@ namespace Data.Models
 {
     [Table("Teachers")]
     public class Teacher
-        : User
+        : User, IExpandsData
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -28,21 +28,13 @@ namespace Data.Models
         public string Email { get; set; }
         public string Password { get; set; }
         public bool Admin { get; set; }
-
-        /// <summary>
-        /// The bookings this teacher is teaching during
-        /// </summary>
-        public virtual List<Booking> TeachingBookings { get; set; }
-        /// <summary>
-        /// The bookings this teacher is assisting during (TA)
-        /// </summary>
-        public virtual List<Booking> AssistingBookings { get; set; }
+        
+        public virtual IList<Booking> Bookings { get; set; }
 
         public Teacher()
         {
             Department = new Department();
-            TeachingBookings = new List<Booking>();
-            AssistingBookings = new List<Booking>();
+            Bookings = new List<Booking>();
 
             Title = string.Empty;
             Email = string.Empty;
@@ -60,11 +52,8 @@ namespace Data.Models
             Out.Write(""); // Don't send the password
             Out.Write(Admin);
 
-            Out.Write(TeachingBookings.Count);
-            TeachingBookings.ForEach(b => Out.Write(b.Id));
-
-            Out.Write(AssistingBookings.Count);
-            AssistingBookings.ForEach(b => Out.Write(b.Id));
+            Out.Write(Bookings.Count);
+            Bookings.ForEach(b => Out.Write(b.Id));
         }
         public override void Deserialise(IReader In)
         {
@@ -77,11 +66,21 @@ namespace Data.Models
             Password = In.ReadString();
             Admin = In.ReadBool();
 
-            TeachingBookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
-            TeachingBookings.ForEach(b => b.Id = In.ReadInt32());
-
-            AssistingBookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
-            AssistingBookings.ForEach(b => b.Id = In.ReadInt32());
+            Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
+            Bookings.ForEach(b => b.Id = In.ReadInt32());
+        }
+        public bool Expand(IDataRepository Repo)
+        {
+            try
+            {
+                Department = Repo.Departments.Where(d => d.Id == Department.Id).Single();
+                Bookings.ForEach(b => b = Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
         public override string ToString()

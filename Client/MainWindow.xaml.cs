@@ -76,7 +76,7 @@ namespace Client
             if (Tile.Booking == null) // New booking
                 Window = new AddBooking(CurrentUser);
             else // Editing booking
-                Window = new AddBooking(CurrentUser, Tile.Booking.Rooms, Tile.Booking.TimeSlot);
+                Window = new AddBooking(CurrentUser, Tile.Booking.Rooms.ToList(), Tile.Booking.TimeSlot);
 
             bool? Result = Window.ShowDialog();
         }

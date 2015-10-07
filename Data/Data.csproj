@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="DataSnapshot.cs" />
     <Compile Include="IDataRepository.cs" />
+    <Compile Include="IExpandsData.cs" />
     <Compile Include="Models\Booking.cs" />
     <Compile Include="Models\Config.cs" />
     <Compile Include="Models\Department.cs" />

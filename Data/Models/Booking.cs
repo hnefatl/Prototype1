@@ -16,7 +16,7 @@ namespace Data.Models
     /// </summary>
     [Table("Bookings")]
     public class Booking
-        : ISerialisable
+        : ISerialisable, IExpandsData
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -50,15 +50,14 @@ namespace Data.Models
         /// <summary>
         /// Rooms used by this booking
         /// </summary>
-        public virtual List<Room> Rooms { get; set; }
+        public virtual IList<Room> Rooms { get; set; }
         /// <summary>
         /// The subject of this booking
         /// </summary>
         public virtual Subject Subject { get; set; }
 
-        public virtual List<Student> Students { get; set; }
+        public virtual IList<Student> Students { get; set; }
         public virtual Teacher Teacher { get; set; }
-        public virtual List<Teacher> Assistants { get; set; }
 
         public Booking()
         {
@@ -67,7 +66,6 @@ namespace Data.Models
             Subject = new Subject();
             Students = new List<Student>();
             Teacher = new Teacher();
-            Assistants = new List<Teacher>();
         }
 
         public void Serialise(IWriter Out)
@@ -84,9 +82,6 @@ namespace Data.Models
             foreach (Student s in Students)
                 Out.Write(s.Id);
             Out.Write(Teacher.Id);
-            Out.Write(Assistants.Count);
-            foreach (Teacher a in Assistants)
-                Out.Write(a.Id);
         }
         public void Deserialise(IReader In)
         {
@@ -102,9 +97,23 @@ namespace Data.Models
             foreach (Student s in Students)
                 s.Id = In.ReadInt32();
             Teacher.Id = In.ReadInt32();
-            Assistants = Enumerable.Repeat(new Teacher(), In.ReadInt32()).ToList();
-            foreach (Teacher a in Assistants)
-                a.Id = In.ReadInt32();
+        }
+
+        public bool Expand(IDataRepository Repo)
+        {
+            try
+            {
+                TimeSlot = Repo.Periods.Where(t => t.Id == TimeSlot.Id).Single();
+                Rooms.ForEach(r => r = Repo.Rooms.Where(r2 => r.Id == r2.Id).Single());
+                Subject = Repo.Subjects.Where(s => s.Id == Subject.Id).Single();
+                Students.ForEach(s => s = Repo.Students.Where(s2 => s.Id == s2.Id).Single());
+                Teacher = Repo.Teachers.Where(t => t.Id == Teacher.Id).Single();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
     }
 

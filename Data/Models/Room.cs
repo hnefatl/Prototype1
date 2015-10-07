@@ -16,7 +16,7 @@ namespace Data.Models
     /// </summary>
     [Table("Rooms")]
     public class Room
-        : ISerialisable
+        : ISerialisable, IExpandsData
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -43,7 +43,7 @@ namespace Data.Models
         /// <summary>
         /// Bookings using this room
         /// </summary>
-        public virtual List<Booking> Bookings { get; set; }
+        public virtual IList<Booking> Bookings { get; set; }
 
         public Room()
         {
@@ -74,6 +74,18 @@ namespace Data.Models
 
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());
+        }
+        public bool Expand(IDataRepository Repo)
+        {
+            try
+            {
+                Bookings.ForEach(b => b = Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
         public override string ToString()

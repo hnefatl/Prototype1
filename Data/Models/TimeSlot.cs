@@ -19,7 +19,7 @@ namespace Data.Models
     /// </summary>
     [Table("Periods")]
     public class TimeSlot
-        : INotifyPropertyChanged, ISerialisable
+        : INotifyPropertyChanged, ISerialisable, IExpandsData
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -66,7 +66,7 @@ namespace Data.Models
             }
         }
 
-        public virtual List<Booking> Bookings { get; set; }
+        public virtual IList<Booking> Bookings { get; set; }
 
         public TimeSlot()
             : this(new TimeSpan(0, 0, 0), new TimeSpan(0, 0, 0))
@@ -103,6 +103,18 @@ namespace Data.Models
 
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());
+        }
+        public bool Expand(IDataRepository Repo)
+        {
+            try
+            {
+                Bookings.ForEach(b => b = Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
         public override string ToString()

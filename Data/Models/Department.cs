@@ -13,7 +13,7 @@ namespace Data.Models
 {
     [Table("Departments")]
     public class Department
-        : ISerialisable
+        : ISerialisable, IExpandsData
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -21,7 +21,7 @@ namespace Data.Models
 
         public string Name { get; set; }
 
-        public virtual List<Teacher> Teachers { get; set; }
+        public virtual IList<Teacher> Teachers { get; set; }
 
         public Department()
         {
@@ -43,6 +43,18 @@ namespace Data.Models
             Name = In.ReadString();
             Teachers = Enumerable.Repeat(new Teacher(), In.ReadInt32()).ToList();
             Teachers.ForEach(t => t.Id = In.ReadInt32());
+        }
+        public bool Expand(IDataRepository Repo)
+        {
+            try
+            {
+                Teachers.ForEach(t => t = Repo.Teachers.Where(t2 => t.Id == t2.Id).Single());
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
         public override string ToString()

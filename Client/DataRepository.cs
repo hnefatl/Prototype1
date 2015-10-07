@@ -15,10 +15,11 @@ using Data;
 namespace Client
 {
     public class DataRepository
-        : IDisposable
+        : IDisposable, IDataRepository
     {
         private static Connection Server { get; set; }
 
+        IList<Booking> IDataRepository.Bookings { get { return Bookings; } }
         private static ObservableCollection<Booking> _Bookings = new ObservableCollection<Booking>();
         public ObservableCollection<Booking> Bookings
         {
@@ -26,6 +27,7 @@ namespace Client
             set { _Bookings = value; }
         }
 
+        IList<Department> IDataRepository.Departments { get { return Departments; } }
         private static ObservableCollection<Department> _Departments = new ObservableCollection<Department>();
         public ObservableCollection<Department> Departments
         {
@@ -33,6 +35,7 @@ namespace Client
             set { _Departments = value; }
         }
 
+        IList<Room> IDataRepository.Rooms { get { return Rooms; } }
         private static ObservableCollection<Room> _Rooms = new ObservableCollection<Room>();
         public ObservableCollection<Room> Rooms
         {
@@ -40,6 +43,7 @@ namespace Client
             set { _Rooms = value; }
         }
 
+        IList<Student> IDataRepository.Students { get { return Students; } }
         private static ObservableCollection<Student> _Students = new ObservableCollection<Student>();
         public ObservableCollection<Student> Students
         {
@@ -47,6 +51,7 @@ namespace Client
             set { _Students = value; }
         }
 
+        IList<Subject> IDataRepository.Subjects { get { return Subjects; } }
         private static ObservableCollection<Subject> _Subjects = new ObservableCollection<Subject>();
         public ObservableCollection<Subject> Subjects
         {
@@ -54,6 +59,7 @@ namespace Client
             set { _Subjects = value; }
         }
 
+        IList<Teacher> IDataRepository.Teachers { get { return Teachers; } }
         private static ObservableCollection<Teacher> _Teachers = new ObservableCollection<Teacher>();
         public ObservableCollection<Teacher> Teachers
         {
@@ -61,6 +67,7 @@ namespace Client
             set { _Teachers = value; }
         }
 
+        IList<TimeSlot> IDataRepository.Periods { get { return Periods; } }
         private static ObservableCollection<TimeSlot> _Periods = new ObservableCollection<TimeSlot>();
         public ObservableCollection<TimeSlot> Periods
         {
@@ -159,6 +166,21 @@ namespace Client
 
                 Repo.Teachers.Clear();
                 Frame.Teachers.ForEach(t => Repo.Teachers.Add(t));
+
+                foreach (Booking b in Repo.Bookings)
+                    b.Expand(Repo);
+                foreach (Department d in Repo.Departments)
+                    d.Expand(Repo);
+                foreach (TimeSlot t in Repo.Periods)
+                    t.Expand(Repo);
+                foreach (Room r in Repo.Rooms)
+                    r.Expand(Repo);
+                foreach (Student s in Repo.Students)
+                    s.Expand(Repo);
+                foreach (Subject s in Repo.Subjects)
+                    s.Expand(Repo);
+                foreach(Teacher t in Repo.Teachers)
+                    t.Expand(Repo);
             }
         }
 
@@ -185,7 +207,7 @@ namespace Client
         {
             Server.MessageReceived -= MessageReceived;
             Server.Disconnect -= Disconnected;
-            
+
             InitialisedEvent.Dispose();
             InitialisedEvent = null;
         }

@@ -17,7 +17,7 @@ namespace Data.Models
     /// </summary>
     [Table("Subjects")]
     public class Subject
-        : ISerialisable
+        : ISerialisable, IExpandsData
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -49,11 +49,11 @@ namespace Data.Models
         /// <summary>
         /// Bookings of this subject
         /// </summary>
-        public virtual List<Booking> Bookings { get; set; }
+        public virtual IList<Booking> Bookings { get; set; }
         /// <summary>
         /// Students taking a subject
         /// </summary>
-        public virtual List<Student> Students { get; set; }
+        public virtual IList<Student> Students { get; set; }
 
         public Subject()
         {
@@ -82,6 +82,19 @@ namespace Data.Models
             Bookings.ForEach(b => b.Id = In.ReadInt32());
             Students = Enumerable.Repeat(new Student(), In.ReadInt32()).ToList();
             Students.ForEach(s => s.Id = In.ReadInt32());
+        }
+        public bool Expand(IDataRepository Repo)
+        {
+            try
+            {
+                Bookings.ForEach(b => b = Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
+                Students.ForEach(s => s = Repo.Students.Where(s2 => s2.Id == s.Id).Single());
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
         public override string ToString()

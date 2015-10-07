@@ -55,26 +55,54 @@ namespace Data
         }
         public void Deserialise(IReader In)
         {
-            Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
-            Bookings.ForEach(b => b.Deserialise(In));
+            Bookings = new List<Booking>(In.ReadInt32());
+            for (int x = 0; x < Bookings.Capacity; x++)
+            {
+                Bookings.Add(new Booking());
+                Bookings[x].Deserialise(In);
+            }
 
-            Departments = Enumerable.Repeat(new Department(), In.ReadInt32()).ToList();
-            Departments.ForEach(d => d.Deserialise(In));
+            Departments = new List<Department>(In.ReadInt32());
+            for (int x = 0; x < Departments.Capacity; x++)
+            {
+                Departments.Add(new Department());
+                Departments[x].Deserialise(In);
+            }
 
-            Periods = Enumerable.Repeat(new TimeSlot(), In.ReadInt32()).ToList();
-            Periods.ForEach(p => p.Deserialise(In));
+            Periods = new List<TimeSlot>(In.ReadInt32());
+            for (int x = 0; x < Periods.Capacity; x++)
+            {
+                Periods.Add(new TimeSlot());
+                Periods[x].Deserialise(In);
+            }
 
-            Rooms = Enumerable.Repeat(new Room(), In.ReadInt32()).ToList();
-            Rooms.ForEach(r => r.Deserialise(In));
+            Rooms = new List<Room>(In.ReadInt32());
+            for (int x = 0; x < Rooms.Capacity; x++)
+            {
+                Rooms.Add(new Room());
+                Rooms[x].Deserialise(In);
+            }
 
-            Students = Enumerable.Repeat(new Student(), In.ReadInt32()).ToList();
-            Students.ForEach(s => s.Deserialise(In));
+            Students = new List<Student>(In.ReadInt32());
+            for (int x = 0; x < Students.Capacity; x++)
+            {
+                Students.Add(new Student());
+                Students[x].Deserialise(In);
+            }
 
-            Subjects = Enumerable.Repeat(new Subject(), In.ReadInt32()).ToList();
-            Subjects.ForEach(s => s.Deserialise(In));
+            Subjects = new List<Subject>(In.ReadInt32());
+            for (int x = 0; x < Subjects.Capacity; x++)
+            {
+                Subjects.Add(new Subject());
+                Subjects[x].Deserialise(In);
+            }
 
-            Teachers = Enumerable.Repeat(new Teacher(), In.ReadInt32()).ToList();
-            Teachers.ForEach(t => t.Deserialise(In));
+            Teachers = new List<Teacher>(In.ReadInt32());
+            for (int x = 0; x < Teachers.Capacity; x++)
+            {
+                Teachers.Add(new Teacher());
+                Teachers[x].Deserialise(In);
+            }
         }
     }
 }
