@@ -34,8 +34,12 @@ namespace Server
         IList<TimeSlot> IDataRepository.Periods { get { return (IList<TimeSlot>)Periods; } }
         public virtual DbSet<TimeSlot> Periods { get; set; }
 
+        private const bool Home = false;
+        private const string ServerProvider = Home ? "MSSQLLocalDb" : "v11.0";
+        private const string Drive = Home ? "G" : "E";
+
         public DataRepository()
-            : base(@"data source=(LocalDb)\MSSQLLocalDb;AttachDbFilename=G:\Burford\Year 13\Computing\Project\Data\Data.mdf;Database=Data;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
+            : base(@"data source=(LocalDb)\" + ServerProvider + @";AttachDbFilename=" + Drive + @":\Burford\Year 13\Computing\Project\Data\Data.mdf;Database=Data;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
         {
             Database.SetInitializer(new DropCreateDatabaseAlways<DataRepository>());
         }

@@ -154,6 +154,10 @@
       <Project>{d880a785-d7e2-42c5-87c7-af2743ec4db7}</Project>
       <Name>NetCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Shared\Shared.csproj">
+      <Project>{fc932dea-f86a-4392-a297-c5d2e8357622}</Project>
+      <Name>Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

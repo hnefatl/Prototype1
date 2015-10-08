@@ -60,7 +60,11 @@ namespace Client
             Connected = false;
             Connection = new Connection();
         }
-
+        protected override void OnClosed(EventArgs e)
+        {
+            Connection.Close(DisconnectType.Expected);
+            base.OnClosed(e);
+        }
         protected void OnLoaded(object sender, RoutedEventArgs e)
         {
             NetHandler();
@@ -106,7 +110,7 @@ namespace Client
         {
             Connection.Disconnect -= Connection_Disconnect;
             Connection.MessageReceived -= Connection_MessageReceived;
-            
+
             Dispatcher.Invoke((Action)Hide);
 
             MessageBox.Show("Lost connection to the server. Will continue trying to connect in the background.");

@@ -111,12 +111,24 @@ namespace Client
                 _Teachers.CollectionChanged += Teachers_CollectionChanged;
                 _Periods.CollectionChanged += Periods_CollectionChanged;
             }
+            catch
+            {
+                return false;
+            }
             finally
             {
                 Monitor.Exit(Lock);
             }
 
-            InitialisedEvent.WaitOne();
+            try
+            {
+                InitialisedEvent.WaitOne();
+            }
+            catch
+            {
+                // Disconnected during initialise
+                return false;
+            }
 
             return true;
         }
@@ -179,7 +191,7 @@ namespace Client
                     s.Expand(Repo);
                 foreach (Subject s in Repo.Subjects)
                     s.Expand(Repo);
-                foreach(Teacher t in Repo.Teachers)
+                foreach (Teacher t in Repo.Teachers)
                     t.Expand(Repo);
             }
         }
@@ -193,6 +205,7 @@ namespace Client
                 if (Msg is InitialiseMessage)
                 {
                     LoadSnapshot((Msg as InitialiseMessage).Snapshot, false);
+                    ReportModelChanges = true;
                     InitialisedEvent.Set();
                 }
                 else if (Msg is NewBookingMessage)
