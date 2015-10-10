@@ -29,7 +29,7 @@ namespace Data.Models
         public string Password { get; set; }
         public bool Admin { get; set; }
         
-        public virtual IList<Booking> Bookings { get; set; }
+        public virtual List<Booking> Bookings { get; set; }
 
         public Teacher()
         {

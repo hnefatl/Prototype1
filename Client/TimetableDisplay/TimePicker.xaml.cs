@@ -33,63 +33,60 @@ namespace Client.TimetableDisplay
     public partial class TimePicker
         : UserControl, INotifyPropertyChanged
     {
+        protected int _Hours;
         public int Hours
         {
             get
             {
-                return Time.Hours;
+                return _Hours;
             }
             set
             {
-                Time = Time.Add(new TimeSpan(value, 0, 0));
+                _Hours = value;
+                OnPropertyChanged("Hours");
+                Text_Hours.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
             }
         }
+        protected int _Minutes;
         public int Minutes
         {
             get
             {
-                return Time.Minutes;
+                return _Minutes;
             }
             set
             {
-                Time = Time.Add(new TimeSpan(0, value, 0));
+                _Minutes = value;
+                OnPropertyChanged("Minutes");
+                Text_Minutes.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
             }
         }
+        protected int _Seconds;
         public int Seconds
         {
             get
             {
-                return Time.Seconds;
+                return _Seconds;
             }
             set
             {
-                Time = Time.Add(new TimeSpan(0, 0, value));
+                _Seconds = value;
+                OnPropertyChanged("Seconds");
+                Text_Seconds.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
             }
         }
-
+        
         public TimeSpan Time
         {
             get
             {
-                return (TimeSpan)GetValue(TimeProperty);
+                return new TimeSpan(Hours, Minutes, Seconds);
             }
             set
             {
-                SetValue(TimeProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty TimeProperty = DependencyProperty.Register("Time", typeof(TimeSpan), typeof(TimePicker),
-            new FrameworkPropertyMetadata(OnTimePropertyChanged) { BindsTwoWayByDefault = true });
-        private static void OnTimePropertyChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            TimePicker Sender = sender as TimePicker;
-            if (Sender != null)
-            {
-                Sender.OnPropertyChanged("Time");
-                Sender.OnPropertyChanged("Hours");
-                Sender.OnPropertyChanged("Minutes");
-                Sender.OnPropertyChanged("Seconds");
+                Hours = value.Hours;
+                Minutes = value.Minutes;
+                Seconds = value.Seconds;
             }
         }
 
@@ -123,8 +120,9 @@ namespace Client.TimetableDisplay
         {
             InitializeComponent();
             TimePickerType = TimePickerType.HoursMinutesSeconds;
-
+            
             PropertyChanged = delegate { };
+            DataContext = this;
         }
 
         private void Text_Hours_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -162,6 +160,8 @@ namespace Client.TimetableDisplay
             int Out;
             if (!int.TryParse(Contents, out Out) || Out < 0 || Out > 23)
                 e.Handled = true;
+            else
+                Hours = Out;
         }
         private void Text_Minutes_TextInput(object sender, TextCompositionEventArgs e)
         {
@@ -170,6 +170,8 @@ namespace Client.TimetableDisplay
             int Out;
             if (!int.TryParse(Contents, out Out) || Out < 0 || Out > 59)
                 e.Handled = true;
+            else
+                Minutes = Out;
         }
         private void Text_Seconds_TextInput(object sender, TextCompositionEventArgs e)
         {
@@ -178,6 +180,8 @@ namespace Client.TimetableDisplay
             int Out;
             if (!int.TryParse(Contents, out Out) || Out < 0 || Out > 59)
                 e.Handled = true;
+            else
+                Seconds = Out;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

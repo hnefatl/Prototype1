@@ -63,8 +63,8 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <RadioButton Name="Time_Radio_Period" Content="Existing period" IsChecked="{Binding ExistingPeriod, Mode=TwoWay}" Margin="5,5,5,0" Grid.Row="0" Grid.Column="0"/>
-                <Grid Name="Time_Grid_Existing" IsEnabled="{Binding IsChecked, ElementName=Time_Radio_Period}" Grid.Row="1" Grid.Column="0">
+                <RadioButton Name="Time_Radio_Existing" Content="Existing period" IsChecked="{Binding ExistingPeriod, Mode=TwoWay}" Margin="5,5,5,0" Grid.Row="0" Grid.Column="0"/>
+                <Grid Name="Time_Grid_Existing" IsEnabled="{Binding IsChecked, ElementName=Time_Radio_Existing}" Grid.Row="1" Grid.Column="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
@@ -75,13 +75,13 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Text="Slot: " Margin="5,8,0,0" Grid.Column="0"/>
-                    <ComboBox Name="Time_Existing_Combo_Time" ItemsSource="{Binding Periods}" Margin="5,5,5,0" Grid.Column="1"/>
+                    <ComboBox Name="Time_Existing_Combo_Time" ItemsSource="{Binding Periods}" SelectedItem="{Binding SelectedTimeslot}" Margin="5,5,5,0" Grid.Column="1"/>
                 </Grid>
 
                 <GridSplitter Grid.Column="1" Grid.ColumnSpan="1000"/>
 
                 <RadioButton Name="Time_Radio_New" Content="New time slot" IsChecked="False" Margin="5,5,5,0" Grid.Row="0" Grid.Column="2"/>
-                <Grid Name="Time_Grid_New" IsEnabled="{Binding Time_Radio_New.IsChecked}" Margin="0,0,0,5" Grid.Row="1" Grid.Column="2">
+                <Grid Name="Time_Grid_New" IsEnabled="{Binding IsChecked, ElementName=Time_Radio_New}" Margin="0,0,0,5" Grid.Row="1" Grid.Column="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>

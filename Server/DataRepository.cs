@@ -13,28 +13,28 @@ namespace Server
         : DbContext, IDataRepository
     {
 
-        IList<Booking> IDataRepository.Bookings { get { return (IList<Booking>)Bookings; } }
+        List<Booking> IDataRepository.Bookings { get { return Bookings.ToList(); } }
         public virtual DbSet<Booking> Bookings { get; set; }
 
-        IList<Department> IDataRepository.Departments { get { return (IList<Department>)Departments; } }
+        List<Department> IDataRepository.Departments { get { return Departments.ToList(); } }
         public virtual DbSet<Department> Departments { get; set; }
 
-        IList<Room> IDataRepository.Rooms { get { return (IList<Room>)Rooms; } }
+        List<Room> IDataRepository.Rooms { get { return Rooms.ToList(); } }
         public virtual DbSet<Room> Rooms { get; set; }
 
-        IList<Student> IDataRepository.Students { get { return (IList<Student>)Students; } }
+        List<Student> IDataRepository.Students { get { return Students.ToList(); } }
         public virtual DbSet<Student> Students { get; set; }
 
-        IList<Subject> IDataRepository.Subjects { get { return (IList<Subject>)Subjects; } }
+        List<Subject> IDataRepository.Subjects { get { return Subjects.ToList(); } }
         public virtual DbSet<Subject> Subjects { get; set; }
 
-        IList<Teacher> IDataRepository.Teachers { get { return (IList<Teacher>)Teachers; } }
+        List<Teacher> IDataRepository.Teachers { get { return Teachers.ToList(); } }
         public virtual DbSet<Teacher> Teachers { get; set; }
 
-        IList<TimeSlot> IDataRepository.Periods { get { return (IList<TimeSlot>)Periods; } }
+        List<TimeSlot> IDataRepository.Periods { get { return Periods.ToList(); } }
         public virtual DbSet<TimeSlot> Periods { get; set; }
 
-        private const bool Home = false;
+        private const bool Home = true;
         private const string ServerProvider = Home ? "MSSQLLocalDb" : "v11.0";
         private const string Drive = Home ? "G" : "E";
 

@@ -9,12 +9,12 @@ namespace Data
 {
     public interface IDataRepository
     {
-        IList<Booking> Bookings { get; }
-        IList<Department> Departments { get; }
-        IList<Room> Rooms { get; }
-        IList<Student> Students { get; }
-        IList<Subject> Subjects { get; }
-        IList<Teacher> Teachers { get; }
-        IList<TimeSlot> Periods { get; }
+        List<Booking> Bookings { get; }
+        List<Department> Departments { get; }
+        List<Room> Rooms { get; }
+        List<Student> Students { get; }
+        List<Subject> Subjects { get; }
+        List<Teacher> Teachers { get; }
+        List<TimeSlot> Periods { get; }
     }
 }

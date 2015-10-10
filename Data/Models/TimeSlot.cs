@@ -66,7 +66,7 @@ namespace Data.Models
             }
         }
 
-        public virtual IList<Booking> Bookings { get; set; }
+        public virtual List<Booking> Bookings { get; set; }
 
         public TimeSlot()
             : this(new TimeSpan(0, 0, 0), new TimeSpan(0, 0, 0))

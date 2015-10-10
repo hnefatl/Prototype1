@@ -14,7 +14,7 @@ namespace Client.Converters
         {
             if (targetType != typeof(string))
                 return null;
-            return System.Convert.ToString((int)value);
+            return System.Convert.ToString((int)value).PadLeft(2, '0');
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

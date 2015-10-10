@@ -21,7 +21,7 @@ namespace Data.Models
 
         public string Name { get; set; }
 
-        public virtual IList<Teacher> Teachers { get; set; }
+        public virtual List<Teacher> Teachers { get; set; }
 
         public Department()
         {

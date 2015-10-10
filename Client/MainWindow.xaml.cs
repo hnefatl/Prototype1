@@ -68,10 +68,6 @@ namespace Client
         protected void OnLoaded(object sender, RoutedEventArgs e)
         {
             NetHandler();
-
-
-
-            Timetable.SetTimetable(DateTime.Now.Date);
         }
 
         private void Timetable_TileClicked(TimetableTile Tile)
@@ -100,9 +96,12 @@ namespace Client
                     Connection.Send(new ConnectMessage(Environment.UserName, Environment.MachineName));
                     if (!DataRepository.Initialise(Connection))
                         continue; // Try again
+
+                    Timetable.Dispatcher.Invoke((Action<DateTime>)Timetable.SetTimetable, DateTime.Now.Date);
+
                     break;
                 }
-                Thread.Sleep(5000); // Wait 5 seconds then try again
+                Thread.Sleep(1000); // Wait for an interval then try again
             }
         }
 

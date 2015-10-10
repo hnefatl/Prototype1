@@ -43,7 +43,7 @@ namespace Data.Models
         /// <summary>
         /// Bookings using this room
         /// </summary>
-        public virtual IList<Booking> Bookings { get; set; }
+        public virtual List<Booking> Bookings { get; set; }
 
         public Room()
         {

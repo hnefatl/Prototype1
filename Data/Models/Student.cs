@@ -27,7 +27,7 @@ namespace Data.Models
         public int Year { get; set; }
         public string Form { get; set; }
 
-        public virtual IList<Booking> Bookings { get; set; }
+        public virtual List<Booking> Bookings { get; set; }
 
         public Student()
         {

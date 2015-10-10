@@ -32,11 +32,11 @@ namespace Data.Models
         {
             get
             {
-                return DateTime.FromBinary(Ticks);
+                return DateTime.FromBinary(Ticks).Date;
             }
             set
             {
-                Ticks = value.ToBinary();
+                Ticks = value.Date.ToBinary();
             }
         }
 
@@ -50,13 +50,13 @@ namespace Data.Models
         /// <summary>
         /// Rooms used by this booking
         /// </summary>
-        public virtual IList<Room> Rooms { get; set; }
+        public virtual List<Room> Rooms { get; set; }
         /// <summary>
         /// The subject of this booking
         /// </summary>
         public virtual Subject Subject { get; set; }
 
-        public virtual IList<Student> Students { get; set; }
+        public virtual List<Student> Students { get; set; }
         public virtual Teacher Teacher { get; set; }
 
         public Booking()
@@ -66,6 +66,14 @@ namespace Data.Models
             Subject = new Subject();
             Students = new List<Student>();
             Teacher = new Teacher();
+        }
+
+        public bool MatchesDay(DateTime Day)
+        {
+            return (BookingType == BookingType.Single && Day.Date == Date) ||
+                    (BookingType == BookingType.Weekly && (Day.Date - Date).Days % 7 == 0) ||
+                    (BookingType == BookingType.Fortnightly && (Day.Date - Date).Days % 14 == 0) ||
+                    (BookingType == BookingType.Monthly && (Day.Date - Date).Days % 31 == 0);
         }
 
         public void Serialise(IWriter Out)
@@ -89,24 +97,25 @@ namespace Data.Models
             Ticks = In.ReadInt64();
             BookingType = (BookingType)In.ReadInt32();
             TimeSlot.Id = In.ReadInt32();
-            Rooms = Enumerable.Repeat(new Room(), In.ReadInt32()).ToList();
-            foreach (Room r in Rooms)
-                r.Id = In.ReadInt32();
+            Rooms = new List<Room>(In.ReadInt32());
+            for (int x = 0; x < Rooms.Capacity; x++)
+                Rooms.Add(new Room() { Id = In.ReadInt32() });
             Subject.Id = In.ReadInt32();
-            Students = Enumerable.Repeat(new Student(), In.ReadInt32()).ToList();
-            foreach (Student s in Students)
-                s.Id = In.ReadInt32();
+            Students = new List<Student>(In.ReadInt32());
+            for (int x = 0; x < Students.Capacity; x++)
+                Students.Add(new Student() { Id = In.ReadInt32() });
             Teacher.Id = In.ReadInt32();
         }
-
         public bool Expand(IDataRepository Repo)
         {
             try
             {
                 TimeSlot = Repo.Periods.Where(t => t.Id == TimeSlot.Id).Single();
-                Rooms.ForEach(r => r = Repo.Rooms.Where(r2 => r.Id == r2.Id).Single());
+                for (int x = 0; x < Rooms.Count; x++)
+                    Rooms[x] = Repo.Rooms.Where(r => Rooms[x].Id == r.Id).Single();
                 Subject = Repo.Subjects.Where(s => s.Id == Subject.Id).Single();
-                Students.ForEach(s => s = Repo.Students.Where(s2 => s.Id == s2.Id).Single());
+                for (int x = 0; x < Students.Count; x++)
+                    Students[x] = Repo.Students.Where(s => Students[x].Id == s.Id).Single();
                 Teacher = Repo.Teachers.Where(t => t.Id == Teacher.Id).Single();
             }
             catch

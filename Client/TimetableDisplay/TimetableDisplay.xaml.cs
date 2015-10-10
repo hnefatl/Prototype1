@@ -80,7 +80,7 @@ namespace Client.TimetableDisplay
                 Container.Children.Add(LeftTile);
             }
 
-            for (int x = 0; x < Frame.Periods.Count; x++)
+            for (int x = -1; x < Frame.Periods.Count; x++)
             {
                 Grid TopTile = new Grid();
                 TopTile.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Auto) });
@@ -89,11 +89,15 @@ namespace Client.TimetableDisplay
                 TopTile.Background = MarginBrush;
                 TopTile.VerticalAlignment = VerticalAlignment.Bottom;
                 TopTile.HorizontalAlignment = HorizontalAlignment.Left;
-                if (!string.IsNullOrWhiteSpace(Frame.Periods[x].Name))
-                    TopTile.Children.Add(new TextBlock() { Text = Frame.Periods[x].Name, FontSize = 16, Margin = new Thickness(2, 2, 2, 0), TextWrapping = TextWrapping.Wrap, Width = TileWidth });
+
+                string Text = "";
+                if (x >= 0 && !string.IsNullOrWhiteSpace(Frame.Periods[x].Name))
+                    Text = Frame.Periods[x].Name;
+
+                TopTile.Children.Add(new TextBlock() { Text = Text, FontSize = 16, Margin = new Thickness(2, 2, 2, 0), TextWrapping = TextWrapping.Wrap, Width = TileWidth });
                 TopTile.Children.Add(new TextBlock()
                 {
-                    Text = new DateTime(Frame.Periods[x].Start.Ticks).ToString("HH:mm") + " - " + new DateTime(Frame.Periods[x].End.Ticks).ToString("HH:mm"),
+                    Text = x >= 0 ? Frame.Periods[x].TimeRange : "",
                     FontSize = 16,
                     Margin = new Thickness(2, 0, 2, 10),
                     TextWrapping = TextWrapping.Wrap,
@@ -109,12 +113,13 @@ namespace Client.TimetableDisplay
             }
 
             // Add the main content
+            List<Booking> RelevantBookings = Frame.Bookings.Where(b => b.MatchesDay(Day)).ToList();
             Tiles = new TimetableTile[Frame.Rooms.Count, Frame.Periods.Count];
             for (int y = 0; y < Frame.Rooms.Count; y++)
             {
                 for (int x = 0; x < Frame.Periods.Count; x++)
                 {
-                    Booking Current = Frame.Bookings.Where(b => b.TimeSlot == Frame.Periods[x] && b.Rooms.Contains(Frame.Rooms[y])).SingleOrDefault();
+                    Booking Current = RelevantBookings.Where(b => b.TimeSlot == Frame.Periods[x] && b.Rooms.Contains(Frame.Rooms[y])).SingleOrDefault();
 
                     Tiles[y, x] = new TimetableTile();
                     Tiles[y, x].Booking = Current;
@@ -148,7 +153,7 @@ namespace Client.TimetableDisplay
                 }
             }
         }
-        
+
         protected void OnPropertyChanged(string PropertyName)
         {
             if (PropertyChanged != null)
