@@ -7,7 +7,7 @@
         xmlns:converters="clr-namespace:Client.Converters"
         xmlns:local="clr-namespace:Client.TimetableDisplay"
         mc:Ignorable="d"
-        Title="Add Booking" Height="400" Width="430"
+        Title="Add Booking" Height="500" Width="430"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Window.Resources>
         <converters:InverseNullableBooleanConverter x:Key="InverseNullableBooleanConverter"/>
@@ -18,37 +18,30 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <GroupBox Header="Rooms" Margin="5" Grid.Row="0">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <ListView Name="List_Rooms" ItemsSource="{Binding Rooms}" Height="100" Grid.Column="0" Grid.ColumnSpan="2">
-                    <ListView.View>
-                        <GridView>
-                            <GridView.Columns>
-                                <GridViewColumn Width="30">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox IsChecked="{Binding Checked}"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn DisplayMemberBinding="{Binding Value.RoomName}" Width="80" Header="Room Name"/>
-                                <GridViewColumn DisplayMemberBinding="{Binding Value.StandardSeats}" Width="90" Header="Standard Seats"/>
-                                <GridViewColumn DisplayMemberBinding="{Binding Value.SpecialSeatsType}" Width="100" Header="Special seat type"/>
-                                <GridViewColumn DisplayMemberBinding="{Binding Value.SpecialSeats}" Width="80" Header="Special seats"/>
-                            </GridView.Columns>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
-            </Grid>
+            <ListView Name="List_Rooms" ItemsSource="{Binding Rooms}" Height="100" Margin="5" Grid.Column="0" Grid.ColumnSpan="2">
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Width="30">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding Checked}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.RoomName}" Width="80" Header="Room Name"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.StandardSeats}" Width="90" Header="Standard Seats"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.SpecialSeatsType}" Width="100" Header="Special seat type"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.SpecialSeats}" Width="80" Header="Special seats"/>
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
         </GroupBox>
 
         <GroupBox Header="Time slot" Margin="5" Grid.Row="1">
@@ -97,6 +90,50 @@
                     <TextBlock Text="End: " Margin="5,8,0,0" Grid.Row="1" Grid.Column="0"/>
                     <local:TimePicker x:Name="Time_New_Date_End" Time="10:00" TimePickerType="HoursMinutes" Margin="5,5,5,0" Grid.Row="1" Grid.Column="1"/>
                 </Grid>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="Students" Margin="5" Grid.Row="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Text="Filter:" Margin="0,7,5,0" Grid.Column="0"/>
+                    <TextBox Name="Text_StudentFilter" Width="100" Margin="0,5,5,0" Grid.Column="1" TextChanged="Text_StudentFilter_TextChanged"/>
+                    <ComboBox Name="Combo_FilterType" ItemsSource="{Binding Path=FilterValues, Mode=OneTime}" SelectedIndex="0" Width="100" Margin="0,5,5,0" Grid.Column="2" SelectionChanged="Combo_FilterType_SelectionChanged"/>
+                </Grid>
+                
+                <ListView Name="List_Students" ItemsSource="{Binding FilteredStudents}" Height="100" Margin="5" Grid.Row="2">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Width="30">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding Checked}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="First Name" Width="70" DisplayMemberBinding="{Binding Value.FirstName}"/>
+                                <GridViewColumn Header="Last Name" Width="70" DisplayMemberBinding="{Binding Value.LastName}"/>
+                                <GridViewColumn Header="Form" Width="40" DisplayMemberBinding="{Binding Value.Form}"/>
+                                <GridViewColumn Header="Year" Width="40" DisplayMemberBinding="{Binding Value.Year}"/>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
             </Grid>
         </GroupBox>
     </Grid>

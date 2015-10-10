@@ -49,19 +49,25 @@ namespace Server
             DataSnapshot Frame = new DataSnapshot();
             using (DataRepository Repo = new DataRepository())
             {
-                bool OriginalProxy = Repo.Configuration.ProxyCreationEnabled;
-                Repo.Configuration.ProxyCreationEnabled = false;
+                Repo.SetProxies(true);
+
                 Frame.Bookings = Repo.Bookings.Include(b => b.Rooms).Include(b => b.Students).ToList();
-                Frame.Departments = Repo.Departments.ToList();
-                Frame.Periods = Repo.Periods.ToList();
-                Frame.Rooms = Repo.Rooms.ToList();
-                Frame.Students = Repo.Students.ToList();
-                Frame.Subjects = Repo.Subjects.ToList();
-                Frame.Teachers = Repo.Teachers.ToList();
-                Repo.Configuration.ProxyCreationEnabled = OriginalProxy;
+                Frame.Departments = Repo.Departments.Include(d => d.Teachers).ToList();
+                Frame.Periods = Repo.Periods.Include(p => p.Bookings).ToList();
+                Frame.Rooms = Repo.Rooms.Include(r => r.Bookings).ToList();
+                Frame.Students = Repo.Students.Include(s => s.Bookings).ToList();
+                Frame.Subjects = Repo.Subjects.Include(s => s.Bookings).ToList();
+                Frame.Teachers = Repo.Teachers.Include(t => t.Bookings).ToList();
+
+                Repo.SetProxies(true);
             }
             return Frame;
         }
 
+        public void SetProxies(bool Enabled)
+        {
+            Configuration.ProxyCreationEnabled = Enabled;
+            Configuration.LazyLoadingEnabled = Enabled;
+        }
     }
 }

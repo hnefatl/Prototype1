@@ -49,16 +49,11 @@ namespace Data.Models
         /// <summary>
         /// Bookings of this subject
         /// </summary>
-        public virtual IList<Booking> Bookings { get; set; }
-        /// <summary>
-        /// Students taking a subject
-        /// </summary>
-        public virtual IList<Student> Students { get; set; }
+        public virtual List<Booking> Bookings { get; set; }
 
         public Subject()
         {
             Bookings = new List<Booking>();
-            Students = new List<Student>();
 
             SubjectName = string.Empty;
         }
@@ -70,8 +65,6 @@ namespace Data.Models
             Out.Write(Argb);
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
-            Out.Write(Students.Count);
-            Students.ForEach(s => Out.Write(s.Id));
         }
         public void Deserialise(IReader In)
         {
@@ -80,15 +73,12 @@ namespace Data.Models
             Argb = In.ReadInt32();
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());
-            Students = Enumerable.Repeat(new Student(), In.ReadInt32()).ToList();
-            Students.ForEach(s => s.Id = In.ReadInt32());
         }
         public bool Expand(IDataRepository Repo)
         {
             try
             {
                 Bookings.ForEach(b => b = Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
-                Students.ForEach(s => s = Repo.Students.Where(s2 => s2.Id == s.Id).Single());
             }
             catch
             {

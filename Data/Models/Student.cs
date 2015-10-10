@@ -24,8 +24,11 @@ namespace Data.Models
         
         public override AccessMode Access { get { return AccessMode.Student; } }
 
-        public int Year { get; set; }
-        public string Form { get; set; }
+        public int Year { get; set; } // 13
+        public string Form { get; set; } // WT
+
+        [NotMapped]
+        public string FullForm { get { return Year + Form; } }
 
         public virtual List<Booking> Bookings { get; set; }
 
