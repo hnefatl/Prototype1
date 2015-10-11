@@ -7,7 +7,8 @@
         xmlns:converters="clr-namespace:Client.Converters"
         xmlns:local="clr-namespace:Client.TimetableDisplay"
         mc:Ignorable="d"
-        Title="Add Booking" Height="500" Width="430"
+        Title="Add Booking" Height="600" Width="430"
+        SizeToContent="Height"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Window.Resources>
         <converters:InverseNullableBooleanConverter x:Key="InverseNullableBooleanConverter"/>
@@ -19,10 +20,30 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <GroupBox Header="Rooms" Margin="5" Grid.Row="0">
+        <GroupBox Header="Info" Margin="5" Grid.Row="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" Name="Row_Subject"/>
+                    <RowDefinition Height="Auto" Name="Row_Teacher"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Subject:" Margin="5,7,5,5" Grid.Row="0" Grid.Column="0"/>
+                <ComboBox Name="Combo_Subject" ItemsSource="{Binding Subjects}" SelectedItem="{Binding SelectedSubject, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="5" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="1"/>
+
+                <TextBlock Text="Teacher:" Margin="5,7,5,5" Grid.Row="1" Grid.Column="0"/>
+                <ComboBox Name="Combo_Teacher" ItemsSource="{Binding Teachers}" SelectedItem="{Binding SelectedTeacher, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="5" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="Rooms" Margin="5" Grid.Row="1">
             <ListView Name="List_Rooms" ItemsSource="{Binding Rooms}" Height="100" Margin="5" Grid.Column="0" Grid.ColumnSpan="2">
                 <ListView.View>
                     <GridView>
@@ -44,7 +65,7 @@
             </ListView>
         </GroupBox>
 
-        <GroupBox Header="Time slot" Margin="5" Grid.Row="1">
+        <GroupBox Header="Time slot" Margin="5" Grid.Row="2">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -73,7 +94,7 @@
 
                 <GridSplitter Grid.Column="1" Grid.ColumnSpan="1000"/>
 
-                <RadioButton Name="Time_Radio_New" Content="New time slot" IsChecked="False" Margin="5,5,5,0" Grid.Row="0" Grid.Column="2"/>
+                <RadioButton Name="Time_Radio_New" Content="New time slot" IsChecked="{Binding NewPeriod}" Margin="5,5,5,0" Grid.Row="0" Grid.Column="2"/>
                 <Grid Name="Time_Grid_New" IsEnabled="{Binding IsChecked, ElementName=Time_Radio_New}" Margin="0,0,0,5" Grid.Row="1" Grid.Column="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -93,7 +114,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="Students" Margin="5" Grid.Row="2">
+        <GroupBox Header="Students" Margin="5" Grid.Row="3">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -108,12 +129,12 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    
+
                     <TextBlock Text="Filter:" Margin="0,7,5,0" Grid.Column="0"/>
-                    <TextBox Name="Text_StudentFilter" Width="100" Margin="0,5,5,0" Grid.Column="1" TextChanged="Text_StudentFilter_TextChanged"/>
+                    <TextBox Name="Text_StudentFilter" Width="150" Margin="0,5,5,0" Grid.Column="1" TextChanged="Text_StudentFilter_TextChanged"/>
                     <ComboBox Name="Combo_FilterType" ItemsSource="{Binding Path=FilterValues, Mode=OneTime}" SelectedIndex="0" Width="100" Margin="0,5,5,0" Grid.Column="2" SelectionChanged="Combo_FilterType_SelectionChanged"/>
                 </Grid>
-                
+
                 <ListView Name="List_Students" ItemsSource="{Binding FilteredStudents}" Height="100" Margin="5" Grid.Row="2">
                     <ListView.View>
                         <GridView>
@@ -126,8 +147,8 @@
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
 
-                                <GridViewColumn Header="First Name" Width="70" DisplayMemberBinding="{Binding Value.FirstName}"/>
-                                <GridViewColumn Header="Last Name" Width="70" DisplayMemberBinding="{Binding Value.LastName}"/>
+                                <GridViewColumn Header="First Name" Width="125" DisplayMemberBinding="{Binding Value.FirstName}"/>
+                                <GridViewColumn Header="Last Name" Width="125" DisplayMemberBinding="{Binding Value.LastName}"/>
                                 <GridViewColumn Header="Form" Width="40" DisplayMemberBinding="{Binding Value.Form}"/>
                                 <GridViewColumn Header="Year" Width="40" DisplayMemberBinding="{Binding Value.Year}"/>
                             </GridView.Columns>
@@ -136,5 +157,8 @@
                 </ListView>
             </Grid>
         </GroupBox>
+
+        <Button Name="Button_Delete" Content="Delete" Click="Button_Delete_Click" Margin="5,5,60,5" Width="50" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="4"/>
+        <Button Name="Button_Submit" Content="Submit" Click="Button_Submit_Click" Margin ="5" Width="50" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="4"/>
     </Grid>
 </Window>

@@ -17,6 +17,8 @@ namespace Client.TimetableDisplay
     public class TimetableTile
         : StackPanel
     {
+        public TimeSlot Time { get; set; }
+        public Room Room { get; set; }
         public Booking Booking { get; set; }
 
         protected SolidColorBrush _Brush;

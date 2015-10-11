@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 using Shared;
 
@@ -17,8 +19,19 @@ namespace Data.Models
     public abstract class User
         : ISerialisable
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        public string LogonName { get; set; }
+
+        [NotMapped]
+        public abstract string InformalName { get; }
+        [NotMapped]
+        public abstract string FormalName { get; }
 
         public abstract AccessMode Access { get; }
 
@@ -36,11 +49,13 @@ namespace Data.Models
         {
             Out.Write(FirstName);
             Out.Write(LastName);
+            Out.Write(LogonName);
         }
         public virtual void Deserialise(IReader In)
         {
             FirstName = In.ReadString();
             LastName = In.ReadString();
+            LogonName = In.ReadString();
         }
     }
 }

@@ -21,6 +21,8 @@ namespace Client.TimetableDisplay
     public partial class AddBooking
         : Window, INotifyPropertyChanged
     {
+        public User CurrentUser { get; private set; }
+
         public ObservableCollection<Checkable<Room>> Rooms { get; set; }
         public List<Checkable<Room>> SelectedRooms { get { return Rooms.Where(r => r.Checked).ToList(); } }
 
@@ -55,6 +57,22 @@ namespace Client.TimetableDisplay
         };
         public List<string> FilterValues { get { return Filters.Keys.ToList(); } }
 
+        public List<Subject> Subjects { get; private set; }
+        private Subject _SelectedSubject;
+        public Subject SelectedSubject
+        {
+            get { return _SelectedSubject; }
+            set { _SelectedSubject = value; OnPropertyChanged("SelectedSubject"); }
+        }
+
+        public List<Teacher> Teachers { get; private set; }
+        private Teacher _SelectedTeacher;
+        public Teacher SelectedTeacher
+        {
+            get { return _SelectedTeacher; }
+            set { _SelectedTeacher = value; OnPropertyChanged("SelectedTeacher"); }
+        }
+
         protected bool _ExistingPeriod = true;
         public bool ExistingPeriod
         {
@@ -66,31 +84,52 @@ namespace Client.TimetableDisplay
             {
                 _ExistingPeriod = value;
                 OnPropertyChanged("ExistingPeriod");
+                OnPropertyChanged("NewPeriod");
             }
         }
+        public bool NewPeriod { get { return !ExistingPeriod; } set { ExistingPeriod = !value; } }
 
-        public User CurrentUser { get; private set; }
+        public bool DeleteBooking { get; private set; }
 
-        public AddBooking(User CurrentUser) // For making a new booking
-            : this(CurrentUser, new List<Room>(), null, new List<Student>())
+        public AddBooking(User CurrentUser, bool NewBooking) // For making a new booking
+            : this(CurrentUser, NewBooking, new List<Room>(), null, null, new List<Student>(), null, null)
         {
         }
-        public AddBooking(User CurrentUser, List<Room> SelectedRooms, TimeSlot TimeSlot, List<Student> SelectedStudents) // For editing an existing booking
+        public AddBooking(User CurrentUser, bool NewBooking, TimeSlot StartTime, Room StartRoom) // For making a new booking
+            : this(CurrentUser, NewBooking, new List<Room>(), StartRoom, StartTime, new List<Student>(), null, null)
+        {
+        }
+        public AddBooking(User CurrentUser, bool NewBooking, Booking Booking)
+            : this(CurrentUser, NewBooking, Booking.Rooms, null, Booking.TimeSlot, Booking.Students, Booking.Subject, Booking.Teacher)
+        {
+        }
+        public AddBooking(User CurrentUser, bool NewBooking, List<Room> SelectedRooms, Room StartRoom, TimeSlot TimeSlot, List<Student> SelectedStudents, Subject Subject, Teacher Teacher) // For editing an existing booking
         {
             PropertyChanged = delegate { };
 
             this.CurrentUser = CurrentUser;
+            DeleteBooking = false;
 
             using (DataRepository Repo = new DataRepository())
             {
-                Rooms = new ObservableCollection<Checkable<Room>>(Repo.Rooms.ToList().Select(r1 => new Checkable<Room>(r1, SelectedRooms.Any(r2 => r1.Id == r2.Id))));
+                Rooms = new ObservableCollection<Checkable<Room>>(Repo.Rooms.ToList().Select(r1 => new Checkable<Room>(r1, (StartRoom != null && r1.Id == StartRoom.Id) || SelectedRooms.Any(r2 => r1.Id == r2.Id))));
                 Periods = new ObservableCollection<TimeSlot>(Repo.Periods);
                 Students = Repo.Students.ToList().Select(s1 => new Checkable<Student>(s1, SelectedStudents.Any(s2 => s2.Id == s1.Id))).ToList();
                 FilteredStudents = new ObservableCollection<Checkable<Student>>(Students);
 
+                Subjects = Repo.Subjects.ToList();
+                if (Subject != null)
+                    SelectedSubject = Subject;
+
+                Teachers = Repo.Teachers.ToList();
+                if (Teacher != null)
+                    SelectedTeacher = Teacher;
+                else if (CurrentUser is Teacher)
+                    SelectedTeacher = (Teacher)CurrentUser;
+
                 if (TimeSlot == null)
                 {
-                    ExistingPeriod = false;
+                    ExistingPeriod = true;
                     SelectedTimeslot = new TimeSlot(new TimeSpan(9, 0, 0), new TimeSpan(10, 0, 0));
                 }
                 else
@@ -101,13 +140,18 @@ namespace Client.TimetableDisplay
             }
 
             InitializeComponent();
+
+            if (NewBooking) // Must be making a new booking
+                Button_Delete.IsEnabled = false;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string PropertyName)
+        public Booking GetBooking()
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
+            if (SelectedTimeslot == null || SelectedRooms == null || SelectedRooms.Count == 0 || SelectedSubject == null || SelectedStudents == null || SelectedStudents.Count == 0 || SelectedTeacher == null)
+                return null;
+
+            return new Booking(SelectedTimeslot, SelectedRooms.Select(c => c.Value).ToList(), SelectedSubject,
+                SelectedStudents.Select(c => c.Value).ToList(), SelectedTeacher);
         }
 
         public void UpdateFilter()
@@ -126,7 +170,7 @@ namespace Client.TimetableDisplay
                     FilteredStudents.Add(s);
             }
         }
-        
+
         private void Combo_FilterType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateFilter();
@@ -134,6 +178,42 @@ namespace Client.TimetableDisplay
         private void Text_StudentFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
             UpdateFilter();
+        }
+
+        private void Button_Submit_Click(object sender, RoutedEventArgs e)
+        {
+            string Error = string.Empty;
+            if (SelectedRooms.Count == 0)
+                Error = "You must select at least one room.";
+            else if (SelectedSubject == null)
+                Error = "You must select a subject.";
+            else if (SelectedTeacher == null)
+                Error = "You must select a teacher";
+
+            if (!string.IsNullOrWhiteSpace(Error))
+                MessageBox.Show(Error, "Error");
+            else
+            {
+                DialogResult = true;
+                Close();
+            }
+        }
+        private void Button_Delete_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult r = MessageBox.Show("Are you sure you want to delete this booking?", "Delete Booking", MessageBoxButton.YesNo);
+            if (r == MessageBoxResult.Yes)
+            {
+                DeleteBooking = true;
+                DialogResult = true;
+                Close();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string PropertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
         }
     }
 }

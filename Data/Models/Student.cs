@@ -18,10 +18,9 @@ namespace Data.Models
     public class Student
         : User, IExpandsData
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        
+        public override string InformalName { get { return FirstName + " " + LastName; } }
+        public override string FormalName { get { return InformalName; } }
+
         public override AccessMode Access { get { return AccessMode.Student; } }
 
         public int Year { get; set; } // 13

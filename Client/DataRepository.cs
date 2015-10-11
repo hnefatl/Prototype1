@@ -14,6 +14,7 @@ using Data;
 
 namespace Client
 {
+    public delegate void UserChangeHandler(User NewUser);
     public class DataRepository
         : IDisposable, IDataRepository
     {
@@ -79,6 +80,15 @@ namespace Client
         private static bool ReportModelChanges { get; set; } // Whether to inform the server of model changes
 
         private static ManualResetEvent InitialisedEvent { get; set; }
+        private static ManualResetEvent UserEvent { get; set; }
+        private static User CurrentUser { get; set; }
+
+        public static event UserChangeHandler UserChange;
+        protected static void OnUserChange(User New)
+        {
+            if (UserChange != null)
+                UserChange(New);
+        }
 
         private bool LockData;
 
@@ -88,15 +98,20 @@ namespace Client
             if (LockData)
                 Monitor.Enter(Lock); // Only allow one DataRepository to be instantiated at a time. Block until all other ones are Disposed.
         }
-        public static bool Initialise(Connection Server)
+        public static User Initialise(Connection Server, ConnectMessage Msg)
         {
             try
             {
                 Monitor.Enter(Lock);
 
+                Server.Send(Msg);
+
                 if (InitialisedEvent == null)
                     InitialisedEvent = new ManualResetEvent(false);
                 InitialisedEvent.Reset();
+                if (UserEvent == null)
+                    UserEvent = new ManualResetEvent(false);
+                UserEvent.Reset();
 
                 DataRepository.Server = Server;
 
@@ -113,7 +128,7 @@ namespace Client
             }
             catch
             {
-                return false;
+                return null;
             }
             finally
             {
@@ -123,14 +138,15 @@ namespace Client
             try
             {
                 InitialisedEvent.WaitOne();
+                UserEvent.WaitOne();
             }
             catch
             {
                 // Disconnected during initialise
-                return false;
+                return null;
             }
 
-            return true;
+            return CurrentUser;
         }
 
         public void Dispose()
@@ -139,10 +155,10 @@ namespace Client
                 Monitor.Exit(Lock);
         }
 
-        public static DataSnapshot TakeSnapshot()
+        public static DataSnapshot TakeSnapshot(bool Lock = true)
         {
             DataSnapshot Frame = new DataSnapshot();
-            using (DataRepository Repo = new DataRepository())
+            using (DataRepository Repo = new DataRepository(Lock))
             {
                 Frame.Bookings = Repo.Bookings.ToList();
                 Frame.Departments = Repo.Departments.ToList();
@@ -205,12 +221,24 @@ namespace Client
                 if (Msg is InitialiseMessage)
                 {
                     LoadSnapshot((Msg as InitialiseMessage).Snapshot, false);
-                    ReportModelChanges = true;
                     InitialisedEvent.Set();
                 }
-                else if (Msg is NewBookingMessage)
-                    _Bookings.Add((Msg as NewBookingMessage).Booking);
+                else if (Msg is UserInformationMessage)
+                {
+                    OnUserChange((Msg as UserInformationMessage).User);
+                    User u = (Msg as UserInformationMessage).User;
+                    DataSnapshot Frame = TakeSnapshot(false);
+                    if (u is Student)
+                        CurrentUser = Frame.Students.Where(s => s.Id == u.Id).SingleOrDefault();
+                    else
+                        CurrentUser = Frame.Teachers.Where(t => t.Id == u.Id).SingleOrDefault();
 
+                    UserEvent.Set();
+                }
+                else if (Msg is BookingMessage)
+                {
+                    _Bookings.Add((Msg as BookingMessage).Booking);
+                }
 
 
                 ReportModelChanges = true; // Continue reporting
@@ -231,10 +259,10 @@ namespace Client
             {
                 if (e.NewItems != null)
                     foreach (Booking b in e.NewItems)
-                        Server.Send(new NewBookingMessage(b));
-                //if (e.OldItems != null)
-                //    foreach (Booking b in e.OldItems)
-                //        Server.Send(new NewBookingMessage(b));
+                        Server.Send(new BookingMessage(b, false));
+                if (e.OldItems != null)
+                    foreach (Booking b in e.OldItems)
+                        Server.Send(new BookingMessage(b, true));
             }
         }
         private static void Departments_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

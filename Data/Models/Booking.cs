@@ -60,12 +60,16 @@ namespace Data.Models
         public virtual Teacher Teacher { get; set; }
 
         public Booking()
+            :this(new TimeSlot(), new List<Room>(), new Subject(), new List<Student>(), new Teacher())
         {
-            TimeSlot = new TimeSlot();
-            Rooms = new List<Room>();
-            Subject = new Subject();
-            Students = new List<Student>();
-            Teacher = new Teacher();
+        }
+        public Booking(TimeSlot Time, List<Room> Rooms, Subject Subject, List<Student> Students, Teacher Teacher)
+        {
+            this.TimeSlot = Time;
+            this.Rooms = Rooms;
+            this.Subject = Subject;
+            this.Students = Students;
+            this.Teacher = Teacher;
         }
 
         public bool MatchesDay(DateTime Day)

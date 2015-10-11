@@ -19,8 +19,9 @@ using System.ComponentModel;
 
 using Client.TimetableDisplay;
 using NetCore;
-using NetCore.Messages;
 using NetCore.Client;
+using NetCore.Messages;
+using NetCore.Messages.DataMessages;
 using Data;
 using Data.Models;
 
@@ -55,7 +56,7 @@ namespace Client
             PropertyChanged = delegate { };
             Loaded += OnLoaded;
 
-            CurrentUser = new Teacher();
+            CurrentUser = new Student();
 
             Connected = false;
             Connection = new Connection();
@@ -73,12 +74,32 @@ namespace Client
         private void Timetable_TileClicked(TimetableTile Tile)
         {
             AddBooking Window = null;
-            if (Tile.Booking == null) // New booking
-                Window = new AddBooking(CurrentUser);
+
+            bool NewBooking = Tile.Booking == null;
+
+            if (NewBooking) // New booking
+                Window = new AddBooking(CurrentUser, true, Tile.Time, Tile.Room);
             else // Editing booking
-                Window = new AddBooking(CurrentUser, Tile.Booking.Rooms.ToList(), Tile.Booking.TimeSlot, Tile.Booking.Students.ToList());
+                Window = new AddBooking(CurrentUser, false, Tile.Booking);
 
             bool? Result = Window.ShowDialog();
+
+            Booking b = Window.GetBooking();
+            bool Delete = Window.DeleteBooking;
+
+            if (Result.HasValue && Result.Value) // Send new/edit/delete booking
+            {
+                if (b != null)
+                {
+                    using (DataRepository Repo = new DataRepository())
+                    {
+                        if (Delete)
+                            Repo.Bookings.Remove(b);
+                        else
+                            Repo.Bookings.Add(b);
+                    }
+                }
+            }
         }
 
         protected void NetHandler()
@@ -93,12 +114,12 @@ namespace Client
 
                 if (Connected)
                 {
-                    Connection.Send(new ConnectMessage(Environment.UserName, Environment.MachineName));
-                    if (!DataRepository.Initialise(Connection))
-                        continue; // Try again
+                    CurrentUser = DataRepository.Initialise(Connection, new ConnectMessage(Environment.UserName, Environment.MachineName));
+                    if (CurrentUser == null) // Failed to initialise
+                        continue;
 
-                    Timetable.Dispatcher.Invoke((Action<DateTime>)Timetable.SetTimetable, DateTime.Now.Date);
-
+                    Timetable.Dispatcher.Invoke((Action<User, DateTime>)Timetable.SetTimetable, CurrentUser, DateTime.Now.Date);
+                    Dispatcher.Invoke((Action)Show);
                     break;
                 }
                 Thread.Sleep(1000); // Wait for an interval then try again

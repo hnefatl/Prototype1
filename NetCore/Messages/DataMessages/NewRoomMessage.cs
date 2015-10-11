@@ -6,7 +6,7 @@ using System.Text;
 using Shared;
 using Data.Models;
 
-namespace NetCore.Messages
+namespace NetCore.Messages.DataMessages
 {
     public class NewRoomMessage
         : Message

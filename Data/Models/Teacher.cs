@@ -14,13 +14,12 @@ namespace Data.Models
     [Table("Teachers")]
     public class Teacher
         : User, IExpandsData
-    {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        
+    {        
         public string Title { get; set; }
         
+        public override string InformalName { get { return FirstName + " " + LastName; } }
+        public override string FormalName { get { return Title + " " + LastName; } }
+
         public override AccessMode Access { get { return AccessMode.Teacher; } }
 
         public virtual Department Department { get; set; }
@@ -85,7 +84,7 @@ namespace Data.Models
 
         public override string ToString()
         {
-            return Title + " " + LastName;
+            return InformalName;
         }
     }
 }

@@ -56,8 +56,10 @@ namespace NetCore.Client
         }
         public bool Connect(IPEndPoint Server, ConnectMessage ConnectionMessage)
         {
-            if (Inner != null && Inner.Connected)
+            if (Inner.Connected)
                 return false;
+
+            Inner = new TcpClient();
 
             try
             {
@@ -123,8 +125,9 @@ namespace NetCore.Client
         {
             try
             {
-                if (Connected)
-                    Out.Write(Msg);
+                lock (Inner)
+                   if (Connected)
+                        Out.Write(Msg);
             }
             catch (ObjectDisposedException)
             { return false; }

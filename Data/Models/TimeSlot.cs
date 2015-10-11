@@ -127,6 +127,9 @@ namespace Data.Models
 
         public static bool operator==(TimeSlot One, TimeSlot Two)
         {
+            if (ReferenceEquals(One, Two))
+                return true;
+
             return (object)One != null && (object)Two != null && One.Start == Two.Start && One.End == Two.End && One.Name == Two.Name;
         }
         public static bool operator!=(TimeSlot One, TimeSlot Two)

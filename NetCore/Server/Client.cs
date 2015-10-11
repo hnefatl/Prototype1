@@ -106,8 +106,9 @@ namespace NetCore.Server
         {
             try
             {
-                if (Connected)
-                    Out.Write(m);
+                lock (Connection)
+                    if (Connected)
+                        Out.Write(m);
             }
             catch
             {

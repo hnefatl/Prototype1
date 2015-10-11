@@ -25,7 +25,7 @@ namespace Client.TimetableDisplay
 
         protected float TileWidth = 100;
         protected float TileHeight = 100;
-        protected float LeftWidth = 50;
+        protected float LeftWidth = 75;
         protected float TopHeight = 75;
 
         protected Brush MarginBrush = Brushes.LightGray;
@@ -42,7 +42,7 @@ namespace Client.TimetableDisplay
             DataContext = this;
         }
 
-        public void SetTimetable(DateTime Day)
+        public void SetTimetable(User CurrentUser, DateTime Day)
         {
             DataSnapshot Frame = DataRepository.TakeSnapshot();
 
@@ -123,6 +123,8 @@ namespace Client.TimetableDisplay
 
                     Tiles[y, x] = new TimetableTile();
                     Tiles[y, x].Booking = Current;
+                    Tiles[y, x].Room = Frame.Rooms[y];
+                    Tiles[y, x].Time = Frame.Periods[x];
 
                     Container.Children.Add(Tiles[y, x]);
                     Tiles[y, x].SetValue(Grid.RowProperty, y + 1); // Set y
@@ -133,11 +135,13 @@ namespace Client.TimetableDisplay
 
                     if (Current != null)
                     {
-                        Tiles[y, x].Children.Add(new TextBlock() { Text = Current.Subject.SubjectName, FontSize = 16, Margin = new Thickness(5, 5, 5, 0), TextWrapping = TextWrapping.Wrap });
-                        Tiles[y, x].Children.Add(new TextBlock() { Text = Current.Teacher.Title + " " + Current.Teacher.LastName, FontSize = 16, Margin = new Thickness(5, 5, 5, 0), TextWrapping = TextWrapping.Wrap });
+                        Tiles[y, x].Children.Add(new TextBlock() { Text = Current.Subject.SubjectName, FontSize = 16, Margin = new Thickness(5, 5, 5, 0), TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis });
+                        Tiles[y, x].Children.Add(new TextBlock() { Text = Current.Teacher.Title + " " + Current.Teacher.LastName, FontSize = 16, Margin = new Thickness(5, 5, 5, 0), TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis });
 
-                        // If contain this student, add a message to the bottom saying so
-                        // if(b.Students.Contains()
+                        // TODO: Still need some sort of marker to show which lessons the student's involved in
+                        //if (CurrentUser is Student)
+                        //    if (Current.Students.Contains(CurrentUser))
+                        //        Tiles[y, x].Children.Add(new TextBlock() { Text = "Involved", FontSize = 16, Margin = new Thickness(5, 5, 5, 0), VerticalAlignment = VerticalAlignment.Bottom, TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis });
 
                         Tiles[y, x].Brush = new SolidColorBrush(Current.Subject.Colour);
                     }
