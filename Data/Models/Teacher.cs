@@ -44,7 +44,6 @@ namespace Data.Models
         {
             base.Serialise(Out);
 
-            Out.Write(Id);
             Out.Write(Title);
             Out.Write(Department.Id);
             Out.Write(Email);
@@ -58,7 +57,6 @@ namespace Data.Models
         {
             base.Deserialise(In);
 
-            Id = In.ReadInt32();
             Title = In.ReadString();
             Department.Id = In.ReadInt32();
             Email = In.ReadString();

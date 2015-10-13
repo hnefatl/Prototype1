@@ -47,12 +47,14 @@ namespace Data.Models
 
         public virtual void Serialise(IWriter Out)
         {
+            Out.Write(Id);
             Out.Write(FirstName);
             Out.Write(LastName);
             Out.Write(LogonName);
         }
         public virtual void Deserialise(IReader In)
         {
+            Id = In.ReadInt32();
             FirstName = In.ReadString();
             LastName = In.ReadString();
             LogonName = In.ReadString();

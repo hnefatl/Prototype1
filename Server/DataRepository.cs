@@ -34,6 +34,9 @@ namespace Server
         List<TimeSlot> IDataRepository.Periods { get { return Periods.ToList(); } }
         public virtual DbSet<TimeSlot> Periods { get; set; }
 
+        List<Class> IDataRepository.Classes { get { return Classes.ToList(); } }
+        public virtual DbSet<Class> Classes { get; set; }
+
         private const bool Home = true;
         private const string ServerProvider = Home ? "MSSQLLocalDb" : "v11.0";
         private const string Drive = Home ? "G" : "E";

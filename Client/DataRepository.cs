@@ -76,6 +76,14 @@ namespace Client
             set { _Periods = value; }
         }
 
+        List<Class> IDataRepository.Classes { get { return Classes.ToList(); } }
+        private static ObservableCollection<Class> _Classes = new ObservableCollection<Class>();
+        public ObservableCollection<Class> Classes
+        {
+            get { return _Classes; }
+            set { _Classes = value; }
+        }
+
         private static object Lock = new object();
         private static bool ReportModelChanges { get; set; } // Whether to inform the server of model changes
 
@@ -125,6 +133,7 @@ namespace Client
                 _Subjects.CollectionChanged += Subjects_CollectionChanged;
                 _Teachers.CollectionChanged += Teachers_CollectionChanged;
                 _Periods.CollectionChanged += Periods_CollectionChanged;
+                _Classes.CollectionChanged += Classes_CollectionChanged;
             }
             catch
             {
@@ -318,6 +327,15 @@ namespace Client
             //if (e.OldItems != null)
             //    foreach (TimeSlot p in e.OldItems)
             //        Server.Send(new NewPeriodMessage(p));
+        }
+        private static void Classes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            //if (e.NewItems != null)
+            //    foreach (Class p in e.NewItems)
+            //        Server.Send(new NewClassMessage(p));
+            //if (e.OldItems != null)
+            //    foreach (Class p in e.OldItems)
+            //        Server.Send(new NewClassMessage(p));
         }
     }
 }

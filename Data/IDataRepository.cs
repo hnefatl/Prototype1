@@ -16,5 +16,6 @@ namespace Data
         List<Subject> Subjects { get; }
         List<Teacher> Teachers { get; }
         List<TimeSlot> Periods { get; }
+        List<Class> Classes { get; }
     }
 }

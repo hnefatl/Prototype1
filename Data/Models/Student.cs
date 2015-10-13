@@ -30,6 +30,7 @@ namespace Data.Models
         public string FullForm { get { return Year + Form; } }
 
         public virtual List<Booking> Bookings { get; set; }
+        public virtual List<Class> Classes { get; set; }
 
         public Student()
         {
@@ -42,27 +43,30 @@ namespace Data.Models
         {
             base.Serialise(Out);
 
-            Out.Write(Id);
             Out.Write(Year);
             Out.Write(Form);
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
+            Classes.ForEach(c => Out.Write(c.Id));
         }
         public override void Deserialise(IReader In)
         {
             base.Deserialise(In);
 
-            Id = In.ReadInt32();
             Year = In.ReadInt32();
             Form = In.ReadString();
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());
+
+            Classes = Enumerable.Repeat(new Class(), In.ReadInt32()).ToList();
+            Classes.ForEach(c => c.Id = In.ReadInt32());
         }
         public bool Expand(IDataRepository Repo)
         {
             try
             {
                 Bookings.ForEach(b => b = Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
+                Classes.ForEach(c1 => c1 = Repo.Classes.Where(c2 => c2.Id == c1.Id).Single());
             }
             catch
             {
