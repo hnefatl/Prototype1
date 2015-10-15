@@ -18,6 +18,7 @@ namespace Data
         public List<Subject> Subjects { get; set; }
         public List<Teacher> Teachers { get; set; }
         public List<TimeSlot> Periods { get; set; }
+        public List<Class> Classes { get; set; }
 
         public DataSnapshot()
         {
@@ -28,6 +29,7 @@ namespace Data
             Subjects = new List<Subject>();
             Teachers = new List<Teacher>();
             Periods = new List<TimeSlot>();
+            Classes = new List<Class>();
         }
 
         public void Serialise(IWriter Out)
@@ -52,6 +54,9 @@ namespace Data
 
             Out.Write(Teachers.Count);
             Teachers.ForEach(t => t.Serialise(Out));
+
+            Out.Write(Classes.Count);
+            Classes.ForEach(c => c.Serialise(Out));
         }
         public void Deserialise(IReader In)
         {
@@ -102,6 +107,13 @@ namespace Data
             {
                 Teachers.Add(new Teacher());
                 Teachers[x].Deserialise(In);
+            }
+
+            Classes = new List<Class>(In.ReadInt32());
+            for (int x = 0; x < Classes.Capacity; x++)
+            {
+                Classes.Add(new Class());
+                Classes[x].Deserialise(In);
             }
         }
     }

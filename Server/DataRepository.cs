@@ -37,7 +37,7 @@ namespace Server
         List<Class> IDataRepository.Classes { get { return Classes.ToList(); } }
         public virtual DbSet<Class> Classes { get; set; }
 
-        private const bool Home = true;
+        private const bool Home = false;
         private const string ServerProvider = Home ? "MSSQLLocalDb" : "v11.0";
         private const string Drive = Home ? "G" : "E";
 
@@ -52,7 +52,7 @@ namespace Server
             DataSnapshot Frame = new DataSnapshot();
             using (DataRepository Repo = new DataRepository())
             {
-                Repo.SetProxies(true);
+                Repo.SetProxies(false);
 
                 Frame.Bookings = Repo.Bookings.Include(b => b.Rooms).Include(b => b.Students).ToList();
                 Frame.Departments = Repo.Departments.Include(d => d.Teachers).ToList();
@@ -61,6 +61,7 @@ namespace Server
                 Frame.Students = Repo.Students.Include(s => s.Bookings).ToList();
                 Frame.Subjects = Repo.Subjects.Include(s => s.Bookings).ToList();
                 Frame.Teachers = Repo.Teachers.Include(t => t.Bookings).ToList();
+                Frame.Classes = Repo.Classes.Include(c => c.Students).ToList();
 
                 Repo.SetProxies(true);
             }

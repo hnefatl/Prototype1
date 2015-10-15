@@ -176,6 +176,7 @@ namespace Client
                 Frame.Students = Repo.Students.ToList();
                 Frame.Subjects = Repo.Subjects.ToList();
                 Frame.Teachers = Repo.Teachers.ToList();
+                Frame.Classes = Repo.Classes.ToList();
             }
             return Frame;
         }
@@ -204,6 +205,9 @@ namespace Client
                 Repo.Teachers.Clear();
                 Frame.Teachers.ForEach(t => Repo.Teachers.Add(t));
 
+                Repo.Classes.Clear();
+                Frame.Classes.ForEach(c => Repo.Classes.Add(c));
+
                 foreach (Booking b in Repo.Bookings)
                     b.Expand(Repo);
                 foreach (Department d in Repo.Departments)
@@ -218,6 +222,8 @@ namespace Client
                     s.Expand(Repo);
                 foreach (Teacher t in Repo.Teachers)
                     t.Expand(Repo);
+                foreach (Class c in Repo.Classes)
+                    c.Expand(Repo);
             }
         }
 
@@ -236,6 +242,10 @@ namespace Client
                 {
                     OnUserChange((Msg as UserInformationMessage).User);
                     User u = (Msg as UserInformationMessage).User;
+
+                    if (u == null)
+                        throw new ArgumentNullException("Received a null user.");
+
                     DataSnapshot Frame = TakeSnapshot(false);
                     if (u is Student)
                         CurrentUser = Frame.Students.Where(s => s.Id == u.Id).SingleOrDefault();

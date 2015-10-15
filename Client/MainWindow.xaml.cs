@@ -133,9 +133,10 @@ namespace Client
 
             Dispatcher.Invoke((Action)Hide);
 
-            MessageBox.Show("Lost connection to the server. Will continue trying to connect in the background.");
+            Environment.Exit(34652);
+            //MessageBox.Show("Lost connection to the server. Will continue trying to connect in the background.");
 
-            NetTask = Task.Factory.StartNew(NetHandler); // Start reconnecting
+            //NetTask = Task.Factory.StartNew(NetHandler); // Start reconnecting
         }
         protected void Connection_MessageReceived(Connection Sender, Message Message)
         {

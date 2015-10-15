@@ -31,6 +31,7 @@ namespace Data.Models
         {
             Out.Write(Id);
             Out.Write(ClassName);
+            Out.Write(Students.Count);
             Students.ForEach(s => Out.Write(s.Id));
         }
         public void Deserialise(IReader In)

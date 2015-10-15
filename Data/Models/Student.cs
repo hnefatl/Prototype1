@@ -35,6 +35,7 @@ namespace Data.Models
         public Student()
         {
             Bookings = new List<Booking>();
+            Classes = new List<Class>();
 
             Form = string.Empty;
         }
@@ -47,6 +48,7 @@ namespace Data.Models
             Out.Write(Form);
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
+            Out.Write(Classes.Count);
             Classes.ForEach(c => Out.Write(c.Id));
         }
         public override void Deserialise(IReader In)

@@ -30,9 +30,9 @@ namespace Server
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 2", Start = new TimeSpan(13, 0, 0), End = new TimeSpan(14, 0, 0) });
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 3", Start = new TimeSpan(14, 0, 0), End = new TimeSpan(15, 0, 0) });
 
-                Repo.Students.Add(new Student() { FirstName = "Keith", LastName = "Collister", Form = "WT", Year = 13, LogonName = "Keith" });
-                Repo.Students.Add(new Student() { FirstName = "Max", LastName = "Norman", Form = "WT", Year = 13, LogonName = "DAN" });
-                Repo.Students.Add(new Student() { FirstName = "Dan", LastName = "Wrenn", Form = "MB", Year = 13, LogonName = "MAX" });
+                Repo.Students.Add(new Student() { FirstName = "Keith", LastName = "Collister", Form = "WT", Year = 13, LogonName = "09135" });
+                Repo.Students.Add(new Student() { FirstName = "Max", LastName = "Norman", Form = "WT", Year = 13, LogonName = "Max" });
+                Repo.Students.Add(new Student() { FirstName = "Dan", LastName = "Wrenn", Form = "MB", Year = 13, LogonName = "Dan" });
 
                 Repo.Subjects.Add(new Subject() { SubjectName = "Maths", Colour = Colors.Red });
                 Repo.Subjects.Add(new Subject() { SubjectName = "Physics", Colour = Colors.Orange });
@@ -43,6 +43,9 @@ namespace Server
                 Repo.Departments.Add(new Department() { Name = "Computing/IT" });
 
                 Repo.SaveChanges();
+
+                Repo.Classes.Add(new Class() { ClassName="Computing", Students=Repo.Students.ToList() });
+                Repo.Classes.Add(new Class() { ClassName = "Maths", Students = Repo.Students.Where(s => s.Form == "13WT").ToList() });
 
                 Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "mb", FirstName = "Mary", LastName = "Bogdiukiewicz", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single() });
                 Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "jk", FirstName = "J....", LastName = "Kenny", Department = Repo.Departments.Where(d => d.Name == "Science").Single() });

@@ -36,6 +36,6 @@ namespace Shared
         long EndReadInt64(IAsyncResult Handle);
 
         IAsyncResult BeginReadString(AsyncCallback Callback);
-        string EndReadString(IAsyncResult Handle);        
+        string EndReadString(IAsyncResult Handle);
     }
 }
