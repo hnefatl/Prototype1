@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.IO;
 
 using NetCore.Messages;
+using NetCore.Sessions;
 
 namespace NetCore.Server
 {
@@ -31,7 +32,7 @@ namespace NetCore.Server
         public event MessageReceivedHandler MessageReceived;
         public event DisconnectHandler Disconnect;
 
-        private byte[] Buffer { get; set; }
+        protected Dictionary<Guid, Session> Sessions { get; set; }
 
         private Client(ConnectMessage m, TcpClient Connection)
         {
@@ -43,6 +44,8 @@ namespace NetCore.Server
             Stream = Connection.GetStream();
             In = new NetReader(Stream);
             Out = new NetWriter(Stream);
+
+            Sessions = new Dictionary<Guid, Session>();
 
             MessageReceived = delegate { };
             Disconnect = delegate { };
@@ -66,6 +69,14 @@ namespace NetCore.Server
         public void Stop()
         {
             Dispose();
+        }
+
+        public EventSession CreateEventSession()
+        {
+            EventSession Session = new EventSession();
+            Sessions.Add(Guid.NewGuid(), Session);
+
+            return Session;
         }
 
         private void StartRead()
@@ -118,10 +129,7 @@ namespace NetCore.Server
 
         public override string ToString()
         {
-            if (!Connected)
-                return "Disconnected client";
-            else
-                return Username + "@" + ComputerName + " on " + Remote.Address.ToString() + ":" + Remote.Port;
+            return Username + "@" + ComputerName + " on " + Remote.Address.ToString() + ":" + Remote.Port;
         }
 
         public static Client Create(TcpClient Connection)
