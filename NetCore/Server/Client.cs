@@ -11,12 +11,10 @@ using NetCore.Sessions;
 
 namespace NetCore.Server
 {
-    public delegate void MessageReceivedHandler(Client Sender, Message Message);
     public delegate void DisconnectHandler(Client Sender, DisconnectMessage Message);
 
-    // Used by RBSListener to represent a virtual "client" (wrapped around a socket, effectively).
     public class Client
-        : IDisposable
+        : IDisposable, ISessionCreator
     {
         public string Username { get; protected set; }
         public string ComputerName { get; protected set; }
@@ -29,10 +27,9 @@ namespace NetCore.Server
         protected NetReader In { get; set; }
         protected NetWriter Out { get; set; }
 
-        public event MessageReceivedHandler MessageReceived;
         public event DisconnectHandler Disconnect;
 
-        protected Dictionary<Guid, Session> Sessions { get; set; }
+        public Dictionary<Guid, Session> Sessions { get; protected set; }
 
         private Client(ConnectMessage m, TcpClient Connection)
         {
@@ -47,12 +44,17 @@ namespace NetCore.Server
 
             Sessions = new Dictionary<Guid, Session>();
 
-            MessageReceived = delegate { };
             Disconnect = delegate { };
         }
         public void Dispose()
         {
-            Send(new DisconnectMessage(DisconnectType.Expected));
+            Sessions.Clear();
+            try
+            {
+                Out.Write(false); // Sending a non-session message
+                Out.Write(new DisconnectMessage(DisconnectType.Expected)); // Send the d/c message
+            }
+            catch { }
 
             Stream.Dispose();
             In.Dispose();
@@ -71,10 +73,13 @@ namespace NetCore.Server
             Dispose();
         }
 
-        public EventSession CreateEventSession()
+        public Session CreateSession<T>() where T : Session
         {
-            EventSession Session = new EventSession();
-            Sessions.Add(Guid.NewGuid(), Session);
+            T Session = (T)Activator.CreateInstance(typeof(T), Guid.NewGuid(), this);
+            Session.SendMessage += Session_SendMessage;
+
+            lock (Session)
+                Sessions.Add(Session.Id, Session);
 
             return Session;
         }
@@ -91,6 +96,8 @@ namespace NetCore.Server
                 In.EndReadByte(Result);
                 Result.AsyncWaitHandle.Dispose();
 
+                Guid Id = new Guid(In.ReadBytes(16));
+
                 Message New;
                 New = Message.ReadMessage(In);
 
@@ -100,7 +107,13 @@ namespace NetCore.Server
                     return;
                 }
                 else
-                    MessageReceived(this, New);
+                {
+                    lock (Sessions)
+                    {
+                        if (Sessions.ContainsKey(Id))
+                            Sessions[Id].RegisterMessage(New);
+                    }
+                }
 
                 StartRead(); // Go for another receive
                 return;
@@ -113,13 +126,19 @@ namespace NetCore.Server
             Disconnect(this, new DisconnectMessage(DisconnectType.Unexpected));
         }
 
-        public void Send(Message m)
+        protected void Session_SendMessage(Session Sender, Message Msg)
         {
             try
             {
                 lock (Connection)
+                {
                     if (Connected)
-                        Out.Write(m);
+                    {
+                        Out.Write(true); // Indicates it's a session message
+                        Out.Write(Sender.Id.ToByteArray()); // The Session Id
+                        Out.Write(Msg); // The Session's message
+                    }
+                }
             }
             catch
             {

@@ -56,7 +56,9 @@
     <Compile Include="Client\Connection.cs" />
     <Compile Include="Server\Listener.cs" />
     <Compile Include="Sessions\EventSession.cs" />
+    <Compile Include="Sessions\ISessionCreator.cs" />
     <Compile Include="Sessions\Session.cs" />
+    <Compile Include="Sessions\SyncSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">

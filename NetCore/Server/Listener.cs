@@ -42,7 +42,7 @@ namespace NetCore.Server
         public Listener(IPEndPoint Endpoint)
             : this(Endpoint, new List<Client>())
         {
-            // Be default, the Clients list is a List
+
         }
         public Listener(IPEndPoint Endpoint, IList<Client> ClientListType)
         {
@@ -84,7 +84,6 @@ namespace NetCore.Server
             {
                 try
                 {
-                    c.Send(new DisconnectMessage(DisconnectType.Expected));
                     c.Dispose();
                 }
                 catch { }

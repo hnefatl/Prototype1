@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading;
 
 using NetCore.Messages;
+using NetCore.Sessions;
 
 namespace NetCore.Client
 {
@@ -16,7 +17,7 @@ namespace NetCore.Client
 
     // Used by the actual network client
     public class Connection
-        : IDisposable
+        : IDisposable, ISessionCreator
     {
         public TcpClient Inner { get; protected set; }
 
@@ -27,20 +28,18 @@ namespace NetCore.Client
         protected NetWriter Out { get; set; }
 
         public event DisconnectHandler Disconnect;
-        public event MessageReceivedHandler MessageReceived;
 
-        private byte[] Buffer { get; set; }
+        public Dictionary<Guid, Session> Sessions { get; protected set; }
 
         public Connection()
         {
             Inner = new TcpClient();
 
             Disconnect = delegate { };
-            MessageReceived = delegate { };
         }
         public void Dispose()
         {
-            Send(new DisconnectMessage(DisconnectType.Unexpected));
+            lock(Inner)
 
             Stream.Dispose();
             Out.Dispose();
@@ -87,6 +86,17 @@ namespace NetCore.Client
             Dispose();
         }
 
+        public T CreateSession<T>() where T : Session
+        {
+            T Session = (T)Activator.CreateInstance(typeof(T), Guid.NewGuid(), this);
+            Session.SendMessage += Session_SendMessage;
+
+            lock (Session)
+                Sessions.Add(Session.Id, Session);
+
+            return Session;
+        }
+
         protected void StartRead()
         {
             // Read the notification byte
@@ -99,6 +109,8 @@ namespace NetCore.Client
                 In.EndReadByte(Result);
                 Result.AsyncWaitHandle.Dispose();
 
+                Guid Id = new Guid(In.ReadBytes(16));
+
                 Message New;
                 New = Message.ReadMessage(In);
 
@@ -108,7 +120,13 @@ namespace NetCore.Client
                     return;
                 }
                 else
-                    MessageReceived(this, New);
+                {
+                    lock(Sessions)
+                    {
+                        if (Sessions.ContainsKey(Id))
+                            Sessions[Id].RegisterMessage(New);
+                    }
+                }
 
                 StartRead(); // Go for another read
                 return;
@@ -121,20 +139,23 @@ namespace NetCore.Client
             Disconnect(this, new DisconnectMessage(DisconnectType.Unexpected));
         }
 
-        public bool Send(Message Msg)
+        public void Session_SendMessage(Session Sender, Message Msg)
         {
             try
             {
                 lock (Inner)
-                   if (Connected)
+                {
+                    if (Connected)
+                    {
+                        Out.Write(Sender.Id.ToByteArray());
                         Out.Write(Msg);
+                    }
+                }
             }
             catch (ObjectDisposedException)
-            { return false; }
+            { }
             catch (IOException)
-            { return false; }
-
-            return true;
+            { }
         }
     }
 }
