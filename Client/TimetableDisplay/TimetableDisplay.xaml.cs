@@ -32,6 +32,8 @@ namespace Client.TimetableDisplay
 
         public event TileClickHandler TileClicked;
 
+        public DateTime CurrentDay { get; protected set; }
+
         public TimetableDisplay()
         {
             InitializeComponent();
@@ -44,6 +46,8 @@ namespace Client.TimetableDisplay
 
         public void SetTimetable(User CurrentUser, DateTime Day)
         {
+            CurrentDay = Day;
+
             DataSnapshot Frame = DataRepository.TakeSnapshot();
 
             Width = TileWidth * Frame.Periods.Count + LeftWidth;

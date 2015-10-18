@@ -69,6 +69,8 @@ namespace Client
         protected void OnLoaded(object sender, RoutedEventArgs e)
         {
             NetHandler();
+
+            DataRepository.DataChanged += Data_DataChanged;
         }
 
         private void Timetable_TileClicked(TimetableTile Tile)
@@ -85,19 +87,21 @@ namespace Client
             bool? Result = Window.ShowDialog();
 
             Booking b = Window.GetBooking();
-            bool Delete = Window.DeleteBooking;
 
-            if (Result.HasValue && Result.Value) // Send new/edit/delete booking
+            if (b != null && Result.HasValue && Result.Value) // Send new/edit/delete booking
             {
-                if (b != null)
+                bool Delete = Window.DeleteBooking;
+                b.Date = Timetable.CurrentDay;
+                b.Id = Tile.Booking == null ? 0 : Tile.Booking.Id;
+
+                using (DataRepository Repo = new DataRepository())
                 {
-                    using (DataRepository Repo = new DataRepository())
-                    {
-                        if (Delete)
-                            Repo.Bookings.Remove(b);
-                        else
-                            Repo.Bookings.Add(b);
-                    }
+                    bool e = b == Repo.Bookings[1];
+
+                    if (Delete)
+                        Repo.Bookings.Remove(b);
+                    else
+                        Repo.Bookings.Add(b);
                 }
             }
         }
@@ -124,6 +128,11 @@ namespace Client
                 }
                 Thread.Sleep(1000); // Wait for an interval then try again
             }
+        }
+
+        protected void Data_DataChanged()
+        {
+            Timetable.Dispatcher.Invoke((Action<User, DateTime>)Timetable.SetTimetable, CurrentUser, Timetable.CurrentDay);
         }
 
         protected void Connection_Disconnect(Connection Sender, DisconnectMessage Message)

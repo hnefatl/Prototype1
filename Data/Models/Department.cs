@@ -13,12 +13,8 @@ namespace Data.Models
 {
     [Table("Departments")]
     public class Department
-        : ISerialisable, IExpandsData
+        : DataModel
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
         public string Name { get; set; }
 
         public virtual List<Teacher> Teachers { get; set; }
@@ -30,21 +26,23 @@ namespace Data.Models
             Name = string.Empty;
         }
 
-        public void Serialise(IWriter Out)
+        public override void Serialise(IWriter Out)
         {
-            Out.Write(Id);
+            base.Serialise(Out);
+            
             Out.Write(Name);
             Out.Write(Teachers.Count);
             Teachers.ForEach(t => Out.Write(t.Id));
         }
-        public void Deserialise(IReader In)
+        protected override void Deserialise(IReader In)
         {
-            Id = In.ReadInt32();
+            base.Deserialise(In);
+
             Name = In.ReadString();
             Teachers = Enumerable.Repeat(new Teacher(), In.ReadInt32()).ToList();
             Teachers.ForEach(t => t.Id = In.ReadInt32());
         }
-        public bool Expand(IDataRepository Repo)
+        public override bool Expand(IDataRepository Repo)
         {
             try
             {

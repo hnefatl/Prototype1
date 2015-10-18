@@ -19,12 +19,8 @@ namespace Data.Models
     /// </summary>
     [Table("Periods")]
     public class TimeSlot
-        : INotifyPropertyChanged, ISerialisable, IExpandsData
+        : DataModel, INotifyPropertyChanged
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
         private TimeSpan _Start;
         public TimeSpan Start
         {
@@ -84,9 +80,10 @@ namespace Data.Models
             Name = string.Empty;
         }
 
-        public void Serialise(IWriter Out)
+        public override void Serialise(IWriter Out)
         {
-            Out.Write(Id);
+            base.Serialise(Out);
+
             Out.Write(_Start.Ticks);
             Out.Write(_End.Ticks);
             Out.Write(Name);
@@ -94,9 +91,10 @@ namespace Data.Models
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
         }
-        public void Deserialise(IReader In)
+        protected override void Deserialise(IReader In)
         {
-            Id = In.ReadInt32();
+            base.Deserialise(In);
+
             _Start = new TimeSpan(In.ReadInt64());
             _End = new TimeSpan(In.ReadInt64());
             Name = In.ReadString();
@@ -104,7 +102,7 @@ namespace Data.Models
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());
         }
-        public bool Expand(IDataRepository Repo)
+        public override bool Expand(IDataRepository Repo)
         {
             try
             {

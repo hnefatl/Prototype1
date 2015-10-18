@@ -13,6 +13,7 @@
     <Window.Resources>
         <converters:InverseNullableBooleanConverter x:Key="InverseNullableBooleanConverter"/>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:BookingTypeToStringConverter x:Key="BookingTypeToStringConverter"/>
     </Window.Resources>
 
     <Grid>
@@ -28,6 +29,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" Name="Row_Subject"/>
+                    <RowDefinition Height="Auto" Name="Row_Recurrence"/>
                     <RowDefinition Height="Auto" Name="Row_Teacher"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -38,8 +40,11 @@
                 <TextBlock Text="Subject:" Margin="5,7,5,5" Grid.Row="0" Grid.Column="0"/>
                 <ComboBox Name="Combo_Subject" ItemsSource="{Binding Subjects}" SelectedItem="{Binding SelectedSubject, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="5" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="1"/>
 
-                <TextBlock Text="Teacher:" Margin="5,7,5,5" Grid.Row="1" Grid.Column="0"/>
-                <ComboBox Name="Combo_Teacher" ItemsSource="{Binding Teachers}" SelectedItem="{Binding SelectedTeacher, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="5" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"/>
+                <TextBlock Text="Recurrence: " Margin="5,7,5,5" Grid.Row="1" Grid.Column="0"/>
+                <ComboBox Name="Combo_BookingType" ItemsSource="{Binding BookingTypes, Converter={StaticResource BookingTypeToStringConverter}}" SelectedItem="{Binding SelectedBookingType, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="5" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"/>
+                
+                <TextBlock Text="Teacher:" Margin="5,7,5,5" Grid.Row="2" Grid.Column="0"/>
+                <ComboBox Name="Combo_Teacher" ItemsSource="{Binding Teachers}" SelectedItem="{Binding SelectedTeacher, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="5" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1"/>
             </Grid>
         </GroupBox>
 

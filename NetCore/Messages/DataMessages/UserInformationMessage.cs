@@ -22,27 +22,21 @@ namespace NetCore.Messages.DataMessages
             this.User = User;
         }
 
-        public override void Serialise(IWriter Writer)
+        public override void Serialise(IWriter Out)
         {
-            base.Serialise(Writer);
+            base.Serialise(Out);
 
-            Writer.Write(User != null);
+            Out.Write(User != null);
             if (User != null)
             {
-                Writer.Write((int)User.Access);
-                User.Serialise(Writer);
+                User.Serialise(Out);
             }
         }
-        public override void Deserialise(IReader Reader)
+        public override void Deserialise(IReader In)
         {
-            if (Reader.ReadBool())
+            if (In.ReadBool())
             {
-                AccessMode Access = (AccessMode)Reader.ReadInt32();
-                if (Access == AccessMode.Teacher || Access == AccessMode.Admin)
-                    User = new Teacher();
-                else
-                    User = new Student();
-                User.Deserialise(Reader);
+                User = (User)DataModel.DeserialiseExternal(In);
             }
         }
     }

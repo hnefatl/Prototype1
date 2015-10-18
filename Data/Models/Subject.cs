@@ -17,12 +17,8 @@ namespace Data.Models
     /// </summary>
     [Table("Subjects")]
     public class Subject
-        : ISerialisable, IExpandsData
+        : DataModel
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
         /// <summary>
         /// Friendly name of the subject (Maths, Computing)
         /// </summary>
@@ -58,23 +54,25 @@ namespace Data.Models
             SubjectName = string.Empty;
         }
 
-        public void Serialise(IWriter Out)
+        public override void Serialise(IWriter Out)
         {
-            Out.Write(Id);
+            base.Serialise(Out);
+
             Out.Write(SubjectName);
             Out.Write(Argb);
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
         }
-        public void Deserialise(IReader In)
+        protected override void Deserialise(IReader In)
         {
-            Id = In.ReadInt32();
+            base.Deserialise(In);
+
             SubjectName = In.ReadString();
             Argb = In.ReadInt32();
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());
         }
-        public bool Expand(IDataRepository Repo)
+        public override bool Expand(IDataRepository Repo)
         {
             try
             {

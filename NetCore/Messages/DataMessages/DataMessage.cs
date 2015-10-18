@@ -8,11 +8,21 @@ using Shared;
 
 namespace NetCore.Messages.DataMessages
 {
-    public abstract class DataMessage
+    public class DataMessage
         : Message
     {
         public virtual DataModel Item { get; set; }
         public bool Delete { get; set; }
+        
+        public DataMessage()
+            : this(null, false)
+        {
+        }
+        public DataMessage(DataModel Item, bool Delete)
+        {
+            this.Item = Item;
+            this.Delete = Delete;
+        }
 
         public override void Serialise(IWriter Out)
         {
@@ -24,33 +34,7 @@ namespace NetCore.Messages.DataMessages
         public override void Deserialise(IReader In)
         {
             Delete = In.ReadBool();
-            Item.Deserialise(In);
-        }
-    }
-    public class DataMessage<T>
-        : DataMessage where T : DataModel
-    {
-        public new T Item { get; set; }
-
-        public DataMessage()
-            : this(Activator.CreateInstance<T>(), false)
-        {
-        }
-        public DataMessage(T Item, bool Delete)
-        {
-            this.Item = Item;
-            this.Delete = Delete;
-        }
-    }
-
-    public static class DataMessageHelper
-    {
-        public static Message CreateMessage(DataModel Item, bool Delete)
-        {
-            if (Item is Booking)
-                return new BookingMessage((Booking)Item, Delete);
-            else
-                return null;
+            Item = DataModel.DeserialiseExternal(In);
         }
     }
 }

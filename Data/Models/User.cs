@@ -17,12 +17,8 @@ namespace Data.Models
     }
 
     public abstract class User
-        : ISerialisable
+        : DataModel
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
@@ -45,16 +41,18 @@ namespace Data.Models
             LastName = string.Empty;
         }
 
-        public virtual void Serialise(IWriter Out)
+        public override void Serialise(IWriter Out)
         {
-            Out.Write(Id);
+            base.Serialise(Out);
+
             Out.Write(FirstName);
             Out.Write(LastName);
             Out.Write(LogonName);
         }
-        public virtual void Deserialise(IReader In)
+        protected override void Deserialise(IReader In)
         {
-            Id = In.ReadInt32();
+            base.Deserialise(In);
+
             FirstName = In.ReadString();
             LastName = In.ReadString();
             LogonName = In.ReadString();

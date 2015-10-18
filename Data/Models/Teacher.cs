@@ -13,7 +13,7 @@ namespace Data.Models
 {
     [Table("Teachers")]
     public class Teacher
-        : User, IExpandsData
+        : User
     {        
         public string Title { get; set; }
         
@@ -53,7 +53,7 @@ namespace Data.Models
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
         }
-        public override void Deserialise(IReader In)
+        protected override void Deserialise(IReader In)
         {
             base.Deserialise(In);
 
@@ -66,7 +66,7 @@ namespace Data.Models
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());
         }
-        public bool Expand(IDataRepository Repo)
+        public override bool Expand(IDataRepository Repo)
         {
             try
             {

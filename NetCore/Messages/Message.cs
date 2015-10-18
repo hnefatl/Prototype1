@@ -51,9 +51,9 @@ namespace NetCore.Messages
 
                 return null;
             }
-            catch (MissingMethodException)
+            catch (MissingMethodException e)
             {
-                throw new Exception("All Message subclasses must define a public parameterless constructor.");
+                throw new Exception("All Message subclasses must define a public parameterless constructor.", e);
             }
         }
         public static T ReadMessage<T>(NetReader Reader)

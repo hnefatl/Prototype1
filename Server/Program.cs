@@ -137,10 +137,9 @@ namespace Server
                 using (DataRepository Repo = new DataRepository())
                     Data.Item.Expand(Repo);
 
-                if (Message is DataMessage<Booking>)
+                if (Data.Item is Booking)
                 {
-                    DataMessage<Booking> Msg = (DataMessage<Booking>)Message;
-                    EditDataEntry(Msg.Item, Msg.Delete);
+                    EditDataEntry((Booking)Data.Item, Data.Delete);
                     Output = "Booking received from " + c.ToString();
                 }
             }
@@ -164,7 +163,7 @@ namespace Server
 
                 Repo.SaveChanges();
 
-                Listener.Send(DataMessageHelper.CreateMessage(Entry, Delete));
+                Listener.Send(new DataMessage(Entry, Delete));
             }
         }
 

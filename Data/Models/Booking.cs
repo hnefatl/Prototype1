@@ -55,16 +55,17 @@ namespace Data.Models
         public virtual Teacher Teacher { get; set; }
 
         public Booking()
-            :this(new TimeSlot(), new List<Room>(), new Subject(), new List<Student>(), new Teacher())
+            : this(new TimeSlot(), new List<Room>(), new Subject(), new List<Student>(), new Teacher(), BookingType.Single)
         {
         }
-        public Booking(TimeSlot Time, List<Room> Rooms, Subject Subject, List<Student> Students, Teacher Teacher)
+        public Booking(TimeSlot Time, List<Room> Rooms, Subject Subject, List<Student> Students, Teacher Teacher, BookingType BookingType)
         {
             this.TimeSlot = Time;
             this.Rooms = Rooms;
             this.Subject = Subject;
             this.Students = Students;
             this.Teacher = Teacher;
+            this.BookingType = BookingType;
         }
 
         public bool MatchesDay(DateTime Day)
@@ -77,7 +78,8 @@ namespace Data.Models
 
         public override void Serialise(IWriter Out)
         {
-            Out.Write(Id);
+            base.Serialise(Out);
+
             Out.Write(Ticks);
             Out.Write((int)BookingType);
             Out.Write(TimeSlot.Id);
@@ -90,9 +92,10 @@ namespace Data.Models
                 Out.Write(s.Id);
             Out.Write(Teacher.Id);
         }
-        public override void Deserialise(IReader In)
+        protected override void Deserialise(IReader In)
         {
-            Id = In.ReadInt32();
+            base.Deserialise(In);
+
             Ticks = In.ReadInt64();
             BookingType = (BookingType)In.ReadInt32();
             TimeSlot.Id = In.ReadInt32();
@@ -122,6 +125,40 @@ namespace Data.Models
                 return false;
             }
             return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Booking))
+                return false;
+
+            Booking b = (obj as Booking);
+            return b == null || ReferenceEquals(this, obj) || (b.BookingType == BookingType && b.Date == Date && b.Id == Id &&
+                b.Rooms == Rooms && b.Students == Students && b.Subject == Subject && b.Teacher == Teacher && b.Ticks == Ticks &&
+                b.TimeSlot == TimeSlot);
+        }
+        public static bool operator ==(Booking One, Booking Two)
+        {
+            if(ReferenceEquals(One, null))
+            {
+                if (ReferenceEquals(Two, null))
+                    return true;
+                return false;
+            }
+            if (ReferenceEquals(Two, null))
+                return false;
+
+            return ReferenceEquals(One, Two) || (One.BookingType == Two.BookingType && One.Date == Two.Date && One.Id == Two.Id &&
+                One.Rooms == Two.Rooms && One.Students == Two.Students && One.Subject == Two.Subject && One.Teacher == Two.Teacher && One.Ticks == Two.Ticks &&
+                One.TimeSlot == Two.TimeSlot);
+        }
+        public static bool operator !=(Booking One, Booking Two)
+        {
+            return !(One == Two);
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 

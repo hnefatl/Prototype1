@@ -57,17 +57,6 @@ namespace NetCore
             int Length = ReadInt32();
             return Encoding.UTF8.GetString(ReadBytes(Length));
         }
-        public List<T> ReadList<T>() where T : ISerialisable
-        {
-            List<T> Items = new List<T>();
-            int Count = ReadInt32();
-            for (int x = 0; x < Count; x++)
-            {
-                Items[x] = Activator.CreateInstance<T>();
-                Items[x].Deserialise(this);
-            }
-            return Items;
-        }
 
         public IAsyncResult BeginReadBytes(int Count, AsyncCallback Callback)
         {

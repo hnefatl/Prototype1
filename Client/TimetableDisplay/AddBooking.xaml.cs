@@ -45,6 +45,14 @@ namespace Client.TimetableDisplay
         public ObservableCollection<Checkable<Student>> FilteredStudents { get; set; }
         public List<Checkable<Student>> SelectedStudents { get { return Students.Where(s => s.Checked).ToList(); } }
 
+        public readonly List<BookingType> BookingTypes = Enum.GetValues(typeof(BookingType)).Cast<BookingType>().ToList();
+        protected BookingType _SelectedBookingType = BookingType.Single;
+        public BookingType SelectedBookingType
+        {
+            get { return _SelectedBookingType; }
+            set { _SelectedBookingType = value;  OnPropertyChanged("SelectedBookingType"); }
+        }
+
         public readonly Dictionary<string, Func<Checkable<Student>, string, bool>> Filters = new Dictionary<string, Func<Checkable<Student>, string, bool>>()
         {
             { "No Filter", (s, f) => true },
@@ -89,25 +97,29 @@ namespace Client.TimetableDisplay
         }
         public bool NewPeriod { get { return !ExistingPeriod; } set { ExistingPeriod = !value; } }
 
+        public int BookingId { get; set; }
+
         public bool DeleteBooking { get; private set; }
 
         public AddBooking(User CurrentUser, bool NewBooking) // For making a new booking
-            : this(CurrentUser, NewBooking, new List<Room>(), null, null, new List<Student>(), null, null)
+            : this(CurrentUser, NewBooking, 0, new List<Room>(), null, null, new List<Student>(), null, null, BookingType.Single)
         {
         }
         public AddBooking(User CurrentUser, bool NewBooking, TimeSlot StartTime, Room StartRoom) // For making a new booking
-            : this(CurrentUser, NewBooking, new List<Room>(), StartRoom, StartTime, new List<Student>(), null, null)
+            : this(CurrentUser, NewBooking, 0, new List<Room>(), StartRoom, StartTime, new List<Student>(), null, null, BookingType.Single)
         {
         }
         public AddBooking(User CurrentUser, bool NewBooking, Booking Booking)
-            : this(CurrentUser, NewBooking, Booking.Rooms, null, Booking.TimeSlot, Booking.Students, Booking.Subject, Booking.Teacher)
+            : this(CurrentUser, NewBooking, Booking.Id, Booking.Rooms, null, Booking.TimeSlot, Booking.Students, Booking.Subject, Booking.Teacher, Booking.BookingType)
         {
         }
-        public AddBooking(User CurrentUser, bool NewBooking, List<Room> SelectedRooms, Room StartRoom, TimeSlot TimeSlot, List<Student> SelectedStudents, Subject Subject, Teacher Teacher) // For editing an existing booking
+        public AddBooking(User CurrentUser, bool NewBooking, int Id, List<Room> SelectedRooms, Room StartRoom, TimeSlot TimeSlot, List<Student> SelectedStudents, Subject Subject, Teacher Teacher, BookingType BookingType) // For editing an existing booking
         {
             PropertyChanged = delegate { };
 
             this.CurrentUser = CurrentUser;
+            SelectedBookingType = BookingType;
+            BookingId = Id;
             DeleteBooking = false;
 
             using (DataRepository Repo = new DataRepository())
@@ -149,9 +161,9 @@ namespace Client.TimetableDisplay
         {
             if (SelectedTimeslot == null || SelectedRooms == null || SelectedRooms.Count == 0 || SelectedSubject == null || SelectedStudents == null || SelectedStudents.Count == 0 || SelectedTeacher == null)
                 return null;
-
+            
             return new Booking(SelectedTimeslot, SelectedRooms.Select(c => c.Value).ToList(), SelectedSubject,
-                SelectedStudents.Select(c => c.Value).ToList(), SelectedTeacher);
+                SelectedStudents.Select(c => c.Value).ToList(), SelectedTeacher, SelectedBookingType) { Id = BookingId };
         }
 
         public void UpdateFilter()

@@ -15,6 +15,7 @@ using Data;
 namespace Client
 {
     public delegate void UserChangeHandler(User NewUser);
+    public delegate void DataChangedHandler();
     public class DataRepository
         : IDisposable, IDataRepository
     {
@@ -91,12 +92,14 @@ namespace Client
         private static ManualResetEvent UserEvent { get; set; }
         private static User CurrentUser { get; set; }
 
-        public static event UserChangeHandler UserChange;
+        public static event UserChangeHandler UserChange = delegate { };
         protected static void OnUserChange(User New)
         {
             if (UserChange != null)
                 UserChange(New);
         }
+
+        public static event DataChangedHandler DataChanged = delegate { };
 
         private bool LockData;
 
@@ -231,7 +234,7 @@ namespace Client
         {
             lock (Lock)
             {
-                ReportModelChanges = false; // We've just got this message from the sever, don't echo it back
+                ReportModelChanges = false; // We've just got this message from the sever, don't echo the results back
 
                 if (Msg is InitialiseMessage)
                 {
@@ -260,8 +263,8 @@ namespace Client
                     using (DataRepository Repo = new DataRepository())
                         Data.Item.Expand(Repo);
 
-                    if(Msg is DataMessage<Booking>)
-                        _Bookings.Add((Msg as BookingMessage).Item);
+                    if(Data.Item is Booking)
+                        _Bookings.Add((Booking)Data.Item);
                 }
 
 
@@ -281,6 +284,8 @@ namespace Client
         {
             if (ReportModelChanges)
             {
+                DataChanged();
+
                 lock (Lock)
                 {
                     ReportModelChanges = false;
@@ -289,7 +294,7 @@ namespace Client
                         foreach (DataModel d in e.NewItems)
                         {
                             ((System.Collections.IList)sender).Remove(d);
-                            Server.Send(DataMessageHelper.CreateMessage(d, false));
+                            Server.Send(new DataMessage(d, false));
                         }
                     }
                     if (e.OldItems != null)
@@ -297,7 +302,7 @@ namespace Client
                         foreach (DataModel d in e.NewItems)
                         {
                             ((System.Collections.IList)sender).Add(d);
-                            Server.Send(DataMessageHelper.CreateMessage(d, true));
+                            Server.Send(new DataMessage(d, true));
                         }
                     }
                     ReportModelChanges = true;

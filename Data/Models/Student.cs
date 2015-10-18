@@ -16,7 +16,7 @@ namespace Data.Models
     /// </summary>
     [Table("Students")]
     public class Student
-        : User, IExpandsData
+        : User
     {
         public override string InformalName { get { return FirstName + " " + LastName; } }
         public override string FormalName { get { return InformalName; } }
@@ -51,7 +51,7 @@ namespace Data.Models
             Out.Write(Classes.Count);
             Classes.ForEach(c => Out.Write(c.Id));
         }
-        public override void Deserialise(IReader In)
+        protected override void Deserialise(IReader In)
         {
             base.Deserialise(In);
 
@@ -63,7 +63,7 @@ namespace Data.Models
             Classes = Enumerable.Repeat(new Class(), In.ReadInt32()).ToList();
             Classes.ForEach(c => c.Id = In.ReadInt32());
         }
-        public bool Expand(IDataRepository Repo)
+        public override bool Expand(IDataRepository Repo)
         {
             try
             {
