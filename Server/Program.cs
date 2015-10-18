@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Data.Entity;
 
 using NetCore;
 using NetCore.Server;
@@ -10,12 +12,14 @@ using NetCore.Messages;
 using NetCore.Messages.DataMessages;
 using Data;
 using Data.Models;
-using System.Windows.Media;
+using Shared;
 
 namespace Server
 {
     class Program
     {
+        static Listener Listener { get; set; }
+
         static void Main(string[] args)
         {
             #region Initialise Data
@@ -45,7 +49,7 @@ namespace Server
 
                 Repo.SaveChanges();
 
-                Repo.Classes.Add(new Class() { ClassName="Computing", Students=Repo.Students.ToList() });
+                Repo.Classes.Add(new Class() { ClassName = "Computing", Students = Repo.Students.ToList() });
                 Repo.Classes.Add(new Class() { ClassName = "Maths", Students = Repo.Students.Where(s => s.Form == "13WT").ToList() });
 
                 Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "mb", FirstName = "Mary", LastName = "Bogdiukiewicz", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single() });
@@ -81,35 +85,34 @@ namespace Server
 
             Print("Initialised data", ConsoleColor.Gray);
 
-            using (Listener Listener = new Listener("127.0.0.1", 34652))
+            Listener = new Listener("127.0.0.1", 34652);
+            try
             {
-                try
-                {
-                    Listener.ClientConnect += ClientConnected;
-                    Listener.ClientDisconnect += ClientDisconnect;
-                    Listener.ClientMessageReceived += ClientMessageReceived;
-                    Listener.Start(false);
-                    Print("Listener started...", ConsoleColor.Green);
+                Listener.ClientConnect += ClientConnected;
+                Listener.ClientDisconnect += ClientDisconnect;
+                Listener.ClientMessageReceived += ClientMessageReceived;
+                Listener.Start(false);
+                Print("Listener started...", ConsoleColor.Green);
 
-                    Console.ReadKey(true);
+                Console.ReadKey(true);
 
-                    Listener.Stop();
-                    Print("Listener stopped...", ConsoleColor.Red);
-                    Listener.ClientConnect -= ClientConnected;
-                    Listener.ClientDisconnect -= ClientDisconnect;
-                    Listener.ClientMessageReceived -= ClientMessageReceived;
-                }
-                catch (Exception e)
-                {
-                    lock (Console.Out)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Error: " + e.ToString());
-                        Console.ForegroundColor = ConsoleColor.Gray;
-                    }
-                    Console.ReadKey(true);
-                }
+                Listener.Stop();
+                Print("Listener stopped...", ConsoleColor.Red);
+                Listener.ClientConnect -= ClientConnected;
+                Listener.ClientDisconnect -= ClientDisconnect;
+                Listener.ClientMessageReceived -= ClientMessageReceived;
             }
+            catch (Exception e)
+            {
+                lock (Console.Out)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Error: " + e.ToString());
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+                Console.ReadKey(true);
+            }
+            Listener.Dispose();
         }
 
         static void ClientConnected(Listener Sender, Client c)
@@ -128,22 +131,41 @@ namespace Server
             string Output = null;
             if (Message is TestMessage)
                 Output = "Message received from " + c.ToString();
-            else if (Message is BookingMessage)
+            else if (Message is DataMessage)
             {
-                Output = "Booking received from " + c.ToString();
-                BookingMessage Msg = (BookingMessage)Message;
+                DataMessage Data = (DataMessage)Message;
                 using (DataRepository Repo = new DataRepository())
+                    Data.Item.Expand(Repo);
+
+                if (Message is DataMessage<Booking>)
                 {
-                    Repo.Set<>
+                    DataMessage<Booking> Msg = (DataMessage<Booking>)Message;
+                    EditDataEntry(Msg.Item, Msg.Delete);
+                    Output = "Booking received from " + c.ToString();
                 }
             }
 
             if (Output != null)
                 Print(Output, ConsoleColor.Gray);
         }
-        static void EditDataEntry<T>(T Entry, bool Delete)
+        static void EditDataEntry<T>(T Entry, bool Delete) where T : DataModel
         {
+            using (DataRepository Repo = new DataRepository())
+            {
+                if (!Entry.Expand(Repo))
+                    return;
 
+                DbSet<T> Set = Repo.Set<T>();
+
+                if (Delete)
+                    Set.Remove(Entry);
+                else
+                    Set.Add(Entry);
+
+                Repo.SaveChanges();
+
+                Listener.Send(DataMessageHelper.CreateMessage(Entry, Delete));
+            }
         }
 
         static void Print(string Text, ConsoleColor Colour)

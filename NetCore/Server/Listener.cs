@@ -111,11 +111,27 @@ namespace NetCore.Server
 
                 New.MessageReceived += Client_MessageReceived;
                 New.Disconnect += Client_Disconnect;
-                Clients.Add(New);
+                lock (Clients)
+                    Clients.Add(New);
 
                 ClientConnect(this, New);
 
                 New.Start(); // Set the client listening for messages
+            }
+        }
+
+        public void Send(Message Msg)
+        {
+            lock (Clients)
+            {
+                foreach (Client c in Clients)
+                {
+                    try
+                    {
+                        c.Send(Msg);
+                    }
+                    catch { }
+                }
             }
         }
 
@@ -133,7 +149,8 @@ namespace NetCore.Server
 
             Sender.Dispose();
 
-            Clients.Remove(Sender);
+            lock (Clients)
+                Clients.Remove(Sender);
 
             ClientDisconnect(this, Sender, Msg);
         }

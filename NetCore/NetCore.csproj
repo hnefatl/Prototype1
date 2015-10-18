@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockingQueue.cs" />
+    <Compile Include="Messages\DataMessages\DataMessage.cs" />
     <Compile Include="Messages\DataMessages\InitialiseMessage.cs" />
     <Compile Include="Messages\DataMessages\NewDepartmentMessage.cs" />
     <Compile Include="Messages\DataMessages\NewRoomMessage.cs" />

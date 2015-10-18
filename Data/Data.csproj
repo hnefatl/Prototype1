@@ -73,6 +73,7 @@
     <Compile Include="Models\Booking.cs" />
     <Compile Include="Models\Class.cs" />
     <Compile Include="Models\Config.cs" />
+    <Compile Include="Models\DataModel.cs" />
     <Compile Include="Models\Department.cs" />
     <Compile Include="Models\Room.cs" />
     <Compile Include="Models\Student.cs" />

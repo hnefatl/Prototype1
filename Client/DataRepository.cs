@@ -126,14 +126,14 @@ namespace Client
                 Server.MessageReceived += MessageReceived;
                 Server.Disconnect += Disconnected;
 
-                _Bookings.CollectionChanged += Bookings_CollectionChanged;
-                _Departments.CollectionChanged += Departments_CollectionChanged;
-                _Rooms.CollectionChanged += Rooms_CollectionChanged;
-                _Students.CollectionChanged += Students_CollectionChanged;
-                _Subjects.CollectionChanged += Subjects_CollectionChanged;
-                _Teachers.CollectionChanged += Teachers_CollectionChanged;
-                _Periods.CollectionChanged += Periods_CollectionChanged;
-                _Classes.CollectionChanged += Classes_CollectionChanged;
+                _Bookings.CollectionChanged += Data_CollectionChanged;
+                _Departments.CollectionChanged += Data_CollectionChanged;
+                _Rooms.CollectionChanged += Data_CollectionChanged;
+                _Students.CollectionChanged += Data_CollectionChanged;
+                _Subjects.CollectionChanged += Data_CollectionChanged;
+                _Teachers.CollectionChanged += Data_CollectionChanged;
+                _Periods.CollectionChanged += Data_CollectionChanged;
+                _Classes.CollectionChanged += Data_CollectionChanged;
             }
             catch
             {
@@ -254,9 +254,14 @@ namespace Client
 
                     UserEvent.Set();
                 }
-                else if (Msg is BookingMessage)
+                else if (Msg is DataMessage)
                 {
-                    _Bookings.Add((Msg as BookingMessage).Booking);
+                    DataMessage Data = (DataMessage)Msg;
+                    using (DataRepository Repo = new DataRepository())
+                        Data.Item.Expand(Repo);
+
+                    if(Msg is DataMessage<Booking>)
+                        _Bookings.Add((Msg as BookingMessage).Item);
                 }
 
 
@@ -272,80 +277,32 @@ namespace Client
             InitialisedEvent = null;
         }
 
-        private static void Bookings_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private static void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (ReportModelChanges)
             {
-                if (e.NewItems != null)
-                    foreach (Booking b in e.NewItems)
-                        Server.Send(new BookingMessage(b, false));
-                if (e.OldItems != null)
-                    foreach (Booking b in e.OldItems)
-                        Server.Send(new BookingMessage(b, true));
+                lock (Lock)
+                {
+                    ReportModelChanges = false;
+                    if (e.NewItems != null)
+                    {
+                        foreach (DataModel d in e.NewItems)
+                        {
+                            ((System.Collections.IList)sender).Remove(d);
+                            Server.Send(DataMessageHelper.CreateMessage(d, false));
+                        }
+                    }
+                    if (e.OldItems != null)
+                    {
+                        foreach (DataModel d in e.NewItems)
+                        {
+                            ((System.Collections.IList)sender).Add(d);
+                            Server.Send(DataMessageHelper.CreateMessage(d, true));
+                        }
+                    }
+                    ReportModelChanges = true;
+                }
             }
-        }
-        private static void Departments_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            //if (e.NewItems != null)
-            //    foreach (Department d in e.NewItems)
-            //        Server.Send(new NewDepartmentMessage(d));
-            //if (e.OldItems != null)
-            //    foreach (Department d in e.OldItems)
-            //        Server.Send(new NewDepartmentMessage(d));
-        }
-        private static void Rooms_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            //if (e.NewItems != null)
-            //    foreach (Room r in e.NewItems)
-            //        Server.Send(new NewRoomMessage(r));
-            //if (e.OldItems != null)
-            //    foreach (Room r in e.OldItems)
-            //        Server.Send(new NewRoomMessage(r));
-        }
-        private static void Students_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            //if (e.NewItems != null)
-            //    foreach (Student s in e.NewItems)
-            //        Server.Send(new NewStudentMessage(s));
-            //if (e.OldItems != null)
-            //    foreach (Student s in e.OldItems)
-            //        Server.Send(new NewStudentMessage(s));
-        }
-        private static void Subjects_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            //if (e.NewItems != null)
-            //    foreach (Subject s in e.NewItems)
-            //        Server.Send(new NewSubjectMessage(s));
-            //if (e.OldItems != null)
-            //    foreach (Subject s in e.OldItems)
-            //        Server.Send(new NewSubjectMessage(s));
-        }
-        private static void Teachers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            //if (e.NewItems != null)
-            //    foreach (Teacher t in e.NewItems)
-            //        Server.Send(new NewTeacherMessage(t));
-            //if (e.OldItems != null)
-            //    foreach (Teacher t in e.OldItems)
-            //        Server.Send(new NewTeacherMessage(t));
-        }
-        private static void Periods_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            //if (e.NewItems != null)
-            //    foreach (TimeSlot p in e.NewItems)
-            //        Server.Send(new NewPeriodMessage(p));
-            //if (e.OldItems != null)
-            //    foreach (TimeSlot p in e.OldItems)
-            //        Server.Send(new NewPeriodMessage(p));
-        }
-        private static void Classes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            //if (e.NewItems != null)
-            //    foreach (Class p in e.NewItems)
-            //        Server.Send(new NewClassMessage(p));
-            //if (e.OldItems != null)
-            //    foreach (Class p in e.OldItems)
-            //        Server.Send(new NewClassMessage(p));
         }
     }
 }

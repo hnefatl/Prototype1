@@ -16,14 +16,8 @@ namespace Data.Models
     /// </summary>
     [Table("Bookings")]
     public class Booking
-        : ISerialisable, IExpandsData
+        : DataModel
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
-
-        public long Ticks { get; set; }
         /// <summary>
         /// The Date of the booking (the time part is irrelevant)
         /// </summary>
@@ -39,6 +33,7 @@ namespace Data.Models
                 Ticks = value.Date.ToBinary();
             }
         }
+        public long Ticks { get; set; }
 
         public BookingType BookingType { get; set; }
 
@@ -80,7 +75,7 @@ namespace Data.Models
                     (BookingType == BookingType.Monthly && (Day.Date - Date).Days % 31 == 0);
         }
 
-        public void Serialise(IWriter Out)
+        public override void Serialise(IWriter Out)
         {
             Out.Write(Id);
             Out.Write(Ticks);
@@ -95,7 +90,7 @@ namespace Data.Models
                 Out.Write(s.Id);
             Out.Write(Teacher.Id);
         }
-        public void Deserialise(IReader In)
+        public override void Deserialise(IReader In)
         {
             Id = In.ReadInt32();
             Ticks = In.ReadInt64();
@@ -110,7 +105,7 @@ namespace Data.Models
                 Students.Add(new Student() { Id = In.ReadInt32() });
             Teacher.Id = In.ReadInt32();
         }
-        public bool Expand(IDataRepository Repo)
+        public override bool Expand(IDataRepository Repo)
         {
             try
             {
