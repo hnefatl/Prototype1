@@ -21,11 +21,11 @@ namespace NetCore.Messages.DataMessages
         public bool Delete { get; set; }
 
         public BookingMessage()
-            :this(null, false)
+            : this(new Booking(), false)
         {
         }
         public BookingMessage(Booking b)
-            :this(b, false)
+            : this(b, false)
         {
         }
         public BookingMessage(Booking b, bool Delete)
@@ -34,15 +34,18 @@ namespace NetCore.Messages.DataMessages
             this.Delete = Delete;
         }
 
-        public override void Serialise(IWriter Writer)
+        public override void Serialise(IWriter Out)
         {
-            base.Serialise(Writer);
+            base.Serialise(Out);
 
-            Booking.Serialise(Writer);
+            Out.Write(Delete);
+            Booking.Serialise(Out);
         }
-        public override void Deserialise(IReader Reader)
+        public override void Deserialise(IReader In)
         {
-            Booking.Deserialise(Reader);
+            Delete = In.ReadBool();
+            if (!Delete)
+                Booking.Deserialise(In);
         }
     }
 }
