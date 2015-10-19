@@ -2,8 +2,26 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:TimetableDisplay="clr-namespace:Client.TimetableDisplay"
-        Title="Room Booking System" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
-    <Grid>
-        <TimetableDisplay:TimetableDisplay x:Name="Timetable" TileClicked="Timetable_TileClicked" />
+        Title="Room Booking System" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <Grid Margin="5,20,5,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <Button Name="Button_PreviousDay" Content="Previous" Width="100" Height="30" Margin="5" Grid.Column="0" Click="Button_PreviousDay_Click"/>
+            <TextBlock Text="{Binding CurrentDayString, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Name="Text_Day" FontSize="16" MinWidth="100" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1"/>            
+            <Button Name="Button_NextDay" Content="Next" Width="100" Height="30" Margin="5" Grid.Column="2" Click="Button_NextDay_Click"/>
+        </Grid>
+        
+        <TimetableDisplay:TimetableDisplay x:Name="Timetable" TileClicked="Timetable_TileClicked" Grid.Row="1" />
     </Grid>
 </Window>

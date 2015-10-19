@@ -32,8 +32,6 @@ namespace Client.TimetableDisplay
 
         public event TileClickHandler TileClicked;
 
-        public DateTime CurrentDay { get; protected set; }
-
         public TimetableDisplay()
         {
             InitializeComponent();
@@ -46,15 +44,13 @@ namespace Client.TimetableDisplay
 
         public void SetTimetable(User CurrentUser, DateTime Day)
         {
-            CurrentDay = Day;
-
             DataSnapshot Frame = DataRepository.TakeSnapshot();
 
             Width = TileWidth * Frame.Periods.Count + LeftWidth;
             Height = TileHeight * Frame.Rooms.Count + TopHeight;
 
             Container.RowDefinitions.Clear();
-            Container.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(TopHeight) });
+            Container.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Auto) });
             for (int y = 0; y < Frame.Rooms.Count; y++)
                 Container.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(TileHeight) });
 
@@ -105,7 +101,7 @@ namespace Client.TimetableDisplay
                     FontSize = 16,
                     Margin = new Thickness(2, 0, 2, 10),
                     TextWrapping = TextWrapping.Wrap,
-                    Width = TileWidth
+                    Width = TileWidth,
                 });
 
                 for (int y = 0; y < TopTile.Children.Count; y++)

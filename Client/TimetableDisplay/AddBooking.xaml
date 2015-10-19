@@ -7,7 +7,7 @@
         xmlns:converters="clr-namespace:Client.Converters"
         xmlns:local="clr-namespace:Client.TimetableDisplay"
         mc:Ignorable="d"
-        Title="Add Booking" Height="600" Width="430"
+        Title="Add Booking" Height="660" Width="430"
         SizeToContent="Height"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Window.Resources>
@@ -18,11 +18,15 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" MinHeight="129"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto" MinHeight="170"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto" MinHeight="110"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto" MinHeight="180"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*" MinHeight="35"/>
         </Grid.RowDefinitions>
 
         <GroupBox Header="Info" Margin="5" Grid.Row="0">
@@ -48,8 +52,10 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="Rooms" Margin="5" Grid.Row="1">
-            <ListView Name="List_Rooms" ItemsSource="{Binding Rooms}" Height="100" Margin="5" Grid.Column="0" Grid.ColumnSpan="2">
+        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"/>
+        
+        <GroupBox Header="Rooms" Margin="5" Grid.Row="2">
+            <ListView Name="List_Rooms" ItemsSource="{Binding Rooms}" MinHeight="100" VerticalAlignment="Stretch" Margin="5" Grid.Column="0" Grid.ColumnSpan="2">
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
@@ -70,20 +76,22 @@
             </ListView>
         </GroupBox>
 
-        <GroupBox Header="Time slot" Margin="5" Grid.Row="2">
-            <Grid>
+        <GridSplitter Grid.Row="3" Height="5" HorizontalAlignment="Stretch"/>
+
+        <GroupBox Header="Time slot" Margin="5" Grid.Row="4">
+            <Grid VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*" MinWidth="130"/>
                     <ColumnDefinition Width="5"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*" MinWidth="120"/>
                 </Grid.ColumnDefinitions>
 
                 <RadioButton Name="Time_Radio_Existing" Content="Existing period" IsChecked="{Binding ExistingPeriod, Mode=TwoWay}" Margin="5,5,5,0" Grid.Row="0" Grid.Column="0"/>
-                <Grid Name="Time_Grid_Existing" IsEnabled="{Binding IsChecked, ElementName=Time_Radio_Existing}" Grid.Row="1" Grid.Column="0">
+                <Grid Name="Time_Grid_Existing" IsEnabled="{Binding IsChecked, ElementName=Time_Radio_Existing}" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
@@ -97,7 +105,7 @@
                     <ComboBox Name="Time_Existing_Combo_Time" ItemsSource="{Binding Periods}" SelectedItem="{Binding SelectedTimeslot}" Margin="5,5,5,0" Grid.Column="1"/>
                 </Grid>
 
-                <GridSplitter Grid.Column="1" Grid.ColumnSpan="1000"/>
+                <GridSplitter Grid.Column="1" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center" Grid.RowSpan="3"/>
 
                 <RadioButton Name="Time_Radio_New" Content="New time slot" IsChecked="{Binding NewPeriod}" Margin="5,5,5,0" Grid.Row="0" Grid.Column="2"/>
                 <Grid Name="Time_Grid_New" IsEnabled="{Binding IsChecked, ElementName=Time_Radio_New}" Margin="0,0,0,5" Grid.Row="1" Grid.Column="2">
@@ -119,20 +127,20 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="Students" Margin="5" Grid.Row="3">
-            <Grid>
+        <GridSplitter Grid.Row="5" Height="5" HorizontalAlignment="Stretch"/>
+
+        <GroupBox Header="Students" Margin="5" Grid.Row="6">
+            <Grid VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Margin="5">
+                <Grid Grid.Row="0" Margin="5" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Text="Filter:" Margin="0,7,5,0" Grid.Column="0"/>
@@ -140,7 +148,7 @@
                     <ComboBox Name="Combo_FilterType" ItemsSource="{Binding Path=FilterValues, Mode=OneTime}" SelectedIndex="0" Width="100" Margin="0,5,5,0" Grid.Column="2" SelectionChanged="Combo_FilterType_SelectionChanged"/>
                 </Grid>
 
-                <ListView Name="List_Students" ItemsSource="{Binding FilteredStudents}" Height="100" Margin="5" Grid.Row="2">
+                <ListView Name="List_Students" ItemsSource="{Binding FilteredStudents}" MinHeight="100" VerticalAlignment="Stretch" Margin="5" Grid.Row="1">
                     <ListView.View>
                         <GridView>
                             <GridView.Columns>
@@ -163,7 +171,9 @@
             </Grid>
         </GroupBox>
 
-        <Button Name="Button_Delete" Content="Delete" Click="Button_Delete_Click" Margin="5,5,60,5" Width="50" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="4"/>
-        <Button Name="Button_Submit" Content="Submit" Click="Button_Submit_Click" Margin ="5" Width="50" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="4"/>
+        <GridSplitter Grid.Row="7" Height="5" HorizontalAlignment="Stretch"/>
+
+        <Button Name="Button_Delete" Content="Delete" Click="Button_Delete_Click" Margin="5,5,60,5" Width="50" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="8"/>
+        <Button Name="Button_Submit" Content="Submit" Click="Button_Submit_Click" Margin ="5" Width="50" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="8"/>
     </Grid>
 </Window>

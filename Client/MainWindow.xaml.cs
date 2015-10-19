@@ -48,6 +48,14 @@ namespace Client
             }
         }
 
+        protected DateTime _CurrentDay = DateTime.Now.Date;
+        public DateTime CurrentDay
+        {
+            get { return _CurrentDay; }
+            set { _CurrentDay = value; OnPropertyChanged("CurrentDay"); OnPropertyChanged("CurrentDayString"); Text_Day.GetBindingExpression(TextBlock.TextProperty).UpdateTarget(); }
+        }
+        public string CurrentDayString { get { return CurrentDay.DayOfWeek + ", " + CurrentDay.ToShortDateString(); } }
+
         public User CurrentUser { get; private set; }
 
         public MainWindow()
@@ -83,7 +91,7 @@ namespace Client
                 Window = new AddBooking(CurrentUser, true, Tile.Time, Tile.Room);
             else // Editing booking
                 Window = new AddBooking(CurrentUser, false, Tile.Booking);
-            Window.CurrentDate = Timetable.CurrentDay;
+            Window.CurrentDate = CurrentDay;
 
             bool? Result = Window.ShowDialog();
 
@@ -107,7 +115,6 @@ namespace Client
         protected void NetHandler()
         {
             Connection.Disconnect += Connection_Disconnect;
-            Connection.MessageReceived += Connection_MessageReceived;
 
             while (true)
             {
@@ -130,13 +137,12 @@ namespace Client
 
         protected void Data_DataChanged()
         {
-            Timetable.Dispatcher.Invoke((Action<User, DateTime>)Timetable.SetTimetable, CurrentUser, Timetable.CurrentDay);
+            Timetable.Dispatcher.Invoke((Action<User, DateTime>)Timetable.SetTimetable, CurrentUser, CurrentDay);
         }
 
         protected void Connection_Disconnect(Connection Sender, DisconnectMessage Message)
         {
             Connection.Disconnect -= Connection_Disconnect;
-            Connection.MessageReceived -= Connection_MessageReceived;
 
             Dispatcher.Invoke((Action)Hide);
 
@@ -145,9 +151,16 @@ namespace Client
 
             //NetTask = Task.Factory.StartNew(NetHandler); // Start reconnecting
         }
-        protected void Connection_MessageReceived(Connection Sender, Message Message)
-        {
 
+        protected void Button_PreviousDay_Click(object sender, RoutedEventArgs e)
+        {
+            CurrentDay = CurrentDay.AddDays(-1);
+            Data_DataChanged();
+        }
+        protected void Button_NextDay_Click(object sender, RoutedEventArgs e)
+        {
+            CurrentDay = CurrentDay.AddDays(1);
+            Data_DataChanged();
         }
 
         protected void OnPropertyChanged(string PropertyName)
