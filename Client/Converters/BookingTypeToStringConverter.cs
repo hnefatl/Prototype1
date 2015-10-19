@@ -15,7 +15,6 @@ namespace Client.Converters
         {
             return Enum.GetName(typeof(BookingType), value);
         }
-
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return Enum.Parse(typeof(BookingType), (string)value);

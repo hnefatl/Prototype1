@@ -96,10 +96,8 @@ namespace Client
 
                 using (DataRepository Repo = new DataRepository())
                 {
-                    bool e = b == Repo.Bookings[1];
-
                     if (Delete)
-                        Repo.Bookings.Remove(b);
+                        Repo.Bookings.Remove(Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
                     else
                         Repo.Bookings.Add(b);
                 }

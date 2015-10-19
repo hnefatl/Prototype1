@@ -157,7 +157,7 @@ namespace Server
                 DbSet<T> Set = Repo.Set<T>();
 
                 if (Delete)
-                    Set.Remove(Entry);
+                    Set.Remove(Set.Where(e => e.Id == Entry.Id).Single());
                 else
                     Set.Add(Entry);
 

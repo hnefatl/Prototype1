@@ -45,7 +45,9 @@ namespace Client.TimetableDisplay
         public ObservableCollection<Checkable<Student>> FilteredStudents { get; set; }
         public List<Checkable<Student>> SelectedStudents { get { return Students.Where(s => s.Checked).ToList(); } }
 
-        public readonly List<BookingType> BookingTypes = Enum.GetValues(typeof(BookingType)).Cast<BookingType>().ToList();
+        protected readonly string[] _BookingTypes = Enum.GetNames(typeof(BookingType));
+        public string[] BookingTypes { get { return _BookingTypes; } }
+
         protected BookingType _SelectedBookingType = BookingType.Single;
         public BookingType SelectedBookingType
         {

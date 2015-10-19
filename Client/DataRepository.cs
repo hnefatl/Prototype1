@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Data.Models;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Data.Entity;
 
 using NetCore.Client;
 using NetCore.Messages;
 using NetCore.Messages.DataMessages;
 using Data;
+using Data.Models;
 
 namespace Client
 {
@@ -260,11 +261,14 @@ namespace Client
                 else if (Msg is DataMessage)
                 {
                     DataMessage Data = (DataMessage)Msg;
-                    using (DataRepository Repo = new DataRepository())
-                        Data.Item.Expand(Repo);
 
-                    if(Data.Item is Booking)
-                        _Bookings.Add((Booking)Data.Item);
+                    if (Data.Item is Booking)
+                    {
+                        if (!Data.Delete)
+                            _Bookings.Add((Booking)Data.Item);
+                        else
+                            _Bookings.Remove(_Bookings.Where(b => b.Id == Data.Item.Id).Single());
+                    }
                 }
 
 
@@ -299,7 +303,7 @@ namespace Client
                     }
                     if (e.OldItems != null)
                     {
-                        foreach (DataModel d in e.NewItems)
+                        foreach (DataModel d in e.OldItems)
                         {
                             ((System.Collections.IList)sender).Add(d);
                             Server.Send(new DataMessage(d, true));

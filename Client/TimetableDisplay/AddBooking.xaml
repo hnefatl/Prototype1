@@ -41,7 +41,7 @@
                 <ComboBox Name="Combo_Subject" ItemsSource="{Binding Subjects}" SelectedItem="{Binding SelectedSubject, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="5" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="1"/>
 
                 <TextBlock Text="Recurrence: " Margin="5,7,5,5" Grid.Row="1" Grid.Column="0"/>
-                <ComboBox Name="Combo_BookingType" ItemsSource="{Binding BookingTypes, Converter={StaticResource BookingTypeToStringConverter}}" SelectedItem="{Binding SelectedBookingType, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="5" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"/>
+                <ComboBox Name="Combo_BookingType" ItemsSource="{Binding BookingTypes}" SelectedItem="{Binding SelectedBookingType, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BookingTypeToStringConverter}}" Width="150" Margin="5" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"/>
                 
                 <TextBlock Text="Teacher:" Margin="5,7,5,5" Grid.Row="2" Grid.Column="0"/>
                 <ComboBox Name="Combo_Teacher" ItemsSource="{Binding Teachers}" SelectedItem="{Binding SelectedTeacher, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="5" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1"/>
