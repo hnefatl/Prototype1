@@ -75,6 +75,10 @@ namespace Data.Models
                     (BookingType == BookingType.Fortnightly && (Day.Date - Date).Days % 14 == 0) ||
                     (BookingType == BookingType.Monthly && (Day.Date - Date).Days % 31 == 0);
         }
+        public bool Conflicts(List<Booking> AllBookings)
+        {
+            return AllBookings.Any(b => b.Id != Id && b.Date == Date && b.TimeSlot == TimeSlot && b.Rooms.Intersect(Rooms).Count() != 0);
+        }
 
         public override void Serialise(IWriter Out)
         {
@@ -139,7 +143,7 @@ namespace Data.Models
         }
         public static bool operator ==(Booking One, Booking Two)
         {
-            if(ReferenceEquals(One, null))
+            if (ReferenceEquals(One, null))
             {
                 if (ReferenceEquals(Two, null))
                     return true;

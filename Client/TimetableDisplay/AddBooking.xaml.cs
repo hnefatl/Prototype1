@@ -52,7 +52,7 @@ namespace Client.TimetableDisplay
         public BookingType SelectedBookingType
         {
             get { return _SelectedBookingType; }
-            set { _SelectedBookingType = value;  OnPropertyChanged("SelectedBookingType"); }
+            set { _SelectedBookingType = value; OnPropertyChanged("SelectedBookingType"); }
         }
 
         public readonly Dictionary<string, Func<Checkable<Student>, string, bool>> Filters = new Dictionary<string, Func<Checkable<Student>, string, bool>>()
@@ -102,6 +102,8 @@ namespace Client.TimetableDisplay
         public int BookingId { get; set; }
 
         public bool DeleteBooking { get; private set; }
+
+        public DateTime CurrentDate { get; set; }
 
         public AddBooking(User CurrentUser, bool NewBooking) // For making a new booking
             : this(CurrentUser, NewBooking, 0, new List<Room>(), null, null, new List<Student>(), null, null, BookingType.Single)
@@ -163,9 +165,10 @@ namespace Client.TimetableDisplay
         {
             if (SelectedTimeslot == null || SelectedRooms == null || SelectedRooms.Count == 0 || SelectedSubject == null || SelectedStudents == null || SelectedStudents.Count == 0 || SelectedTeacher == null)
                 return null;
-            
+
             return new Booking(SelectedTimeslot, SelectedRooms.Select(c => c.Value).ToList(), SelectedSubject,
-                SelectedStudents.Select(c => c.Value).ToList(), SelectedTeacher, SelectedBookingType) { Id = BookingId };
+                SelectedStudents.Select(c => c.Value).ToList(), SelectedTeacher, SelectedBookingType)
+            { Id = BookingId, Date = CurrentDate };
         }
 
         public void UpdateFilter()
@@ -203,6 +206,12 @@ namespace Client.TimetableDisplay
                 Error = "You must select a subject.";
             else if (SelectedTeacher == null)
                 Error = "You must select a teacher";
+            else
+            {
+                using (DataRepository Repo = new DataRepository())
+                    if (GetBooking().Conflicts(Repo.Bookings.ToList()))
+                        Error = "Booking conflicts with another booking.";
+            }
 
             if (!string.IsNullOrWhiteSpace(Error))
                 MessageBox.Show(Error, "Error");

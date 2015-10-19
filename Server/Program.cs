@@ -33,6 +33,8 @@ namespace Server
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 1", Start = new TimeSpan(12, 0, 0), End = new TimeSpan(13, 0, 0) });
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 2", Start = new TimeSpan(13, 0, 0), End = new TimeSpan(14, 0, 0) });
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 3", Start = new TimeSpan(14, 0, 0), End = new TimeSpan(15, 0, 0) });
+                Repo.Periods.Add(new TimeSlot() { Name = "Period 4", Start = new TimeSpan(15, 0, 0), End = new TimeSpan(16, 0, 0) });
+                Repo.Periods.Add(new TimeSlot() { Name = "Period 5", Start = new TimeSpan(16, 0, 0), End = new TimeSpan(17, 0, 0) });
 
                 const string LogonName = DataRepository.Home ? "Keith" : "09135"; // For testing on home/school computers
                 Repo.Students.Add(new Student() { FirstName = "Keith", LastName = "Collister", Form = "WT", Year = 13, LogonName = LogonName });
@@ -140,7 +142,7 @@ namespace Server
                 if (Data.Item is Booking)
                 {
                     EditDataEntry((Booking)Data.Item, Data.Delete);
-                    Output = "Booking received from " + c.ToString();
+                    Output = (Data.Delete ? "Delete" : "Add") + " Booking received from " + c.ToString();
                 }
             }
 
@@ -159,7 +161,11 @@ namespace Server
                 if (Delete)
                     Set.Remove(Set.Where(e => e.Id == Entry.Id).Single());
                 else
-                    Set.Add(Entry);
+                {
+                    // Check for conflicts if necessary
+                    if (!(Entry is Booking) || (!((Booking)((object)Entry)).Conflicts(Set.Cast<Booking>().ToList())))
+                        Set.Add(Entry);
+                }
 
                 Repo.SaveChanges();
 

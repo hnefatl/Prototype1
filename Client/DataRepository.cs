@@ -233,47 +233,57 @@ namespace Client
 
         private static void MessageReceived(Connection Sender, Message Msg)
         {
-            lock (Lock)
+            Monitor.Enter(Lock);
+            bool Unlocked = false;
+
+
+            ReportModelChanges = false; // We've just got this message from the sever, don't echo the results back
+
+            if (Msg is InitialiseMessage)
             {
-                ReportModelChanges = false; // We've just got this message from the sever, don't echo the results back
-
-                if (Msg is InitialiseMessage)
-                {
-                    LoadSnapshot((Msg as InitialiseMessage).Snapshot, false);
-                    InitialisedEvent.Set();
-                }
-                else if (Msg is UserInformationMessage)
-                {
-                    OnUserChange((Msg as UserInformationMessage).User);
-                    User u = (Msg as UserInformationMessage).User;
-
-                    if (u == null)
-                        throw new ArgumentNullException("Received a null user.");
-
-                    DataSnapshot Frame = TakeSnapshot(false);
-                    if (u is Student)
-                        CurrentUser = Frame.Students.Where(s => s.Id == u.Id).SingleOrDefault();
-                    else
-                        CurrentUser = Frame.Teachers.Where(t => t.Id == u.Id).SingleOrDefault();
-
-                    UserEvent.Set();
-                }
-                else if (Msg is DataMessage)
-                {
-                    DataMessage Data = (DataMessage)Msg;
-
-                    if (Data.Item is Booking)
-                    {
-                        if (!Data.Delete)
-                            _Bookings.Add((Booking)Data.Item);
-                        else
-                            _Bookings.Remove(_Bookings.Where(b => b.Id == Data.Item.Id).Single());
-                    }
-                }
-
-
-                ReportModelChanges = true; // Continue reporting
+                LoadSnapshot((Msg as InitialiseMessage).Snapshot, false);
+                InitialisedEvent.Set();
             }
+            else if (Msg is UserInformationMessage)
+            {
+                OnUserChange((Msg as UserInformationMessage).User);
+                User u = (Msg as UserInformationMessage).User;
+
+                if (u == null)
+                    throw new ArgumentNullException("Received a null user.");
+
+                DataSnapshot Frame = TakeSnapshot(false);
+                if (u is Student)
+                    CurrentUser = Frame.Students.Where(s => s.Id == u.Id).SingleOrDefault();
+                else
+                    CurrentUser = Frame.Teachers.Where(t => t.Id == u.Id).SingleOrDefault();
+
+                UserEvent.Set();
+            }
+            else if (Msg is DataMessage)
+            {
+                DataMessage Data = (DataMessage)Msg;
+
+                Monitor.Exit(Lock);
+                Unlocked = true;
+
+                if (Data.Item is Booking)
+                {
+                    if (!Data.Delete)
+                    {
+                        using (DataRepository Repo = new DataRepository(false))
+                            Data.Item.Expand(Repo);
+                        _Bookings.Add((Booking)Data.Item);
+                    }
+                    else
+                        _Bookings.Remove(_Bookings.Where(b => b.Id == Data.Item.Id).Single());
+                }
+            }
+
+            ReportModelChanges = true; // Continue reporting
+
+            if (!Unlocked)
+                Monitor.Exit(Lock);
         }
         private static void Disconnected(Connection Sender, DisconnectMessage Message)
         {
@@ -288,8 +298,6 @@ namespace Client
         {
             if (ReportModelChanges)
             {
-                DataChanged();
-
                 lock (Lock)
                 {
                     ReportModelChanges = false;
@@ -312,6 +320,8 @@ namespace Client
                     ReportModelChanges = true;
                 }
             }
+
+            DataChanged();
         }
     }
 }

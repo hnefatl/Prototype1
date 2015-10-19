@@ -83,6 +83,7 @@ namespace Client
                 Window = new AddBooking(CurrentUser, true, Tile.Time, Tile.Room);
             else // Editing booking
                 Window = new AddBooking(CurrentUser, false, Tile.Booking);
+            Window.CurrentDate = Timetable.CurrentDay;
 
             bool? Result = Window.ShowDialog();
 
@@ -91,7 +92,6 @@ namespace Client
             if (b != null && Result.HasValue && Result.Value) // Send new/edit/delete booking
             {
                 bool Delete = Window.DeleteBooking;
-                b.Date = Timetable.CurrentDay;
                 b.Id = Tile.Booking == null ? 0 : Tile.Booking.Id;
 
                 using (DataRepository Repo = new DataRepository())

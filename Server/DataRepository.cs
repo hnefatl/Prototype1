@@ -37,7 +37,7 @@ namespace Server
         List<Class> IDataRepository.Classes { get { return Classes.ToList(); } }
         public virtual DbSet<Class> Classes { get; set; }
 
-        public const bool Home = false;
+        public const bool Home = true;
         private const string ServerProvider = Home ? "MSSQLLocalDb" : "v11.0";
         private const string Drive = Home ? "G" : "E";
 
