@@ -79,6 +79,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Admin\AdminWindow.xaml.cs">
+      <DependentUpon>AdminWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\BookingTypeToStringConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\IntToStringConverter.cs" />
@@ -89,7 +92,7 @@
     <Compile Include="TimetableDisplay\AddBooking.xaml.cs">
       <DependentUpon>AddBooking.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TimetableDisplay\Checkable.cs" />
+    <Compile Include="Checkable.cs" />
     <Compile Include="TimetableDisplay\TimePicker.xaml.cs">
       <DependentUpon>TimePicker.xaml</DependentUpon>
     </Compile>
@@ -97,6 +100,10 @@
       <DependentUpon>TimetableDisplay.xaml</DependentUpon>
     </Compile>
     <Compile Include="TimetableDisplay\TimetableTile.cs" />
+    <Page Include="Admin\AdminWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

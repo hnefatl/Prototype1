@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 
-namespace Client.TimetableDisplay
+namespace Client
 {
     public class Checkable<T>
         : INotifyPropertyChanged
