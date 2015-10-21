@@ -25,7 +25,7 @@ namespace NetCore.Client
         protected NetworkStream Stream { get; set; }
         protected NetReader In { get; set; }
         protected NetWriter Out { get; set; }
-
+        
         public event DisconnectHandler Disconnect;
         public event MessageReceivedHandler MessageReceived;
 
@@ -34,7 +34,7 @@ namespace NetCore.Client
         public Connection()
         {
             Inner = new TcpClient();
-
+        
             Disconnect = delegate { };
             MessageReceived = delegate { };
         }

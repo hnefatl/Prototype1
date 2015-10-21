@@ -39,7 +39,7 @@ namespace Server
 
         public const bool Home = true;
         private const string ServerProvider = Home ? "MSSQLLocalDb" : "v11.0";
-        private const string Drive = Home ? "F" : "E";
+        private const string Drive = Home ? "G" : "E";
 
         public DataRepository()
             : base(@"data source=(LocalDb)\" + ServerProvider + @";AttachDbFilename=" + Drive + @":\Burford\Year 13\Computing\Project\Data\Data.mdf;Database=Data;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")

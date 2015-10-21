@@ -33,21 +33,7 @@ namespace Client
         public Connection Connection { get; set; }
 
         protected Task NetTask { get; set; }
-
-        private bool _Connected;
-        public bool Connected
-        {
-            get
-            {
-                return _Connected;
-            }
-            protected set
-            {
-                _Connected = value;
-                OnPropertyChanged("Connected");
-            }
-        }
-
+        
         protected DateTime _CurrentDay = DateTime.Now.Date;
         public DateTime CurrentDay
         {
@@ -58,27 +44,23 @@ namespace Client
 
         public User CurrentUser { get; private set; }
 
-        public MainWindow()
+        public MainWindow(Connection Connection, User CurrentUser)
         {
             InitializeComponent();
             PropertyChanged = delegate { };
-            Loaded += OnLoaded;
-
-            CurrentUser = new Student();
-
-            Connected = false;
-            Connection = new Connection();
-        }
-        protected override void OnClosed(EventArgs e)
-        {
-            Connection.Close(DisconnectType.Expected);
-            base.OnClosed(e);
-        }
-        protected void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            NetHandler();
 
             DataRepository.DataChanged += Data_DataChanged;
+            Connection.Disconnect += Connection_Disconnect;
+
+            this.Connection = Connection;
+            this.CurrentUser = CurrentUser;
+
+            Data_DataChanged();
+        }
+
+        private void Connection_Disconnect(Connection Sender, DisconnectMessage Message)
+        {
+            Dispatcher.Invoke((Action)Close);
         }
 
         private void Timetable_TileClicked(TimetableTile Tile)
@@ -112,44 +94,9 @@ namespace Client
             }
         }
 
-        protected void NetHandler()
-        {
-            Connection.Disconnect += Connection_Disconnect;
-
-            while (true)
-            {
-                // Try to connect
-                Connected = Connection.Connect(Settings.Get<string>("ServerAddress"), Settings.Get<ushort>("ServerPort"), new ConnectMessage(Environment.UserName, Environment.MachineName));
-
-                if (Connected)
-                {
-                    CurrentUser = DataRepository.Initialise(Connection, new ConnectMessage(Environment.UserName, Environment.MachineName));
-                    if (CurrentUser == null) // Failed to initialise
-                        continue;
-
-                    Timetable.Dispatcher.Invoke((Action<User, DateTime>)Timetable.SetTimetable, CurrentUser, DateTime.Now.Date);
-                    Dispatcher.Invoke((Action)Show);
-                    break;
-                }
-                Thread.Sleep(1000); // Wait for an interval then try again
-            }
-        }
-
         protected void Data_DataChanged()
         {
             Timetable.Dispatcher.Invoke((Action<User, DateTime>)Timetable.SetTimetable, CurrentUser, CurrentDay);
-        }
-
-        protected void Connection_Disconnect(Connection Sender, DisconnectMessage Message)
-        {
-            Connection.Disconnect -= Connection_Disconnect;
-
-            Dispatcher.Invoke((Action)Hide);
-
-            Environment.Exit(34652);
-            //MessageBox.Show("Lost connection to the server. Will continue trying to connect in the background.");
-
-            //NetTask = Task.Factory.StartNew(NetHandler); // Start reconnecting
         }
 
         protected void Button_PreviousDay_Click(object sender, RoutedEventArgs e)

@@ -14,27 +14,36 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 
 using Data.Models;
+using NetCore.Client;
 
 namespace Client.Admin
 {
     public partial class AdminWindow
         : Window, INotifyPropertyChanged
     {
+        public Connection Connection { get; set; }
+        public User CurrentUser { get; set; }
+
         protected ObservableCollection<Checkable<Room>> _Rooms = new ObservableCollection<Checkable<Room>>();
         public ObservableCollection<Checkable<Room>> Rooms
         {
             get { return _Rooms; }
-            set { _Rooms = value; OnPropertyChanged("Rooms"); }
+            set { _Rooms = value; OnPropertyChanged("Rooms"); OnPropertyChanged("SelectedRooms"); OnPropertyChanged("SingleRoomSelected"); OnPropertyChanged("SelectedRoom"); }
         }
         public List<Room> SelectedRooms { get { return Rooms.Where(c => c.Checked).Select(c => c.Value).ToList(); } }
+        public Room SelectedRoom { get { return SelectedRooms.Count == 1 ? SelectedRooms[0] : null; } }
+        public bool SingleRoomSelected { get { return SelectedRooms.Count == 1; } }
 
-        public AdminWindow()
+        public AdminWindow(Connection Connection, User CurrentUser)
         {
             InitializeComponent();
 
+            this.Connection = Connection;
+            this.CurrentUser = CurrentUser;
+
             using (DataRepository Repo = new DataRepository())
             {
-
+                Rooms = new ObservableCollection<Checkable<Room>>(Repo.Rooms.Select(r => new Checkable<Room>(r)));
             }
         }
 

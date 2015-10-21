@@ -4,9 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client.Admin"
+        xmlns:c="clr-namespace:Client.Converters"
         mc:Ignorable="d"
         Title="Admin Controls" Height="500" Width="600"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
+    <Window.Resources>
+        <c:BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Window.Resources>
     
     <Grid>
         <TabControl>
@@ -16,8 +21,12 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
                     
-                    <ListView Name="List_Rooms" Grid.Row="0">
+                    <ListView Name="List_Rooms" ItemsSource="{Binding Rooms, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="0">
                         <ListView.View>
                             <GridView>
                                 <GridView.Columns>
@@ -37,7 +46,26 @@
                         </ListView.View>
                     </ListView>
 
-                    <Grid Grid.Row="1">
+                    <GroupBox Header="Selected Room" Margin="5,0,5,0" Visibility="{Binding SingleRoomSelected, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVis}}" Grid.Column="1">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Text="Room Name:" Margin="5" Grid.Row="0"/>
+                            <TextBox Text="{Binding SelectedRoom.RoomName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,5,5" Width="100"  Grid.Row="0" Grid.Column="1" />
+                        
+                            
+                        </Grid>
+                    </GroupBox>
+                    
+                    <Grid Grid.Row="1" Grid.ColumnSpan="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>

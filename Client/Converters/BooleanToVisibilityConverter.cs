@@ -15,7 +15,7 @@ namespace Client.Converters
         {
             if(value is bool)
             {
-                return ((bool)value) ? Visibility.Visible : Visibility.Hidden;
+                return ((bool)value) ? Visibility.Visible : Visibility.Collapsed;
             }
             throw new ArgumentException("value was not of type bool.");
         }
