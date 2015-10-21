@@ -35,8 +35,7 @@ namespace Client
 
             NetHandler();
 
-            AdminWindow Wnd = new AdminWindow(Connection, CurrentUser);
-            Wnd.Show();
+            TrayIcon Wnd = new TrayIcon(Connection, CurrentUser);
         }
 
         protected void NetHandler()
@@ -63,13 +62,7 @@ namespace Client
         protected void Connection_Disconnect(Connection Sender, DisconnectMessage Message)
         {
             Connection.Disconnect -= Connection_Disconnect;
-
-            Dispatcher.Invoke((Action)(() =>
-                {
-                    foreach (Window w in Windows)
-                        w.Close();
-                }));
-
+            
             Environment.Exit(34652);
             //MessageBox.Show("Lost connection to the server. Will continue trying to connect in the background.");
 

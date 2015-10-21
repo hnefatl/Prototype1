@@ -24,14 +24,14 @@ namespace Client.Admin
         public Connection Connection { get; set; }
         public User CurrentUser { get; set; }
 
-        protected ObservableCollection<Checkable<Room>> _Rooms = new ObservableCollection<Checkable<Room>>();
-        public ObservableCollection<Checkable<Room>> Rooms
+        protected ObservableCollection<Room> _Rooms = new ObservableCollection<Room>();
+        public ObservableCollection<Room> Rooms
         {
             get { return _Rooms; }
             set { _Rooms = value; OnPropertyChanged("Rooms"); OnPropertyChanged("SelectedRooms"); OnPropertyChanged("SingleRoomSelected"); OnPropertyChanged("SelectedRoom"); }
         }
-        public List<Room> SelectedRooms { get { return Rooms.Where(c => c.Checked).Select(c => c.Value).ToList(); } }
-        public Room SelectedRoom { get { return SelectedRooms.Count == 1 ? SelectedRooms[0] : null; } }
+        public List<Room> SelectedRooms { get { return List_Rooms.SelectedItems.Cast<Room>().ToList(); } }
+        public Room SelectedRoom { get { return (Room)List_Rooms.SelectedItem; } }
         public bool SingleRoomSelected { get { return SelectedRooms.Count == 1; } }
 
         public AdminWindow(Connection Connection, User CurrentUser)
@@ -43,7 +43,15 @@ namespace Client.Admin
 
             using (DataRepository Repo = new DataRepository())
             {
-                Rooms = new ObservableCollection<Checkable<Room>>(Repo.Rooms.Select(r => new Checkable<Room>(r)));
+                Rooms = new ObservableCollection<Room>(Repo.Rooms);
+            }
+        }
+
+        private void Button_Save_Click(object sender, RoutedEventArgs e)
+        {
+            using (DataRepository Repo = new DataRepository())
+            {
+
             }
         }
 
@@ -53,5 +61,6 @@ namespace Client.Admin
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
         }
+
     }
 }

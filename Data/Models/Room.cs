@@ -34,7 +34,7 @@ namespace Data.Models
         /// <summary>
         /// Type of "Special Seat", so eg "Computer", "Workbench".
         /// </summary>
-        public string SpecialSeatsType { get; set; }
+        public string SpecialSeatType { get; set; }
 
         /// <summary>
         /// Bookings using this room
@@ -46,7 +46,7 @@ namespace Data.Models
             Bookings = new List<Booking>();
 
             RoomName = string.Empty;
-            SpecialSeatsType = string.Empty;
+            SpecialSeatType = string.Empty;
         }
 
         public override void Serialise(IWriter Out)
@@ -56,7 +56,7 @@ namespace Data.Models
             Out.Write(RoomName);
             Out.Write(StandardSeats);
             Out.Write(SpecialSeats);
-            Out.Write(SpecialSeatsType);
+            Out.Write(SpecialSeatType);
 
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
@@ -68,7 +68,7 @@ namespace Data.Models
             RoomName = In.ReadString();
             StandardSeats = In.ReadInt32();
             SpecialSeats = In.ReadInt32();
-            SpecialSeatsType = In.ReadString();
+            SpecialSeatType = In.ReadString();
 
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());

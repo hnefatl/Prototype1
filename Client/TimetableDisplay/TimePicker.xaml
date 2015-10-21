@@ -14,7 +14,7 @@
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
     <UserControl.Resources>
-        <converters:IntToStringConverter x:Key="IntToStringConverter"/>
+        <converters:TimeToStringConverter x:Key="TimeToString"/>
         <Style x:Key="PlainTextbox" TargetType="TextBox">
             <Setter Property="Template">
                 <Setter.Value>
@@ -38,10 +38,10 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <TextBox Name="Text_Hours" Text="{Binding Hours, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IntToStringConverter}}" Style="{StaticResource PlainTextbox}" AllowDrop="False" Width="19" Grid.Column="0" PreviewKeyDown="Text_Hours_PreviewKeyDown" PreviewTextInput="Text_Hours_TextInput" TabIndex="0"/>
+        <TextBox Name="Text_Hours" Text="{Binding Hours, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TimeToString}}" Style="{StaticResource PlainTextbox}" AllowDrop="False" Width="19" Grid.Column="0" PreviewKeyDown="Text_Hours_PreviewKeyDown" PreviewTextInput="Text_Hours_TextInput" TabIndex="0"/>
         <TextBlock Name="Colon1" Text=":" Background="Transparent" Grid.Column="1"/>
-        <TextBox Name="Text_Minutes" Text="{Binding Minutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IntToStringConverter}}" Style="{StaticResource PlainTextbox}" AllowDrop="False" Width="19" Grid.Column="2" PreviewKeyDown="Text_Minutes_PreviewKeyDown" PreviewTextInput="Text_Minutes_TextInput" TabIndex="1"/>
+        <TextBox Name="Text_Minutes" Text="{Binding Minutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TimeToString}}" Style="{StaticResource PlainTextbox}" AllowDrop="False" Width="19" Grid.Column="2" PreviewKeyDown="Text_Minutes_PreviewKeyDown" PreviewTextInput="Text_Minutes_TextInput" TabIndex="1"/>
         <TextBlock Name="Colon2" Text=":" Background="Transparent" Grid.Column="3"/>
-        <TextBox Name="Text_Seconds" Text="{Binding Seconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IntToStringConverter}}" Style="{StaticResource PlainTextbox}" AllowDrop="False" Width="19" Grid.Column="4" PreviewKeyDown="Text_Seconds_PreviewKeyDown" PreviewTextInput="Text_Seconds_TextInput" TabIndex="2"/>
+        <TextBox Name="Text_Seconds" Text="{Binding Seconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TimeToString}}" Style="{StaticResource PlainTextbox}" AllowDrop="False" Width="19" Grid.Column="4" PreviewKeyDown="Text_Seconds_PreviewKeyDown" PreviewTextInput="Text_Seconds_TextInput" TabIndex="2"/>
     </Grid>
 </UserControl>
