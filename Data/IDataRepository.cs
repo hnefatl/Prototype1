@@ -13,8 +13,9 @@ namespace Data
         List<Department> Departments { get; }
         List<Room> Rooms { get; }
         List<Student> Students { get; }
-        List<Subject> Subjects { get; }
         List<Teacher> Teachers { get; }
+        List<User> Users { get; }
+        List<Subject> Subjects { get; }
         List<TimeSlot> Periods { get; }
         List<Class> Classes { get; }
     }

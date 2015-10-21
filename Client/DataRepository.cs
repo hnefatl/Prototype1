@@ -54,20 +54,28 @@ namespace Client
             set { _Students = value; }
         }
 
-        List<Subject> IDataRepository.Subjects { get { return Subjects.ToList(); } }
-        private static ObservableCollection<Subject> _Subjects = new ObservableCollection<Subject>();
-        public ObservableCollection<Subject> Subjects
-        {
-            get { return _Subjects; }
-            set { _Subjects = value; }
-        }
-
         List<Teacher> IDataRepository.Teachers { get { return Teachers.ToList(); } }
         private static ObservableCollection<Teacher> _Teachers = new ObservableCollection<Teacher>();
         public ObservableCollection<Teacher> Teachers
         {
             get { return _Teachers; }
             set { _Teachers = value; }
+        }
+
+        List<User> IDataRepository.Users { get { return Users.ToList(); } }
+        private static ObservableCollection<User> _Users = new ObservableCollection<User>();
+        public ObservableCollection<User> Users
+        {
+            get { return _Users; }
+            set { _Users = value; }
+        }
+
+        List<Subject> IDataRepository.Subjects { get { return Subjects.ToList(); } }
+        private static ObservableCollection<Subject> _Subjects = new ObservableCollection<Subject>();
+        public ObservableCollection<Subject> Subjects
+        {
+            get { return _Subjects; }
+            set { _Subjects = value; }
         }
 
         List<TimeSlot> IDataRepository.Periods { get { return Periods.ToList(); } }

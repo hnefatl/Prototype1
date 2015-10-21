@@ -25,11 +25,14 @@ namespace Server
         List<Student> IDataRepository.Students { get { return Students.ToList(); } }
         public virtual DbSet<Student> Students { get; set; }
 
-        List<Subject> IDataRepository.Subjects { get { return Subjects.ToList(); } }
-        public virtual DbSet<Subject> Subjects { get; set; }
-
         List<Teacher> IDataRepository.Teachers { get { return Teachers.ToList(); } }
         public virtual DbSet<Teacher> Teachers { get; set; }
+
+        List<User> IDataRepository.Users { get { return Users.ToList(); } }
+        public virtual DbSet<User> Users { get; set; }
+
+        List<Subject> IDataRepository.Subjects { get { return Subjects.ToList(); } }
+        public virtual DbSet<Subject> Subjects { get; set; }
 
         List<TimeSlot> IDataRepository.Periods { get { return Periods.ToList(); } }
         public virtual DbSet<TimeSlot> Periods { get; set; }
@@ -45,6 +48,14 @@ namespace Server
             : base(@"data source=(LocalDb)\" + ServerProvider + @";AttachDbFilename=" + Drive + @":\Burford\Year 13\Computing\Project\Data\Data.mdf;Database=Data;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
         {
             Database.SetInitializer(new DropCreateDatabaseAlways<DataRepository>());
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>().Map<Student>(c => c.Requires("Access").HasValue((int)AccessMode.Student));
+            modelBuilder.Entity<User>().Map<Teacher>(c => c.Requires("Access").HasValue((int)AccessMode.Teacher));
+
+            base.OnModelCreating(modelBuilder);
         }
 
         public static DataSnapshot TakeSnapshot()
