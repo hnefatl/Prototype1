@@ -35,7 +35,7 @@ namespace Client
 
             NetHandler();
 
-            TrayIcon Wnd = new TrayIcon(Connection, CurrentUser);
+            MainWindow = new TrayIcon(Connection, CurrentUser);
         }
 
         protected void NetHandler()

@@ -46,20 +46,14 @@ namespace Client
             set { _Rooms = value; }
         }
 
-        List<Student> IDataRepository.Students { get { return Students.ToList(); } }
-        private static ObservableCollection<Student> _Students = new ObservableCollection<Student>();
-        public ObservableCollection<Student> Students
+        public List<Student> Students
         {
-            get { return _Students; }
-            set { _Students = value; }
+            get { return Users.OfType<Student>().ToList(); }
         }
 
-        List<Teacher> IDataRepository.Teachers { get { return Teachers.ToList(); } }
-        private static ObservableCollection<Teacher> _Teachers = new ObservableCollection<Teacher>();
-        public ObservableCollection<Teacher> Teachers
+        public List<Teacher> Teachers
         {
-            get { return _Teachers; }
-            set { _Teachers = value; }
+            get { return Users.OfType<Teacher>().ToList(); }
         }
 
         List<User> IDataRepository.Users { get { return Users.ToList(); } }
@@ -141,9 +135,8 @@ namespace Client
                 _Bookings.CollectionChanged += Data_CollectionChanged;
                 _Departments.CollectionChanged += Data_CollectionChanged;
                 _Rooms.CollectionChanged += Data_CollectionChanged;
-                _Students.CollectionChanged += Data_CollectionChanged;
+                _Users.CollectionChanged += Data_CollectionChanged;
                 _Subjects.CollectionChanged += Data_CollectionChanged;
-                _Teachers.CollectionChanged += Data_CollectionChanged;
                 _Periods.CollectionChanged += Data_CollectionChanged;
                 _Classes.CollectionChanged += Data_CollectionChanged;
             }
@@ -185,9 +178,8 @@ namespace Client
                 Frame.Departments = Repo.Departments.ToList();
                 Frame.Periods = Repo.Periods.ToList();
                 Frame.Rooms = Repo.Rooms.ToList();
-                Frame.Students = Repo.Students.ToList();
+                Frame.Users = Repo.Users.ToList();
                 Frame.Subjects = Repo.Subjects.ToList();
-                Frame.Teachers = Repo.Teachers.ToList();
                 Frame.Classes = Repo.Classes.ToList();
             }
             return Frame;
@@ -208,14 +200,11 @@ namespace Client
                 Repo.Rooms.Clear();
                 Frame.Rooms.ForEach(t => Repo.Rooms.Add(t));
 
-                Repo.Students.Clear();
-                Frame.Students.ForEach(s => Repo.Students.Add(s));
+                Repo.Users.Clear();
+                Frame.Users.ForEach(u => Repo.Users.Add(u));
 
                 Repo.Subjects.Clear();
                 Frame.Subjects.ForEach(s => Repo.Subjects.Add(s));
-
-                Repo.Teachers.Clear();
-                Frame.Teachers.ForEach(t => Repo.Teachers.Add(t));
 
                 Repo.Classes.Clear();
                 Frame.Classes.ForEach(c => Repo.Classes.Add(c));
@@ -228,12 +217,10 @@ namespace Client
                     t.Expand(Repo);
                 foreach (Room r in Repo.Rooms)
                     r.Expand(Repo);
-                foreach (Student s in Repo.Students)
-                    s.Expand(Repo);
+                foreach (User u in Repo.Users)
+                    u.Expand(Repo);
                 foreach (Subject s in Repo.Subjects)
                     s.Expand(Repo);
-                foreach (Teacher t in Repo.Teachers)
-                    t.Expand(Repo);
                 foreach (Class c in Repo.Classes)
                     c.Expand(Repo);
             }
@@ -255,16 +242,13 @@ namespace Client
             else if (Msg is UserInformationMessage)
             {
                 OnUserChange((Msg as UserInformationMessage).User);
-                User u = (Msg as UserInformationMessage).User;
+                User User = (Msg as UserInformationMessage).User;
 
-                if (u == null)
+                if (User == null)
                     throw new ArgumentNullException("Received a null user.");
 
                 DataSnapshot Frame = TakeSnapshot(false);
-                if (u is Student)
-                    CurrentUser = Frame.Students.Where(s => s.Id == u.Id).SingleOrDefault();
-                else
-                    CurrentUser = Frame.Teachers.Where(t => t.Id == u.Id).SingleOrDefault();
+                CurrentUser = Frame.Users.Where(u => u.Id == User.Id).SingleOrDefault();
 
                 UserEvent.Set();
             }

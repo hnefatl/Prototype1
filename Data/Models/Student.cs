@@ -18,24 +18,26 @@ namespace Data.Models
     public class Student
         : User
     {
-        public override string InformalName { get { return FirstName + " " + LastName; } }
-        public override string FormalName { get { return InformalName; } }
-
-        public override AccessMode Access { get { return AccessMode.Student; } }
-
-        public int Year { get; set; } // 13
-        public string Form { get; set; } // WT
+        public int Year { get; set; } // Eg. 13
+        public string Form { get; set; } // Eg. WT
 
         [NotMapped]
         public string FullForm { get { return Year + Form; } }
 
-        public virtual List<Booking> Bookings { get; set; }
+        public override string InformalName { get { return FirstName + " " + LastName; } }
+        public override string FormalName { get { return InformalName; } }
+
+        public override AccessMode Access { get; set; }
+
+        public override UserType Discriminator { get { return UserType.Student; } }
+
         public virtual List<Class> Classes { get; set; }
 
         public Student()
         {
-            Bookings = new List<Booking>();
             Classes = new List<Class>();
+
+            //Access = AccessMode.Student;
 
             Form = string.Empty;
         }

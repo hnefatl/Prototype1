@@ -20,24 +20,23 @@ namespace Data.Models
         public override string InformalName { get { return FirstName + " " + LastName; } }
         public override string FormalName { get { return Title + " " + LastName; } }
 
-        public override AccessMode Access { get { return AccessMode.Teacher; } }
+        public override AccessMode Access { get; set; }
+
+        public override UserType Discriminator { get { return UserType.Teacher; } }
 
         public virtual Department Department { get; set; }
 
         public string Email { get; set; }
-        public string Password { get; set; }
         public bool Admin { get; set; }
-        
-        public virtual List<Booking> Bookings { get; set; }
 
         public Teacher()
         {
             Department = new Department();
-            Bookings = new List<Booking>();
+
+            Access = AccessMode.Teacher;
 
             Title = string.Empty;
             Email = string.Empty;
-            Password = string.Empty;
         }
 
         public override void Serialise(IWriter Out)
@@ -47,7 +46,6 @@ namespace Data.Models
             Out.Write(Title);
             Out.Write(Department.Id);
             Out.Write(Email);
-            Out.Write(""); // Don't send the password
             Out.Write(Admin);
 
             Out.Write(Bookings.Count);
@@ -60,7 +58,6 @@ namespace Data.Models
             Title = In.ReadString();
             Department.Id = In.ReadInt32();
             Email = In.ReadString();
-            Password = In.ReadString();
             Admin = In.ReadBool();
 
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();

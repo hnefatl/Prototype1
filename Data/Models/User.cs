@@ -9,11 +9,16 @@ using Shared;
 
 namespace Data.Models
 {
-    public enum AccessMode
+    public enum AccessMode // Actual access mode in the system
     {
         Student,
         Teacher,
         Admin,
+    }
+    public enum UserType // Internal discriminator for the database between Students and Teachers (for their respective tables)
+    {
+        Student,
+        Teacher,
     }
 
     public abstract class User
@@ -29,22 +34,32 @@ namespace Data.Models
         [NotMapped]
         public abstract string FormalName { get; }
 
-        public abstract AccessMode Access { get; }
+        public virtual AccessMode Access { get; set; }
 
+        public abstract UserType Discriminator { get; }
+
+        [NotMapped]
         public virtual bool IsStudent { get { return Access == AccessMode.Student; } }
+        [NotMapped]
         public virtual bool IsTeacher { get { return Access == AccessMode.Teacher; } }
+        [NotMapped]
         public virtual bool IsAdmin { get { return Access == AccessMode.Admin; } }
+        
+        public virtual List<Booking> Bookings { get; set; }
 
         public User()
         {
             FirstName = string.Empty;
             LastName = string.Empty;
+
+            Bookings = new List<Booking>();
         }
 
         public override void Serialise(IWriter Out)
         {
             base.Serialise(Out);
 
+            Out.Write((int)Access);
             Out.Write(FirstName);
             Out.Write(LastName);
             Out.Write(LogonName);
@@ -53,6 +68,7 @@ namespace Data.Models
         {
             base.Deserialise(In);
 
+            Access = (AccessMode)In.ReadInt32();
             FirstName = In.ReadString();
             LastName = In.ReadString();
             LogonName = In.ReadString();

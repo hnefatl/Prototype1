@@ -14,9 +14,8 @@ namespace Data
         public List<Booking> Bookings { get; set; }
         public List<Department> Departments { get; set; }
         public List<Room> Rooms { get; set; }
-        public List<Student> Students { get; set; }
+        public List<User> Users { get; set; }
         public List<Subject> Subjects { get; set; }
-        public List<Teacher> Teachers { get; set; }
         public List<TimeSlot> Periods { get; set; }
         public List<Class> Classes { get; set; }
 
@@ -25,9 +24,8 @@ namespace Data
             Bookings = new List<Booking>();
             Departments = new List<Department>();
             Rooms = new List<Room>();
-            Students = new List<Student>();
+            Users = new List<User>();
             Subjects = new List<Subject>();
-            Teachers = new List<Teacher>();
             Periods = new List<TimeSlot>();
             Classes = new List<Class>();
         }
@@ -46,14 +44,11 @@ namespace Data
             Out.Write(Rooms.Count);
             Rooms.ForEach(r => r.Serialise(Out));
 
-            Out.Write(Students.Count);
-            Students.ForEach(s => s.Serialise(Out));
+            Out.Write(Users.Count);
+            Users.ForEach(t => t.Serialise(Out));
 
             Out.Write(Subjects.Count);
             Subjects.ForEach(s => s.Serialise(Out));
-
-            Out.Write(Teachers.Count);
-            Teachers.ForEach(t => t.Serialise(Out));
 
             Out.Write(Classes.Count);
             Classes.ForEach(c => c.Serialise(Out));
@@ -76,18 +71,14 @@ namespace Data
             for (int x = 0; x < Rooms.Capacity; x++)
                 Rooms.Add((Room)DataModel.DeserialiseExternal(In));
 
-            Students = new List<Student>(In.ReadInt32());
-            for (int x = 0; x < Students.Capacity; x++)
-                Students.Add((Student)DataModel.DeserialiseExternal(In));
+            Users = new List<User>(In.ReadInt32());
+            for (int x = 0; x < Users.Capacity; x++)
+                Users.Add((User)DataModel.DeserialiseExternal(In));
 
             Subjects = new List<Subject>(In.ReadInt32());
             for (int x = 0; x < Subjects.Capacity; x++)
                 Subjects.Add((Subject)DataModel.DeserialiseExternal(In));
-
-            Teachers = new List<Teacher>(In.ReadInt32());
-            for (int x = 0; x < Teachers.Capacity; x++)
-                Teachers.Add((Teacher)DataModel.DeserialiseExternal(In));
-
+            
             Classes = new List<Class>(In.ReadInt32());
             for (int x = 0; x < Classes.Capacity; x++)
                 Classes.Add((Class)DataModel.DeserialiseExternal(In));

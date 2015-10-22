@@ -46,48 +46,74 @@ namespace Client
             AdminWindowShown = false;
 
             ToolbarIcon = new System.Windows.Forms.NotifyIcon();
-            ToolbarIcon.Click += ToolbarIcon_Click;
+            ToolbarIcon.MouseClick += ToolbarIcon_Click;
             ToolbarIcon.Icon = Properties.Resources.ToolbarIcon;
             ToolbarIcon.Visible = true;
 
             if (CurrentUser.Access == AccessMode.Admin)
             {
                 Menu = new System.Windows.Forms.ContextMenu();
-                Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Standard View", ToolbarIcon_Click));
-                Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Admin View", ShowAdminWindow));
+                Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Standard View", (s, e) => ToolbarIcon_Click(s, null)));
+                Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Admin View", (s, e) => ShowAdminWindow()));
+                Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Exit", ExitClick));
                 ToolbarIcon.ContextMenu = Menu;
             }
         }
+        protected override void OnClosed(EventArgs e)
+        {
+            ToolbarIcon.Visible = false;
+            Menu.Dispose();
+            ToolbarIcon.Dispose();
 
-        private void ToolbarIcon_Click(object sender, EventArgs e)
+            base.OnClosed(e);
+        }
+
+
+        private void ToolbarIcon_Click(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e == null || (e != null && e.Button != System.Windows.Forms.MouseButtons.Right))
+                ShowMainWindow();
+        }
+        private void ShowMainWindow()
         {
             if (MainWindow != null && !MainWindow.Dispatcher.CheckAccess())
-                MainWindow.Dispatcher.Invoke((Action<object, EventArgs>)ToolbarIcon_Click, sender, e);
+                MainWindow.Dispatcher.Invoke((Action)ShowMainWindow);
 
             if (!MainWindowShown)
             {
+                MainWindowShown = true;
                 MainWindow = new MainWindow(Connection, CurrentUser);
+                // Something really weird happens here - calling the MainWindow constructor causes the click event to be run again.
+                // Stack Trace shows it comes direct from the NotifyIcon itself, not from any accidental callbacks :/
+                // Some crazy logic and flags avoids the issue, as the root cause seems to be threads updating when the new window is shown and therefore unavoidable.
+
                 MainWindow.Closed += (s, o) => MainWindowShown = false;
                 MainWindow.Show();
             }
             else
-                MainWindow.Show();
+                MainWindow.Activate();
         }
-        private void ShowAdminWindow(object sender, EventArgs e)
+        private void ShowAdminWindow()
         {
             if (AdminWindow != null && !AdminWindow.Dispatcher.CheckAccess())
-                AdminWindow.Dispatcher.Invoke((Action<object, EventArgs>)ShowAdminWindow, sender, e);
+                AdminWindow.Dispatcher.Invoke((Action)ShowAdminWindow);
 
             if (!AdminWindowShown)
             {
                 AdminWindow = new AdminWindow(Connection, CurrentUser);
                 AdminWindow.Closed += (s, o) => AdminWindowShown = false;
                 AdminWindow.Show();
+                AdminWindowShown = true;
             }
             else
-                AdminWindow.Show();
+                AdminWindow.Activate();
         }
-        
+
+        private void ExitClick(object sender, EventArgs e)
+        {
+            Close();
+        }
+
         private void Connection_Disconnect(Connection Sender, NetCore.Messages.DisconnectMessage Message)
         {
             if (MainWindowShown)

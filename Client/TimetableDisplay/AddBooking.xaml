@@ -68,7 +68,7 @@
                             </GridViewColumn>
                             <GridViewColumn DisplayMemberBinding="{Binding Value.RoomName}" Width="80" Header="Room Name"/>
                             <GridViewColumn DisplayMemberBinding="{Binding Value.StandardSeats}" Width="90" Header="Standard Seats"/>
-                            <GridViewColumn DisplayMemberBinding="{Binding Value.SpecialSeatsType}" Width="100" Header="Special seat type"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.SpecialSeatType}" Width="100" Header="Special seat type"/>
                             <GridViewColumn DisplayMemberBinding="{Binding Value.SpecialSeats}" Width="80" Header="Special seats"/>
                         </GridView.Columns>
                     </GridView>

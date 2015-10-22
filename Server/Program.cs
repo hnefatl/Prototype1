@@ -37,7 +37,7 @@ namespace Server
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 5", Start = new TimeSpan(14, 0, 0), End = new TimeSpan(15, 0, 0) });
 
                 const string LogonName = DataRepository.Home ? "Keith" : "09135"; // For testing on home/school computers
-                Repo.Students.Add(new Student() { FirstName = "Keith", LastName = "Collister", Form = "WT", Year = 13, LogonName = LogonName });
+                Repo.Students.Add(new Student() { FirstName = "Keith", LastName = "Collister", Form = "WT", Year = 13, LogonName = LogonName, Access = AccessMode.Admin });
                 Repo.Students.Add(new Student() { FirstName = "Max", LastName = "Norman", Form = "WT", Year = 13, LogonName = "Max" });
                 Repo.Students.Add(new Student() { FirstName = "Dan", LastName = "Wrenn", Form = "MB", Year = 13, LogonName = "Dan" });
 
@@ -122,7 +122,7 @@ namespace Server
             Print(c.ToString() + " connected", ConsoleColor.Green);
             DataSnapshot Frame = DataRepository.TakeSnapshot();
             c.Send(new InitialiseMessage(Frame));
-            c.Send(new UserInformationMessage(Frame.Teachers.Union<User>(Frame.Students).Where(u => u.LogonName == c.Username).SingleOrDefault()));
+            c.Send(new UserInformationMessage(Frame.Users.Where(u => u.LogonName == c.Username).SingleOrDefault()));
         }
         static void ClientDisconnect(Listener Sender, Client c, DisconnectMessage Message)
         {

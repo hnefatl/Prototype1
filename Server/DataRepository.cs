@@ -12,7 +12,6 @@ namespace Server
     public class DataRepository
         : DbContext, IDataRepository
     {
-
         List<Booking> IDataRepository.Bookings { get { return Bookings.ToList(); } }
         public virtual DbSet<Booking> Bookings { get; set; }
 
@@ -21,7 +20,7 @@ namespace Server
 
         List<Room> IDataRepository.Rooms { get { return Rooms.ToList(); } }
         public virtual DbSet<Room> Rooms { get; set; }
-
+        
         List<Student> IDataRepository.Students { get { return Students.ToList(); } }
         public virtual DbSet<Student> Students { get; set; }
 
@@ -52,8 +51,8 @@ namespace Server
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>().Map<Student>(c => c.Requires("Access").HasValue((int)AccessMode.Student));
-            modelBuilder.Entity<User>().Map<Teacher>(c => c.Requires("Access").HasValue((int)AccessMode.Teacher));
+            modelBuilder.Entity<User>().Map<Student>(c => c.Requires("Discriminator").HasValue((int)UserType.Student));
+            modelBuilder.Entity<User>().Map<Teacher>(c => c.Requires("Discriminator").HasValue((int)UserType.Teacher));
 
             base.OnModelCreating(modelBuilder);
         }
@@ -69,9 +68,8 @@ namespace Server
                 Frame.Departments = Repo.Departments.Include(d => d.Teachers).ToList();
                 Frame.Periods = Repo.Periods.Include(p => p.Bookings).ToList();
                 Frame.Rooms = Repo.Rooms.Include(r => r.Bookings).ToList();
-                Frame.Students = Repo.Students.Include(s => s.Bookings).ToList();
+                Frame.Users = Repo.Users.Include(s => s.Bookings).ToList();
                 Frame.Subjects = Repo.Subjects.Include(s => s.Bookings).ToList();
-                Frame.Teachers = Repo.Teachers.Include(t => t.Bookings).ToList();
                 Frame.Classes = Repo.Classes.Include(c => c.Students).ToList();
 
                 Repo.SetProxies(true);
