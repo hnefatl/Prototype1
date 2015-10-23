@@ -78,35 +78,39 @@ namespace Client
         {
             if (MainWindow != null && !MainWindow.Dispatcher.CheckAccess())
                 MainWindow.Dispatcher.Invoke((Action)ShowMainWindow);
-
-            if (!MainWindowShown)
-            {
-                MainWindowShown = true;
-                MainWindow = new MainWindow(Connection, CurrentUser);
-                // Something really weird happens here - calling the MainWindow constructor causes the click event to be run again.
-                // Stack Trace shows it comes direct from the NotifyIcon itself, not from any accidental callbacks :/
-                // Some crazy logic and flags avoids the issue, as the root cause seems to be threads updating when the new window is shown and therefore unavoidable.
-
-                MainWindow.Closed += (s, o) => MainWindowShown = false;
-                MainWindow.Show();
-            }
             else
-                MainWindow.Activate();
+            {
+                if (!MainWindowShown)
+                {
+                    MainWindowShown = true;
+                    MainWindow = new MainWindow(Connection, CurrentUser);
+                    // Something really weird happens here - calling the MainWindow constructor causes the click event to be run again.
+                    // Stack Trace shows it comes direct from the NotifyIcon itself, not from any accidental callbacks :/
+                    // Some crazy logic and flags avoids the issue, as the root cause seems to be threads updating when the new window is shown and therefore unavoidable.
+
+                    MainWindow.Closed += (s, o) => MainWindowShown = false;
+                    MainWindow.Show();
+                }
+                else
+                    MainWindow.Activate();
+            }
         }
         private void ShowAdminWindow()
         {
             if (AdminWindow != null && !AdminWindow.Dispatcher.CheckAccess())
                 AdminWindow.Dispatcher.Invoke((Action)ShowAdminWindow);
-
-            if (!AdminWindowShown)
-            {
-                AdminWindow = new AdminWindow(Connection, CurrentUser);
-                AdminWindow.Closed += (s, o) => AdminWindowShown = false;
-                AdminWindow.Show();
-                AdminWindowShown = true;
-            }
             else
-                AdminWindow.Activate();
+            {
+                if (!AdminWindowShown)
+                {
+                    AdminWindow = new AdminWindow(Connection, CurrentUser);
+                    AdminWindow.Closed += (s, o) => AdminWindowShown = false;
+                    AdminWindow.Show();
+                    AdminWindowShown = true;
+                }
+                else
+                    AdminWindow.Activate();
+            }
         }
 
         private void ExitClick(object sender, EventArgs e)

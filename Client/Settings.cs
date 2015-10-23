@@ -62,6 +62,8 @@ namespace Client
             try
             {
                 Inner = new Dictionary<string, object>();
+                //Inner.Add("ServerAddress", "10.105.35.97");
+                //Inner.Add("ServerPort", "34652");
                 BinaryFormatter Reader = new BinaryFormatter();
                 using (FileStream File = new FileStream(Path, FileMode.Open))
                 {

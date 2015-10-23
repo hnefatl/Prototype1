@@ -39,7 +39,7 @@ namespace Server
                 const string LogonName = DataRepository.Home ? "Keith" : "09135"; // For testing on home/school computers
                 Repo.Students.Add(new Student() { FirstName = "Keith", LastName = "Collister", Form = "WT", Year = 13, LogonName = LogonName, Access = AccessMode.Admin });
                 Repo.Students.Add(new Student() { FirstName = "Max", LastName = "Norman", Form = "WT", Year = 13, LogonName = "Max" });
-                Repo.Students.Add(new Student() { FirstName = "Dan", LastName = "Wrenn", Form = "MB", Year = 13, LogonName = "Dan" });
+                Repo.Students.Add(new Student() { FirstName = "Dan", LastName = "Wrenn", Form = "MB", Year = 13, LogonName = "09154" });
 
                 Repo.Subjects.Add(new Subject() { SubjectName = "Maths", Colour = Colors.Red });
                 Repo.Subjects.Add(new Subject() { SubjectName = "Physics", Colour = Colors.Orange });
