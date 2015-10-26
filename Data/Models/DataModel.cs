@@ -17,11 +17,8 @@ namespace Data.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        
-        public virtual bool Conflicts(List<DataModel> Others)
-        {
-            return Others.Any(d => d.Id == Id);
-        }
+
+        public abstract bool Conflicts(List<DataModel> Others);
 
         public virtual void Serialise(IWriter Out)
         {
@@ -32,6 +29,8 @@ namespace Data.Models
         {
             Id = In.ReadInt32();
         }
+
+        public abstract void Update(DataModel Other);
 
         public abstract bool Expand(IDataRepository Repo);
 

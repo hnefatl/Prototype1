@@ -57,7 +57,18 @@ namespace Data.Models
 
         public override bool Conflicts(List<DataModel> Others)
         {
-            return base.Conflicts(Others) || Others.Cast<User>().Any(u => u.LogonName == LogonName);
+            return Others.Cast<User>().Any(u => u.Id != Id && u.LogonName == LogonName);
+        }
+
+        public override void Update(DataModel Other)
+        {
+            User u = (User)Other;
+
+            FirstName = u.FirstName;
+            LastName = u.LastName;
+            LogonName = u.LogonName;
+            Access = u.Access;
+            Bookings = u.Bookings;
         }
 
         public override void Serialise(IWriter Out)

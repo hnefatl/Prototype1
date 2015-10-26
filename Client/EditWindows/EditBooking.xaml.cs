@@ -16,9 +16,9 @@ using System.Data.Entity;
 
 using Data.Models;
 
-namespace Client.TimetableDisplay
+namespace Client.EditWindows
 {
-    public partial class AddBooking
+    public partial class EditBooking
         : Window, INotifyPropertyChanged
     {
         public User CurrentUser { get; private set; }
@@ -105,19 +105,19 @@ namespace Client.TimetableDisplay
 
         public DateTime CurrentDate { get; set; }
 
-        public AddBooking(User CurrentUser, bool NewBooking) // For making a new booking
+        public EditBooking(User CurrentUser, bool NewBooking) // For making a new booking
             : this(CurrentUser, NewBooking, 0, new List<Room>(), null, null, new List<Student>(), null, null, BookingType.Single)
         {
         }
-        public AddBooking(User CurrentUser, bool NewBooking, TimeSlot StartTime, Room StartRoom) // For making a new booking
+        public EditBooking(User CurrentUser, bool NewBooking, TimeSlot StartTime, Room StartRoom) // For making a new booking
             : this(CurrentUser, NewBooking, 0, new List<Room>(), StartRoom, StartTime, new List<Student>(), null, null, BookingType.Single)
         {
         }
-        public AddBooking(User CurrentUser, bool NewBooking, Booking Booking)
+        public EditBooking(User CurrentUser, bool NewBooking, Booking Booking)
             : this(CurrentUser, NewBooking, Booking.Id, Booking.Rooms, null, Booking.TimeSlot, Booking.Students, Booking.Subject, Booking.Teacher, Booking.BookingType)
         {
         }
-        public AddBooking(User CurrentUser, bool NewBooking, int Id, List<Room> SelectedRooms, Room StartRoom, TimeSlot TimeSlot, List<Student> SelectedStudents, Subject Subject, Teacher Teacher, BookingType BookingType) // For editing an existing booking
+        public EditBooking(User CurrentUser, bool NewBooking, int Id, List<Room> SelectedRooms, Room StartRoom, TimeSlot TimeSlot, List<Student> SelectedStudents, Subject Subject, Teacher Teacher, BookingType BookingType) // For editing an existing booking
         {
             PropertyChanged = delegate { };
 

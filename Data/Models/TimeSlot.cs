@@ -82,7 +82,17 @@ namespace Data.Models
 
         public override bool Conflicts(List<DataModel> Others)
         {
-            return base.Conflicts(Others) || Others.Cast<TimeSlot>().Any(t => t.Name == Name || (t.Start == Start && t.End == End));
+            return Others.Cast<TimeSlot>().Any(t => t.Id != Id && t.Name == Name || (t.Start == Start && t.End == End));
+        }
+
+        public override void Update(DataModel Other)
+        {
+            TimeSlot t = (TimeSlot)Other;
+
+            Start = t.Start;
+            End = t.End;
+            Name = t.Name;
+            Bookings = t.Bookings;
         }
 
         public override void Serialise(IWriter Out)
@@ -128,14 +138,14 @@ namespace Data.Models
                 return TimeRange;
         }
 
-        public static bool operator==(TimeSlot One, TimeSlot Two)
+        public static bool operator ==(TimeSlot One, TimeSlot Two)
         {
             if (ReferenceEquals(One, Two))
                 return true;
 
             return (object)One != null && (object)Two != null && One.Start == Two.Start && One.End == Two.End && One.Name == Two.Name;
         }
-        public static bool operator!=(TimeSlot One, TimeSlot Two)
+        public static bool operator !=(TimeSlot One, TimeSlot Two)
         {
             return !(One == Two);
         }

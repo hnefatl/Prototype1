@@ -27,7 +27,16 @@ namespace Data.Models
 
         public override bool Conflicts(List<DataModel> Others)
         {
-            return base.Conflicts(Others) || Others.Cast<Class>().Any(c => c.ClassName == ClassName);
+            return Others.Cast<Class>().Any(c => c.Id != Id && c.ClassName == ClassName);
+        }
+
+        public override void Update(DataModel Other)
+        {
+            Class c = (Class)Other;
+
+            ClassName = c.ClassName;
+            Owner = c.Owner;
+            Students = c.Students;
         }
 
         public override void Serialise(IWriter Out)

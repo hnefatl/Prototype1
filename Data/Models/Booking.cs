@@ -60,7 +60,7 @@ namespace Data.Models
         }
         public Booking(TimeSlot Time, List<Room> Rooms, Subject Subject, List<Student> Students, Teacher Teacher, BookingType BookingType)
         {
-            this.TimeSlot = Time;
+            TimeSlot = Time;
             this.Rooms = Rooms;
             this.Subject = Subject;
             this.Students = Students;
@@ -77,7 +77,19 @@ namespace Data.Models
         }
         public override bool Conflicts(List<DataModel> AllBookings)
         {
-            return base.Conflicts(AllBookings) || AllBookings.Cast<Booking>().Any(b => b.Date == Date && b.TimeSlot == TimeSlot && b.Rooms.Intersect(Rooms).Count() != 0);
+            return AllBookings.Cast<Booking>().Any(b => b.Id != Id && b.Date == Date && b.TimeSlot == TimeSlot && b.Rooms.Intersect(Rooms).Count() != 0);
+        }
+
+        public override void Update(DataModel Other)
+        {
+            Booking b = (Booking)Other;
+            Ticks = b.Ticks;
+            BookingType = b.BookingType;
+            TimeSlot = b.TimeSlot;
+            Rooms = b.Rooms;
+            Subject = b.Subject;
+            Students = b.Students;
+            Teacher = b.Teacher;
         }
 
         public override void Serialise(IWriter Out)

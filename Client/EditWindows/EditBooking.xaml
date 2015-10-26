@@ -1,4 +1,4 @@
-﻿<Window x:Class="Client.TimetableDisplay.AddBooking"
+﻿<Window x:Class="Client.EditWindows.EditBooking"
         x:Name="Wnd"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,7 +7,7 @@
         xmlns:converters="clr-namespace:Client.Converters"
         xmlns:local="clr-namespace:Client.TimetableDisplay"
         mc:Ignorable="d"
-        Title="Add Booking" Height="660" Width="430"
+        Title="Edit Booking" Height="680" Width="430"
         SizeToContent="Height"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Window.Resources>

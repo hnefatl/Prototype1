@@ -16,7 +16,8 @@ namespace Data.Models
         : User
     {        
         public string Title { get; set; }
-        
+        public string Email { get; set; }
+
         public override string InformalName { get { return FirstName + " " + LastName; } }
         public override string FormalName { get { return Title + " " + LastName; } }
 
@@ -26,9 +27,6 @@ namespace Data.Models
 
         public virtual Department Department { get; set; }
         public virtual List<Class> Classes { get; set; }
-
-        public string Email { get; set; }
-        public bool Admin { get; set; }
 
         public Teacher()
         {
@@ -41,6 +39,20 @@ namespace Data.Models
             Email = string.Empty;
         }
 
+        public override bool Conflicts(List<DataModel> Others)
+        {
+            return base.Conflicts(Others) || Others.Cast<Teacher>().Any(t => t.Id!=Id && t.Title!=Title && t.Email!= Email);
+        }
+
+        public override void Update(DataModel Other)
+        {
+            base.Update(Other);
+
+            Teacher t = (Teacher)Other;
+            Title = t.Title;
+            Email = t.Email;
+        }
+
         public override void Serialise(IWriter Out)
         {
             base.Serialise(Out);
@@ -50,7 +62,6 @@ namespace Data.Models
             Out.Write(Classes.Count);
             Classes.ForEach(c => Out.Write(c.Id));
             Out.Write(Email);
-            Out.Write(Admin);
 
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
@@ -64,7 +75,6 @@ namespace Data.Models
             Classes = Enumerable.Repeat(new Class(), In.ReadInt32()).ToList();
             Classes.ForEach(c => c.Id = In.ReadInt32());
             Email = In.ReadString();
-            Admin = In.ReadBool();
 
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());

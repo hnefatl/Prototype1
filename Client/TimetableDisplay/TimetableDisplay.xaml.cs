@@ -73,6 +73,7 @@ namespace Client.TimetableDisplay
                 Child.HorizontalAlignment = HorizontalAlignment.Right;
 
                 Border LeftTile = new Border();
+                LeftTile.ToolTip = "Standard Seats: " + Frame.Rooms[y].StandardSeats + "\n" + Frame.Rooms[y].SpecialSeatType + ": " + Frame.Rooms[y].SpecialSeats;
                 LeftTile.Child = Child;
                 LeftTile.Background = MarginBrush;
                 LeftTile.SetValue(Grid.RowProperty, y + 1);

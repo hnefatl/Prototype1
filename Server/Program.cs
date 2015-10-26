@@ -51,12 +51,14 @@ namespace Server
 
                 Repo.SaveChanges();
 
-                Repo.Classes.Add(new Class() { ClassName = "Computing", Students = Repo.Students.ToList() });
-                Repo.Classes.Add(new Class() { ClassName = "Maths", Students = Repo.Students.Where(s => s.Form == "13WT").ToList() });
-
                 Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "mb", FirstName = "Mary", LastName = "Bogdiukiewicz", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single() });
                 Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "jk", FirstName = "J....", LastName = "Kenny", Department = Repo.Departments.Where(d => d.Name == "Science").Single() });
                 Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "rb", FirstName = "R....", LastName = "Britton", Department = Repo.Departments.Where(d => d.Name == "Maths").Single() });
+
+                Repo.SaveChanges();
+
+                Repo.Classes.Add(new Class() { ClassName = "Computing", Students = Repo.Students.ToList(), Owner=Repo.Teachers.Where(t => t.LogonName=="mb").Single() });
+                Repo.Classes.Add(new Class() { ClassName = "Maths", Students = Repo.Students.Where(s => s.Form == "13WT").ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "rb").Single() });
 
                 Repo.SaveChanges();
 
@@ -185,7 +187,7 @@ namespace Server
             {
                 if (!Entry.Expand(Repo))
                     return;
-
+                
                 DbSet<T> Set = Repo.Set<T>();
 
                 if (Delete)
@@ -193,13 +195,21 @@ namespace Server
                 else
                 {
                     // Check for conflicts if necessary
-                    if (!Entry.Conflicts(Set.Cast<DataModel>().ToList()))
-                        Set.Add(Entry);
+                    if (!Entry.Conflicts(Set.ToList().Cast<DataModel>().ToList()))
+                    {
+                        if (Set.Any(m => m.Id == Entry.Id)) // Updating existing item
+                        {
+                            Set.Single(m => m.Id == Entry.Id).Update(Entry);
+                        }
+                        else
+                        {
+                            Set.Add(Entry);
+                        }
+                        Repo.SaveChanges();
+
+                        Listener.Send(new DataMessage(Entry, Delete));
+                    }
                 }
-
-                Repo.SaveChanges();
-
-                Listener.Send(new DataMessage(Entry, Delete));
             }
         }
 

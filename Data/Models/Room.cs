@@ -51,7 +51,18 @@ namespace Data.Models
 
         public override bool Conflicts(List<DataModel> Others)
         {
-            return base.Conflicts(Others) || Others.Cast<Room>().Any(r => r.RoomName == RoomName);
+            return Others.Cast<Room>().Any(r => r.Id != Id && r.RoomName == RoomName);
+        }
+
+        public override void Update(DataModel Other)
+        {
+            Room r = (Room)Other;
+
+            RoomName = r.RoomName;
+            StandardSeats = r.StandardSeats;
+            SpecialSeatType = r.SpecialSeatType;
+            SpecialSeats = r.SpecialSeats;
+            Bookings = r.Bookings;
         }
 
         public override void Serialise(IWriter Out)

@@ -265,10 +265,15 @@ namespace Client
                     {
                         using (DataRepository Repo = new DataRepository(false))
                             Data.Item.Expand(Repo);
-                        _Bookings.Add((Booking)Data.Item);
+
+                        int Index = _Bookings.IndexOf(_Bookings.SingleOrDefault(i => i.Id == Data.Item.Id));
+                        if (Index < 0)
+                            _Bookings.Add((Booking)Data.Item);
+                        else
+                            _Bookings[Index] = (Booking)Data.Item;
                     }
                     else
-                        _Bookings.Remove(_Bookings.Where(b => b.Id == Data.Item.Id).Single());
+                        _Bookings.Remove(_Bookings.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
                 }
                 else if (Data.Item is Class)
                 {
@@ -276,10 +281,15 @@ namespace Client
                     {
                         using (DataRepository Repo = new DataRepository(false))
                             Data.Item.Expand(Repo);
-                        _Classes.Add((Class)Data.Item);
+
+                        int Index = _Classes.IndexOf(_Classes.SingleOrDefault(i => i.Id == Data.Item.Id));
+                        if (Index < 0)
+                            _Classes.Add((Class)Data.Item);
+                        else
+                            _Classes[Index] = (Class)Data.Item;
                     }
                     else
-                        _Classes.Remove(_Classes.Where(b => b.Id == Data.Item.Id).Single());
+                        _Classes.Remove(_Classes.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
                 }
                 else if (Data.Item is Department)
                 {
@@ -287,10 +297,15 @@ namespace Client
                     {
                         using (DataRepository Repo = new DataRepository(false))
                             Data.Item.Expand(Repo);
-                        _Departments.Add((Department)Data.Item);
+
+                        int Index = _Departments.IndexOf(_Departments.SingleOrDefault(i => i.Id == Data.Item.Id));
+                        if (Index < 0)
+                            _Departments.Add((Department)Data.Item);
+                        else
+                            _Departments[Index] = (Department)Data.Item;
                     }
                     else
-                        _Departments.Remove(_Departments.Where(b => b.Id == Data.Item.Id).Single());
+                        _Departments.Remove(_Departments.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
                 }
                 else if (Data.Item is Room)
                 {
@@ -298,10 +313,15 @@ namespace Client
                     {
                         using (DataRepository Repo = new DataRepository(false))
                             Data.Item.Expand(Repo);
-                        _Rooms.Add((Room)Data.Item);
+
+                        int Index = _Rooms.IndexOf(_Rooms.SingleOrDefault(r => r.Id == Data.Item.Id));
+                        if (Index < 0)
+                            _Rooms.Add((Room)Data.Item);
+                        else
+                            _Rooms[Index] = (Room)Data.Item;
                     }
                     else
-                        _Rooms.Remove(_Rooms.Where(b => b.Id == Data.Item.Id).Single());
+                        _Rooms.Remove(_Rooms.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
                 }
                 else if (Data.Item is User)
                 {
@@ -309,10 +329,15 @@ namespace Client
                     {
                         using (DataRepository Repo = new DataRepository(false))
                             Data.Item.Expand(Repo);
-                        _Users.Add((User)Data.Item);
+
+                        int Index = _Users.IndexOf(_Users.SingleOrDefault(i => i.Id == Data.Item.Id));
+                        if (Index < 0)
+                            _Users.Add((User)Data.Item);
+                        else
+                            _Users[Index] = (User)Data.Item;
                     }
                     else
-                        _Users.Remove(_Users.Where(b => b.Id == Data.Item.Id).Single());
+                        _Users.Remove(_Users.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
                 }
                 else if (Data.Item is Subject)
                 {
@@ -320,10 +345,15 @@ namespace Client
                     {
                         using (DataRepository Repo = new DataRepository(false))
                             Data.Item.Expand(Repo);
-                        _Subjects.Add((Subject)Data.Item);
+
+                        int Index = _Subjects.IndexOf(_Subjects.SingleOrDefault(i => i.Id == Data.Item.Id));
+                        if (Index < 0)
+                            _Subjects.Add((Subject)Data.Item);
+                        else
+                            _Subjects[Index] = (Subject)Data.Item;
                     }
                     else
-                        _Subjects.Remove(_Subjects.Where(b => b.Id == Data.Item.Id).Single());
+                        _Subjects.Remove(_Subjects.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
                 }
                 else if (Data.Item is TimeSlot)
                 {
@@ -331,7 +361,12 @@ namespace Client
                     {
                         using (DataRepository Repo = new DataRepository(false))
                             Data.Item.Expand(Repo);
-                        _Periods.Add((TimeSlot)Data.Item);
+
+                        int Index = _Periods.IndexOf(_Periods.SingleOrDefault(i => i.Id == Data.Item.Id));
+                        if (Index < 0)
+                            _Periods.Add((TimeSlot)Data.Item);
+                        else
+                            _Periods[Index] = (TimeSlot)Data.Item;
                     }
                     else
                         _Periods.Remove(_Periods.Where(b => b.Id == Data.Item.Id).Single());

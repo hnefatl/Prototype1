@@ -27,8 +27,6 @@ namespace Data.Models
         public override string InformalName { get { return FirstName + " " + LastName; } }
         public override string FormalName { get { return InformalName; } }
 
-        public override AccessMode Access { get; set; }
-
         public override UserType Discriminator { get { return UserType.Student; } }
 
         public virtual List<Class> Classes { get; set; }
@@ -37,9 +35,24 @@ namespace Data.Models
         {
             Classes = new List<Class>();
 
-            //Access = AccessMode.Student;
+            Access = AccessMode.Student;
 
             Form = string.Empty;
+        }
+
+        public override bool Conflicts(List<DataModel> Others)
+        {
+            return base.Conflicts(Others) || Others.Cast<Student>().Any(s => s.Id != Id && s.Year == Year && s.Form == Form);
+        }
+
+        public override void Update(DataModel Other)
+        {
+            base.Update(Other);
+
+            Student s = (Student)Other;
+            Year = s.Year;
+            Form = s.Form;
+            Classes = s.Classes;
         }
 
         public override void Serialise(IWriter Out)

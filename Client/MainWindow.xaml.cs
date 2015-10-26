@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 
 using Client.TimetableDisplay;
+using Client.EditWindows;
 using NetCore;
 using NetCore.Client;
 using NetCore.Messages;
@@ -65,14 +66,14 @@ namespace Client
 
         private void Timetable_TileClicked(TimetableTile Tile)
         {
-            AddBooking Window = null;
+            EditBooking Window = null;
 
             bool NewBooking = Tile.Booking == null;
 
             if (NewBooking) // New booking
-                Window = new AddBooking(CurrentUser, true, Tile.Time, Tile.Room);
+                Window = new EditBooking(CurrentUser, true, Tile.Time, Tile.Room);
             else // Editing booking
-                Window = new AddBooking(CurrentUser, false, Tile.Booking);
+                Window = new EditBooking(CurrentUser, false, Tile.Booking);
             Window.CurrentDate = CurrentDay;
 
             bool? Result = Window.ShowDialog();

@@ -16,6 +16,8 @@ using System.Collections.ObjectModel;
 using Data.Models;
 using NetCore.Client;
 
+using Client.EditWindows;
+
 namespace Client.Admin
 {
     public partial class AdminWindow
@@ -33,6 +35,16 @@ namespace Client.Admin
         public List<Room> SelectedRooms { get { return List_Rooms.SelectedItems.Cast<Room>().ToList(); } }
         public Room SelectedRoom { get { return (Room)List_Rooms.SelectedItem; } }
         public bool SingleRoomSelected { get { return SelectedRooms.Count == 1; } }
+
+        protected ObservableCollection<TimeSlot> _Periods = new ObservableCollection<TimeSlot>();
+        public ObservableCollection<TimeSlot> Periods
+        {
+            get { return _Periods; }
+            set { _Periods = value; OnPropertyChanged("Periods"); OnPropertyChanged("SelectedPeriods"); OnPropertyChanged("SinglePeriodSelected"); OnPropertyChanged("SelectedPeriod"); }
+        }
+        public List<TimeSlot> SelectedPeriods { get { return List_Periods.SelectedItems.Cast<TimeSlot>().ToList(); } }
+        public TimeSlot SelectedPeriod { get { return (TimeSlot)List_Periods.SelectedItem; } }
+        public bool SinglePeriodSelected { get { return SelectedPeriods.Count == 1; } }
 
         public AdminWindow(Connection Connection, User CurrentUser)
         {
@@ -60,17 +72,41 @@ namespace Client.Admin
                 {
                     if (t == typeof(Room))
                         Rooms = new ObservableCollection<Room>(Repo.Rooms);
+                    
                 }
             }
         }
 
-        private void Button_Save_Click(object sender, RoutedEventArgs e)
+        private void Button_AddRoom_Click(object sender, RoutedEventArgs e)
         {
-            using (DataRepository Repo = new DataRepository())
-            {
+            EditRoom(null);
+        }
+        private void Button_EditRoom_Click(object sender, RoutedEventArgs e)
+        {
+            EditRoom((Room)List_Rooms.SelectedItem);
+        }
+        private void EditRoom(Room Existing)
+        {
+            EditRoom Wnd = new EditRoom(Existing);
+            bool? Result = Wnd.ShowDialog();
 
+            if (Result.HasValue && Result.Value)
+            {
+                Room New = Wnd.GetRoom();
+                if (New != null)
+                {
+                    using (DataRepository Repo = new DataRepository())
+                        Repo.Rooms.Add(New);
+                }
             }
         }
+        private void Button_DeleteRoom_Click(object sender, RoutedEventArgs e)
+        {
+            using (DataRepository Repo = new DataRepository())
+                Repo.Rooms.Remove((Room)List_Rooms.SelectedItem);
+        }
+
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string PropertyName)
@@ -79,41 +115,34 @@ namespace Client.Admin
                 PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
         }
 
-        private void Button_AddRoom_Click(object sender, RoutedEventArgs e)
+        private void Button_AddPeriod_Click(object sender, RoutedEventArgs e)
         {
-            Room New = EditRoom("Add Room", new Room());
-
-            bool Existing = false;
-            using (DataRepository Repo = new DataRepository())
-            {
-                if (New.Conflicts(Repo.Rooms.Cast<DataModel>().ToList()))
-                    Existing = true;
-                else
-                    Repo.Rooms.Add(New);
-            }
-            if (Existing)
-                MessageBox.Show("Another room with that name already exists.");
+            EditPeriod(null);
         }
-        private void Button_EditRoom_Click(object sender, RoutedEventArgs e)
+        private void Button_EditPeriod_Click(object sender, RoutedEventArgs e)
         {
-            Room New = EditRoom("Edit Room", (Room)List_Rooms.SelectedItem);
+            EditPeriod((TimeSlot)List_Periods.SelectedItem);
+        }
+        private void EditPeriod(TimeSlot Existing)
+        {
+            EditPeriod Wnd = new EditPeriod(Existing);
+            bool? Result = Wnd.ShowDialog();
 
-            using (DataRepository Repo = new DataRepository())
+            if (Result.HasValue && Result.Value)
             {
-                Repo.Rooms.Add(New);
+                TimeSlot New = Wnd.GetRoom();
+                if (New != null)
+                {
+                    using (DataRepository Repo = new DataRepository())
+                        Repo.Periods.Add(New);
+                }
             }
         }
-        private Room EditRoom(string WindowTitle, Room r)
-        {
-            Dictionary<string, EditItem> Fields = new Dictionary<string, EditItem>() {
-                { "RoomName", new EditItem("Room Name", r.RoomName, o => (o is string && !string.IsNullOrWhiteSpace(o as string) ? null : "Room Name must be entered")) },
-                { "StandardSeats", new EditItem("Standard Seats", r.StandardSeats, EditItem.NonNegativeIntegerValidator) },
-                { "SpecialSeats", new EditItem("Special Seats", r.SpecialSeats, EditItem.NonNegativeIntegerValidator) },
-                { "SpecialSeatType", new EditItem("Special Seat Type", r.SpecialSeatType) },
-            };
 
-            Dictionary<string, object> Results = EditWindow.Show(WindowTitle, Fields);
-            return new Room { Id = r.Id, Bookings = r.Bookings, RoomName = (string)Results["RoomName"], StandardSeats = Convert.ToInt32(Results["StandardSeats"]), SpecialSeats = Convert.ToInt32(Results["SpecialSeats"]), SpecialSeatType = (string)Results["SpecialSeatType"] };
+        private void Button_DeletePeriod_Click(object sender, RoutedEventArgs e)
+        {
+            using (DataRepository Repo = new DataRepository())
+                Repo.Periods.Remove((TimeSlot)List_Periods.SelectedItem);
         }
     }
 }
