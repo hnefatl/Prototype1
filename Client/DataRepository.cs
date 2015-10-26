@@ -16,7 +16,7 @@ using Data.Models;
 namespace Client
 {
     public delegate void UserChangeHandler(User NewUser);
-    public delegate void DataChangedHandler();
+    public delegate void DataChangedHandler(List<DataModel> OldItems, List<DataModel> NewItems);
     public class DataRepository
         : IDisposable, IDataRepository
     {
@@ -270,6 +270,72 @@ namespace Client
                     else
                         _Bookings.Remove(_Bookings.Where(b => b.Id == Data.Item.Id).Single());
                 }
+                else if (Data.Item is Class)
+                {
+                    if (!Data.Delete)
+                    {
+                        using (DataRepository Repo = new DataRepository(false))
+                            Data.Item.Expand(Repo);
+                        _Classes.Add((Class)Data.Item);
+                    }
+                    else
+                        _Classes.Remove(_Classes.Where(b => b.Id == Data.Item.Id).Single());
+                }
+                else if (Data.Item is Department)
+                {
+                    if (!Data.Delete)
+                    {
+                        using (DataRepository Repo = new DataRepository(false))
+                            Data.Item.Expand(Repo);
+                        _Departments.Add((Department)Data.Item);
+                    }
+                    else
+                        _Departments.Remove(_Departments.Where(b => b.Id == Data.Item.Id).Single());
+                }
+                else if (Data.Item is Room)
+                {
+                    if (!Data.Delete)
+                    {
+                        using (DataRepository Repo = new DataRepository(false))
+                            Data.Item.Expand(Repo);
+                        _Rooms.Add((Room)Data.Item);
+                    }
+                    else
+                        _Rooms.Remove(_Rooms.Where(b => b.Id == Data.Item.Id).Single());
+                }
+                else if (Data.Item is User)
+                {
+                    if (!Data.Delete)
+                    {
+                        using (DataRepository Repo = new DataRepository(false))
+                            Data.Item.Expand(Repo);
+                        _Users.Add((User)Data.Item);
+                    }
+                    else
+                        _Users.Remove(_Users.Where(b => b.Id == Data.Item.Id).Single());
+                }
+                else if (Data.Item is Subject)
+                {
+                    if (!Data.Delete)
+                    {
+                        using (DataRepository Repo = new DataRepository(false))
+                            Data.Item.Expand(Repo);
+                        _Subjects.Add((Subject)Data.Item);
+                    }
+                    else
+                        _Subjects.Remove(_Subjects.Where(b => b.Id == Data.Item.Id).Single());
+                }
+                else if (Data.Item is TimeSlot)
+                {
+                    if (!Data.Delete)
+                    {
+                        using (DataRepository Repo = new DataRepository(false))
+                            Data.Item.Expand(Repo);
+                        _Periods.Add((TimeSlot)Data.Item);
+                    }
+                    else
+                        _Periods.Remove(_Periods.Where(b => b.Id == Data.Item.Id).Single());
+                }
             }
 
             ReportModelChanges = true; // Continue reporting
@@ -312,8 +378,9 @@ namespace Client
                     ReportModelChanges = true;
                 }
             }
-
-            DataChanged();
+            else
+                DataChanged(e.OldItems == null ? new List<DataModel>() : e.OldItems.Cast<DataModel>().ToList(),
+                            e.NewItems == null ? new List<DataModel>() : e.NewItems.Cast<DataModel>().ToList());
         }
     }
 }

@@ -17,13 +17,13 @@
         <Grid Name="Grid_Controls" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             
         </Grid>
 
 
-        <Button Name="Button_Back" Content="Back" Margin="5,5,60,5" Width="50" Height="20" HorizontalAlignment="Right" Grid.Row="1" Click="Button_Back_Click"/>
-        <Button Name="Button_Submit" Content="Submit" Margin="5" Width="50" Height="20" HorizontalAlignment="Right" Grid.Row="1" Click="Button_Submit_Click"/>
+        <Button Name="Button_Back" Content="Back" Margin="5,5,60,5" Width="50" Height="22" HorizontalAlignment="Right" Grid.Row="1" Click="Button_Back_Click"/>
+        <Button Name="Button_Submit" Content="Submit" Margin="5" Width="50" Height="22" HorizontalAlignment="Right" Grid.Row="1" Click="Button_Submit_Click"/>
     </Grid>
 </Window>

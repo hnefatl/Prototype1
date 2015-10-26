@@ -55,7 +55,7 @@ namespace Client
             this.Connection = Connection;
             this.CurrentUser = CurrentUser;
 
-            Data_DataChanged();
+            Timetable.Dispatcher.Invoke((Action<User, DateTime>)Timetable.SetTimetable, CurrentUser, CurrentDay);
         }
 
         private void Connection_Disconnect(Connection Sender, DisconnectMessage Message)
@@ -94,7 +94,7 @@ namespace Client
             }
         }
 
-        protected void Data_DataChanged()
+        protected void Data_DataChanged(List<DataModel> OldItems, List<DataModel> NewItems)
         {
             Timetable.Dispatcher.Invoke((Action<User, DateTime>)Timetable.SetTimetable, CurrentUser, CurrentDay);
         }
@@ -102,12 +102,12 @@ namespace Client
         protected void Button_PreviousDay_Click(object sender, RoutedEventArgs e)
         {
             CurrentDay = CurrentDay.AddDays(-1);
-            Data_DataChanged();
+            Timetable.Dispatcher.Invoke((Action<User, DateTime>)Timetable.SetTimetable, CurrentUser, CurrentDay);
         }
         protected void Button_NextDay_Click(object sender, RoutedEventArgs e)
         {
             CurrentDay = CurrentDay.AddDays(1);
-            Data_DataChanged();
+            Timetable.Dispatcher.Invoke((Action<User, DateTime>)Timetable.SetTimetable, CurrentUser, CurrentDay);
         }
 
         protected void OnPropertyChanged(string PropertyName)

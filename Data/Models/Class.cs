@@ -15,27 +15,36 @@ namespace Data.Models
     {
         public string ClassName { get; set; }
 
+        public virtual Teacher Owner { get; set; }
         public virtual List<Student> Students { get; set; }
 
         public Class()
         {
-            Students = new List<Student>();
             ClassName = string.Empty;
+            Owner = new Teacher();
+            Students = new List<Student>();
+        }
+
+        public override bool Conflicts(List<DataModel> Others)
+        {
+            return base.Conflicts(Others) || Others.Cast<Class>().Any(c => c.ClassName == ClassName);
         }
 
         public override void Serialise(IWriter Out)
         {
             base.Serialise(Out);
-            
+
             Out.Write(ClassName);
+            Out.Write(Owner.Id);
             Out.Write(Students.Count);
             Students.ForEach(s => Out.Write(s.Id));
         }
         protected override void Deserialise(IReader In)
         {
             base.Deserialise(In);
-            
+
             ClassName = In.ReadString();
+            Owner.Id = In.ReadInt32();
             Students = Enumerable.Repeat(new Student(), In.ReadInt32()).ToList();
             Students.ForEach(s => s.Id = In.ReadInt32());
         }
@@ -43,6 +52,7 @@ namespace Data.Models
         {
             try
             {
+                Owner = Repo.Teachers.Where(t => t.Id == Owner.Id).Single();
                 Students.ForEach(s1 => s1 = Repo.Students.Where(s2 => s1.Id == s2.Id).Single());
             }
             catch

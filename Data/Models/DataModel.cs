@@ -18,6 +18,11 @@ namespace Data.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         
+        public virtual bool Conflicts(List<DataModel> Others)
+        {
+            return Others.Any(d => d.Id == Id);
+        }
+
         public virtual void Serialise(IWriter Out)
         {
             Out.Write(GetType().FullName);

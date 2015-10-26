@@ -209,7 +209,7 @@ namespace Client.TimetableDisplay
             else
             {
                 using (DataRepository Repo = new DataRepository())
-                    if (GetBooking().Conflicts(Repo.Bookings.ToList()))
+                    if (GetBooking().Conflicts(Repo.Bookings.Cast<DataModel>().ToList()))
                         Error = "Booking conflicts with another booking.";
             }
 

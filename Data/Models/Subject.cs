@@ -54,6 +54,11 @@ namespace Data.Models
             SubjectName = string.Empty;
         }
 
+        public override bool Conflicts(List<DataModel> Others)
+        {
+            return base.Conflicts(Others) || Others.Cast<Subject>().Any(s => s.SubjectName == SubjectName);
+        }
+
         public override void Serialise(IWriter Out)
         {
             base.Serialise(Out);

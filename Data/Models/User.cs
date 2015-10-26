@@ -55,6 +55,11 @@ namespace Data.Models
             Bookings = new List<Booking>();
         }
 
+        public override bool Conflicts(List<DataModel> Others)
+        {
+            return base.Conflicts(Others) || Others.Cast<User>().Any(u => u.LogonName == LogonName);
+        }
+
         public override void Serialise(IWriter Out)
         {
             base.Serialise(Out);

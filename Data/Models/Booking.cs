@@ -75,9 +75,9 @@ namespace Data.Models
                     (BookingType == BookingType.Fortnightly && (Day.Date - Date).Days % 14 == 0) ||
                     (BookingType == BookingType.Monthly && (Day.Date - Date).Days % 31 == 0);
         }
-        public bool Conflicts(List<Booking> AllBookings)
+        public override bool Conflicts(List<DataModel> AllBookings)
         {
-            return AllBookings.Any(b => b.Id != Id && b.Date == Date && b.TimeSlot == TimeSlot && b.Rooms.Intersect(Rooms).Count() != 0);
+            return base.Conflicts(AllBookings) || AllBookings.Cast<Booking>().Any(b => b.Date == Date && b.TimeSlot == TimeSlot && b.Rooms.Intersect(Rooms).Count() != 0);
         }
 
         public override void Serialise(IWriter Out)

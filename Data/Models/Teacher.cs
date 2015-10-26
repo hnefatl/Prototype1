@@ -25,6 +25,7 @@ namespace Data.Models
         public override UserType Discriminator { get { return UserType.Teacher; } }
 
         public virtual Department Department { get; set; }
+        public virtual List<Class> Classes { get; set; }
 
         public string Email { get; set; }
         public bool Admin { get; set; }
@@ -32,6 +33,7 @@ namespace Data.Models
         public Teacher()
         {
             Department = new Department();
+            Classes = new List<Class>();
 
             Access = AccessMode.Teacher;
 
@@ -45,6 +47,8 @@ namespace Data.Models
 
             Out.Write(Title);
             Out.Write(Department.Id);
+            Out.Write(Classes.Count);
+            Classes.ForEach(c => Out.Write(c.Id));
             Out.Write(Email);
             Out.Write(Admin);
 
@@ -57,6 +61,8 @@ namespace Data.Models
 
             Title = In.ReadString();
             Department.Id = In.ReadInt32();
+            Classes = Enumerable.Repeat(new Class(), In.ReadInt32()).ToList();
+            Classes.ForEach(c => c.Id = In.ReadInt32());
             Email = In.ReadString();
             Admin = In.ReadBool();
 
@@ -68,6 +74,7 @@ namespace Data.Models
             try
             {
                 Department = Repo.Departments.Where(d => d.Id == Department.Id).Single();
+                Classes.ForEach(c => c = Repo.Classes.Where(c1 => c1.Id == c.Id).Single());
                 Bookings.ForEach(b => b = Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
             }
             catch

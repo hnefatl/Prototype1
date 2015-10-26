@@ -49,6 +49,11 @@ namespace Data.Models
             SpecialSeatType = string.Empty;
         }
 
+        public override bool Conflicts(List<DataModel> Others)
+        {
+            return base.Conflicts(Others) || Others.Cast<Room>().Any(r => r.RoomName == RoomName);
+        }
+
         public override void Serialise(IWriter Out)
         {
             base.Serialise(Out);

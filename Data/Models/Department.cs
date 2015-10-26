@@ -26,10 +26,15 @@ namespace Data.Models
             Name = string.Empty;
         }
 
+        public override bool Conflicts(List<DataModel> Others)
+        {
+            return base.Conflicts(Others) || Others.Cast<Department>().Any(d => d.Name == Name);
+        }
+
         public override void Serialise(IWriter Out)
         {
             base.Serialise(Out);
-            
+
             Out.Write(Name);
             Out.Write(Teachers.Count);
             Teachers.ForEach(t => Out.Write(t.Id));

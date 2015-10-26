@@ -80,6 +80,11 @@ namespace Data.Models
             Name = string.Empty;
         }
 
+        public override bool Conflicts(List<DataModel> Others)
+        {
+            return base.Conflicts(Others) || Others.Cast<TimeSlot>().Any(t => t.Name == Name || (t.Start == Start && t.End == End));
+        }
+
         public override void Serialise(IWriter Out)
         {
             base.Serialise(Out);

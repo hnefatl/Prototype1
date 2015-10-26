@@ -19,13 +19,15 @@ namespace Client.Admin
     {
         protected Dictionary<string, EditItem> Items { get; set; }
 
-        private EditWindow(Dictionary<string, EditItem> Items)
+        protected EditWindow(string Title, Dictionary<string, EditItem> Items)
         {
             InitializeComponent();
 
+            this.Title = Title;
+
             this.Items = Items;
         }
-        private void UpdateUI()
+        protected void UpdateUI()
         {
             if (!Dispatcher.CheckAccess())
                 Dispatcher.Invoke((Action)UpdateUI);
@@ -38,12 +40,14 @@ namespace Client.Admin
                     Grid_Controls.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Auto) });
 
                     TextBlock Label = new TextBlock();
+                    Label.Margin = new Thickness(5);
                     Label.Text = i.Value.Label + ":";
                     Grid_Controls.Children.Add(Label);
                     Label.SetValue(Grid.RowProperty, x);
-                    Label.SetValue(Grid.ColumnProperty, 1);
+                    Label.SetValue(Grid.ColumnProperty, 0);
 
-                    Control Control = i.Value.GetControl();
+                    Control Control = i.Value.Control;
+                    Control.Margin = new Thickness(5);
                     Grid_Controls.Children.Add(Control);
                     Control.SetValue(Grid.RowProperty, x);
                     Control.SetValue(Grid.ColumnProperty, 1);
@@ -53,67 +57,123 @@ namespace Client.Admin
             }
         }
 
-        private Dictionary<string, EditItem> Load()
-        {
 
-        }
-
-        public Dictionary<string, object> Show(Dictionary<string, EditItem> Items)
+        public static Dictionary<string, object> Show(string Title, Dictionary<string, EditItem> Items)
         {
-            EditWindow Wnd = new EditWindow(Items);
+            EditWindow Wnd = new EditWindow(Title, Items);
             Wnd.UpdateUI();
 
             bool? Result = Wnd.ShowDialog();
             if (Result.HasValue && Result.Value)
-                return Wnd.Load().Select(p => new KeyValuePair<string, object>(p.Key, p.Value.Value));
+                return Wnd.Items.ToDictionary(p => p.Key, p => p.Value.Value);
             else
                 return null;
         }
 
-        private void Button_Back_Click(object sender, RoutedEventArgs e)
+        protected void Button_Back_Click(object sender, RoutedEventArgs e)
         {
-
+            DialogResult = false;
+            Close();
         }
-        private void Button_Submit_Click(object sender, RoutedEventArgs e)
+        protected void Button_Submit_Click(object sender, RoutedEventArgs e)
         {
+            Dictionary<string, string> Errors = new Dictionary<string, string>();
+            foreach (KeyValuePair<string, EditItem> i in Items)
+            {
+                string Error = i.Value.Validate();
+                if (!string.IsNullOrWhiteSpace(Error))
+                    Errors.Add(i.Value.Label, Error);
+            }
 
+            if (Errors.Count > 0)
+            {
+                string Message = Errors.Count + " validation errors:" + Environment.NewLine;
+                foreach (KeyValuePair<string, string> i in Errors)
+                    Message += i.Key + ": " + i.Value + Environment.NewLine;
+
+                MessageBox.Show(Message, "Validation Errors", MessageBoxButton.OK);
+            }
+            else
+            {
+                DialogResult = true;
+                Close();
+            }
         }
     }
 
     public class EditItem
     {
-        public object Value { get; set; }
-        public Type ValueType { get { return Value.GetType(); } }
+        public object Value
+        {
+            get
+            {
+                if (ValueType == typeof(string) && Control is TextBox)
+                    return (Control as TextBox).Text;
+                else if (ValueType == typeof(int) && Control is TextBox)
+                    return (Control as TextBox).Text;
+                else if (ValueType.IsEnum && Control is ComboBox)
+                    return Enum.Parse(ValueType, (string)(Control as ComboBox).SelectedItem);
+                else if (ValueType == typeof(bool) && Control is CheckBox)
+                    return (Control as CheckBox).IsChecked;
+                else
+                    throw new NotSupportedException("Invalid type");
+            }
+            protected set
+            {
+                if (ValueType == typeof(string))
+                    (Control as TextBox).Text = value as string;
+                else if (ValueType == typeof(int))
+                    (Control as TextBox).Text = Convert.ToString((int)value);
+                else if (ValueType.IsEnum)
+                    (Control as ComboBox).SelectedItem = Enum.GetName(ValueType, value);
+                else if (ValueType == typeof(bool))
+                    (Control as CheckBox).IsChecked = (bool)value;
+                else
+                    throw new NotSupportedException("Invalid type");
+            }
+        }
+        protected readonly Type _ValueType;
+        public Type ValueType { get { return _ValueType; } }
 
         public string Label { get; set; }
 
-        public EditItem(object DefaultValue, string Label)
+        public Func<object, string> Validator { get; set; }
+
+        public Control Control { get; protected set; }
+
+        public EditItem(string Label, object DefaultValue)
+            : this(Label, DefaultValue, null)
         {
-            Value = DefaultValue;
+        }
+        public EditItem(string Label, object DefaultValue, Func<object, string> Validator)
+        {
+            _ValueType = DefaultValue.GetType();
             this.Label = Label;
+            this.Validator = Validator;
+
+            if (ValueType == typeof(string))
+                Control = new TextBox() { Text = DefaultValue as string };
+            else if (ValueType == typeof(int))
+                Control = new TextBox() { Text = Convert.ToString((int)DefaultValue) };
+            else if (ValueType.IsEnum)
+                Control = new ComboBox() { ItemsSource = Enum.GetNames(ValueType), SelectedItem = Enum.GetName(ValueType, DefaultValue) };
+            else if (ValueType == typeof(bool))
+                Control = new CheckBox() { IsChecked = (bool)DefaultValue };
+            else
+                throw new NotSupportedException("Invalid type");
+
+            Value = DefaultValue;
         }
 
-        public Control GetControl()
+        public string Validate()
         {
-            if (ValueType == typeof(string))
-                return new TextBox() { Text = Value as string };
-            else if (ValueType.IsEnum)
-                return new ComboBox() { ItemsSource = Enum.GetNames(ValueType), SelectedItem = Enum.GetName(ValueType, Value) };
-            else if (ValueType == typeof(bool))
-                return new CheckBox() { IsChecked = (bool)Value };
+            if (Validator != null)
+                return Validator(Value);
             else
-                throw new NotSupportedException("Invalid type");
+                return null;
         }
-        public void LoadFromControl(Control c)
-        {
-            if (ValueType == typeof(string) && c is TextBox)
-                Value = (c as TextBox).Text;
-            else if (ValueType.IsEnum && c is ComboBox)
-                Value = Enum.Parse(ValueType, (string)(c as ComboBox).SelectedItem);
-            else if (ValueType == typeof(bool) && c is CheckBox)
-                Value = (c as CheckBox).IsChecked;
-            else
-                throw new NotSupportedException("Invalid type");
-        }
+
+        public static readonly Func<object, string> NonNegativeIntegerValidator = (o) =>
+        { int Out; return (o is string && int.TryParse(o as string, out Out) && Out >= 0) ? "" : "Must be a number greater than or equal to 0"; };
     }
 }

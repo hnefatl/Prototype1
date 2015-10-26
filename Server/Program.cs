@@ -144,6 +144,36 @@ namespace Server
                     EditDataEntry((Booking)Data.Item, Data.Delete);
                     Output = (Data.Delete ? "Delete" : "Add") + " Booking received from " + c.ToString();
                 }
+                else if (Data.Item is Class)
+                {
+                    EditDataEntry((Class)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : "Add") + " Class received from " + c.ToString();
+                }
+                else if (Data.Item is Department)
+                {
+                    EditDataEntry((Department)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : "Add") + " Department received from " + c.ToString();
+                }
+                else if (Data.Item is Room)
+                {
+                    EditDataEntry((Room)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : "Add") + " Room received from " + c.ToString();
+                }
+                else if (Data.Item is Subject)
+                {
+                    EditDataEntry((Subject)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : "Add") + " Subject received from " + c.ToString();
+                }
+                else if (Data.Item is User)
+                {
+                    EditDataEntry((User)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : "Add") + " User received from " + c.ToString();
+                }
+                else if (Data.Item is TimeSlot)
+                {
+                    EditDataEntry((TimeSlot)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : "Add") + " Period received from " + c.ToString();
+                }
             }
 
             if (Output != null)
@@ -163,7 +193,7 @@ namespace Server
                 else
                 {
                     // Check for conflicts if necessary
-                    if (!(Entry is Booking) || (!((Booking)((object)Entry)).Conflicts(Set.Cast<Booking>().ToList())))
+                    if (!Entry.Conflicts(Set.Cast<DataModel>().ToList()))
                         Set.Add(Entry);
                 }
 

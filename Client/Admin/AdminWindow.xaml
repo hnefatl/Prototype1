@@ -16,13 +16,8 @@
         <c:StringToIntConverter x:Key="StringToInt"/>
         <c:IntToStringConverter x:Key="IntToString"/>
     </Window.Resources>
-    
+
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        
         <TabControl Grid.Row="0">
             <TabItem Header="Rooms">
                 <Grid>
@@ -55,8 +50,8 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button Name="Button_AddRoom" Content="Add Room" Height="25" Width="75" Margin="5" Grid.Column="0"/>
-                        <Button Name="Button_EditRoom" Content="Edit Room" IsEnabled="{Binding ElementName=List_Rooms, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="75" Margin="5" Grid.Column="1"/>
+                        <Button Name="Button_AddRoom" Content="Add Room" Height="25" Width="75" Margin="5" Grid.Column="0" Click="Button_AddRoom_Click"/>
+                        <Button Name="Button_EditRoom" Content="Edit Room" IsEnabled="{Binding ElementName=List_Rooms, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="75" Margin="5" Grid.Column="1" Click="Button_EditRoom_Click"/>
                         <Button Name="Button_DeleteRoom" Content="Delete Room" IsEnabled="{Binding ElementName=List_Rooms, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="75" Margin="5" Grid.Column="2"/>
                     </Grid>
                 </Grid>
@@ -78,7 +73,5 @@
 
             </TabItem>
         </TabControl>
-        
-        <Button Name="Button_Save" Content="Save" HorizontalAlignment="Right" Margin="5" Width="60" Height="25" Grid.Row="1" Click="Button_Save_Click"/>
     </Grid>
 </Window>
