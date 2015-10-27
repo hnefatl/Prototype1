@@ -34,6 +34,8 @@ namespace Data.Models
                 OnPropertyChanged("Start");
             }
         }
+        [NotMapped]
+        public string ShortStart { get { return new DateTime(Start.Ticks).ToShortTimeString(); } }
         private TimeSpan _End;
         public TimeSpan End
         {
@@ -47,6 +49,8 @@ namespace Data.Models
                 OnPropertyChanged("End");
             }
         }
+        [NotMapped]
+        public string ShortEnd { get { return new DateTime(End.Ticks).ToShortTimeString(); } }
 
         /// <summary>
         /// Should be null if not a period, else have the period name
@@ -58,7 +62,7 @@ namespace Data.Models
         {
             get
             {
-                return new DateTime(Start.Ticks).ToShortTimeString() + " - " + new DateTime(End.Ticks).ToShortTimeString();
+                return ShortStart + " - " + ShortEnd;
             }
         }
 

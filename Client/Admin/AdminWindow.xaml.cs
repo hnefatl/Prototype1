@@ -30,21 +30,43 @@ namespace Client.Admin
         public ObservableCollection<Room> Rooms
         {
             get { return _Rooms; }
-            set { _Rooms = value; OnPropertyChanged("Rooms"); OnPropertyChanged("SelectedRooms"); OnPropertyChanged("SingleRoomSelected"); OnPropertyChanged("SelectedRoom"); }
+            set { _Rooms = value; OnPropertyChanged("Rooms"); }
         }
-        public List<Room> SelectedRooms { get { return List_Rooms.SelectedItems.Cast<Room>().ToList(); } }
-        public Room SelectedRoom { get { return (Room)List_Rooms.SelectedItem; } }
-        public bool SingleRoomSelected { get { return SelectedRooms.Count == 1; } }
 
         protected ObservableCollection<TimeSlot> _Periods = new ObservableCollection<TimeSlot>();
         public ObservableCollection<TimeSlot> Periods
         {
             get { return _Periods; }
-            set { _Periods = value; OnPropertyChanged("Periods"); OnPropertyChanged("SelectedPeriods"); OnPropertyChanged("SinglePeriodSelected"); OnPropertyChanged("SelectedPeriod"); }
+            set { _Periods = value; OnPropertyChanged("Periods"); }
         }
-        public List<TimeSlot> SelectedPeriods { get { return List_Periods.SelectedItems.Cast<TimeSlot>().ToList(); } }
-        public TimeSlot SelectedPeriod { get { return (TimeSlot)List_Periods.SelectedItem; } }
-        public bool SinglePeriodSelected { get { return SelectedPeriods.Count == 1; } }
+
+        protected ObservableCollection<Teacher> _Teachers = new ObservableCollection<Teacher>();
+        public ObservableCollection<Teacher> Teachers
+        {
+            get { return _Teachers; }
+            set { _Teachers = value; OnPropertyChanged("Teachers"); }
+        }
+
+        protected ObservableCollection<Student> _Students = new ObservableCollection<Student>();
+        public ObservableCollection<Student> Students
+        {
+            get { return _Students; }
+            set { _Students = value; OnPropertyChanged("Students"); }
+        }
+
+        protected ObservableCollection<Department> _Departments = new ObservableCollection<Department>();
+        public ObservableCollection<Department> Departments
+        {
+            get { return _Departments; }
+            set { _Departments = value; OnPropertyChanged("Departments"); }
+        }
+
+        protected ObservableCollection<Class> _Classes = new ObservableCollection<Class>();
+        public ObservableCollection<Class> Classes
+        {
+            get { return _Classes; }
+            set { _Classes = value; OnPropertyChanged("Classes"); }
+        }
 
         public AdminWindow(Connection Connection, User CurrentUser)
         {
@@ -58,6 +80,11 @@ namespace Client.Admin
             using (DataRepository Repo = new DataRepository())
             {
                 Rooms = new ObservableCollection<Room>(Repo.Rooms);
+                Periods = new ObservableCollection<TimeSlot>(Repo.Periods);
+                Teachers = new ObservableCollection<Teacher>(Repo.Teachers);
+                Students = new ObservableCollection<Student>(Repo.Students);
+                Departments = new ObservableCollection<Department>(Repo.Departments);
+                Classes = new ObservableCollection<Class>(Repo.Classes);
             }
         }
 
@@ -72,7 +99,16 @@ namespace Client.Admin
                 {
                     if (t == typeof(Room))
                         Rooms = new ObservableCollection<Room>(Repo.Rooms);
-                    
+                    else if (t == typeof(TimeSlot))
+                        Periods = new ObservableCollection<TimeSlot>(Repo.Periods);
+                    else if (t == typeof(Teacher))
+                        Teachers = new ObservableCollection<Teacher>(Repo.Teachers);
+                    else if (t == typeof(Student))
+                        Students = new ObservableCollection<Student>(Repo.Students);
+                    else if (t == typeof(Department))
+                        Departments = new ObservableCollection<Department>(Repo.Departments);
+                    else if (t == typeof(Class))
+                        Classes = new ObservableCollection<Class>(Repo.Classes);
                 }
             }
         }
@@ -106,15 +142,6 @@ namespace Client.Admin
                 Repo.Rooms.Remove((Room)List_Rooms.SelectedItem);
         }
 
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string PropertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
-        }
-
         private void Button_AddPeriod_Click(object sender, RoutedEventArgs e)
         {
             EditPeriod(null);
@@ -130,7 +157,7 @@ namespace Client.Admin
 
             if (Result.HasValue && Result.Value)
             {
-                TimeSlot New = Wnd.GetRoom();
+                TimeSlot New = Wnd.GetPeriod();
                 if (New != null)
                 {
                     using (DataRepository Repo = new DataRepository())
@@ -138,11 +165,19 @@ namespace Client.Admin
                 }
             }
         }
-
         private void Button_DeletePeriod_Click(object sender, RoutedEventArgs e)
         {
             using (DataRepository Repo = new DataRepository())
                 Repo.Periods.Remove((TimeSlot)List_Periods.SelectedItem);
+        }
+
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string PropertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
         }
     }
 }

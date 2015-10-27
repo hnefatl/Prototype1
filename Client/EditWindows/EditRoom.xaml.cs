@@ -136,7 +136,7 @@ namespace Client.EditWindows
             else if (!int.TryParse(SpecialSeats, out Temp) || Temp < 0)
                 Error = "Special seats must be a non-negative integer";
             else if (Temp != 0 && string.IsNullOrWhiteSpace(SpecialSeatType))
-                Error = "You ust enter a special seat type (eg Workbench, Computer)";
+                Error = "You must enter a special seat type (eg Workbench, Computer)";
             else
             {
                 using (DataRepository Repo = new DataRepository())

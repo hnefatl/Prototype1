@@ -68,13 +68,13 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <ListView Name="List_Periods" SelectionMode="Single" ItemsSource="{Binding Rooms, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="0">
+                    <ListView Name="List_Periods" SelectionMode="Single" ItemsSource="{Binding Periods, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="0">
                         <ListView.View>
                             <GridView>
                                 <GridView.Columns>
                                     <GridViewColumn DisplayMemberBinding="{Binding Name}" Width="80" Header="Name"/>
-                                    <GridViewColumn DisplayMemberBinding="{Binding Start}" Width="90" Header="Start Time"/>
-                                    <GridViewColumn DisplayMemberBinding="{Binding End}" Width="100" Header="End Time"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding ShortStart}" Width="90" Header="Start Time"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding ShortEnd}" Width="100" Header="End Time"/>
                                 </GridView.Columns>
                             </GridView>
                         </ListView.View>
@@ -103,6 +103,10 @@
             </TabItem>
 
             <TabItem Header="Departments">
+
+            </TabItem>
+
+            <TabItem Header="Classes">
 
             </TabItem>
         </TabControl>
