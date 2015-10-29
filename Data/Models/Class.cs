@@ -61,8 +61,9 @@ namespace Data.Models
         {
             try
             {
-                Owner = Repo.Teachers.Where(t => t.Id == Owner.Id).Single();
-                Students.ForEach(s1 => s1 = Repo.Students.Where(s2 => s1.Id == s2.Id).Single());
+                Owner = (Teacher)Repo.Users.Where(t => t.Id == Owner.Id).Single();
+                for (int x = 0; x < Students.Count; x++)
+                    Students[x] = Repo.Users.OfType<Student>().Single(s => s.Id == Students[x].Id);
             }
             catch
             {

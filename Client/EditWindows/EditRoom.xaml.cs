@@ -75,11 +75,26 @@ namespace Client.EditWindows
             }
         }
 
+        protected string _Department;
+        public string Department
+        {
+            get { return _Department; }
+            set
+            {
+                _Department = value;
+                OnPropertyChanged("Department");
+            }
+        }
+        public string[] Departments { get; }
+
         protected int RoomId { get; set; }
 
         public EditRoom(Room Current)
         {
             InitializeComponent();
+
+            using (DataRepository Repo = new DataRepository())
+                Departments = Repo.Departments.Select(d => d.Name).ToArray();
 
             if (Current == null)
             {
@@ -110,6 +125,9 @@ namespace Client.EditWindows
                 New.SpecialSeatType = SpecialSeatType;
                 New.SpecialSeats = Convert.ToInt32(SpecialSeats);
                 New.Id = RoomId;
+
+                using (DataRepository Repo = new DataRepository())
+                    New.Department = Repo.Departments.Single(d => d.Name == Department);
             }
             catch
             {

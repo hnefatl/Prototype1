@@ -25,10 +25,16 @@ namespace Server
             #region Initialise Data
             using (DataRepository Repo = new DataRepository())
             {
-                Repo.Rooms.Add(new Room() { RoomName = "D6", SpecialSeats = 5, StandardSeats = 10, SpecialSeatType = "Computer" });
-                Repo.Rooms.Add(new Room() { RoomName = "D12", SpecialSeats = 20, StandardSeats = 5, SpecialSeatType = "Workbench" });
-                Repo.Rooms.Add(new Room() { RoomName = "Library", SpecialSeats = 20, StandardSeats = 30, SpecialSeatType = "Computer" });
-                Repo.Rooms.Add(new Room() { RoomName = "Sports Hall", SpecialSeats = 0, StandardSeats = 100, SpecialSeatType = "" });
+                Repo.Departments.Add(new Department() { Name = "Maths" });
+                Repo.Departments.Add(new Department() { Name = "Science" });
+                Repo.Departments.Add(new Department() { Name = "Computing/IT" });
+
+                Repo.SaveChanges();
+
+                Repo.Rooms.Add(new Room() { RoomName = "D6", SpecialSeats = 5, StandardSeats = 10, SpecialSeatType = "Computer", Department = Repo.Departments.Single(d => d.Name=="Computing/IT") });
+                Repo.Rooms.Add(new Room() { RoomName = "D12", SpecialSeats = 20, StandardSeats = 5, SpecialSeatType = "Workbench", Department = Repo.Departments.Single(d => d.Name == "Computing/IT") });
+                Repo.Rooms.Add(new Room() { RoomName = "Library", SpecialSeats = 20, StandardSeats = 30, SpecialSeatType = "Computer", Department = Repo.Departments.Single(d => d.Name == "Science") });
+                Repo.Rooms.Add(new Room() { RoomName = "Sports Hall", SpecialSeats = 0, StandardSeats = 100, SpecialSeatType = "", Department = Repo.Departments.Single(d => d.Name == "Maths") });
 
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 1", Start = new TimeSpan(8, 50, 0), End = new TimeSpan(9, 50, 0) });
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 2", Start = new TimeSpan(9, 50, 0), End = new TimeSpan(10, 50, 0) });
@@ -36,7 +42,7 @@ namespace Server
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 4", Start = new TimeSpan(12, 10, 0), End = new TimeSpan(13, 10, 0) });
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 5", Start = new TimeSpan(14, 0, 0), End = new TimeSpan(15, 0, 0) });
 
-                const string LogonName = DataRepository.Home ? "Keith" : "09135"; // For testing on home/school computers
+                const string LogonName = DataRepository.Home ? "Keith" : "09135"; // For testing on home versus school computers
                 Repo.Students.Add(new Student() { FirstName = "Keith", LastName = "Collister", Form = "WT", Year = 13, LogonName = LogonName, Access = AccessMode.Admin });
                 Repo.Students.Add(new Student() { FirstName = "Max", LastName = "Norman", Form = "WT", Year = 13, LogonName = "Max" });
                 Repo.Students.Add(new Student() { FirstName = "Dan", LastName = "Wrenn", Form = "MB", Year = 13, LogonName = "09154" });
@@ -44,10 +50,6 @@ namespace Server
                 Repo.Subjects.Add(new Subject() { SubjectName = "Maths", Colour = Colors.Red });
                 Repo.Subjects.Add(new Subject() { SubjectName = "Physics", Colour = Colors.Orange });
                 Repo.Subjects.Add(new Subject() { SubjectName = "Computing", Colour = Colors.Blue });
-
-                Repo.Departments.Add(new Department() { Name = "Maths" });
-                Repo.Departments.Add(new Department() { Name = "Science" });
-                Repo.Departments.Add(new Department() { Name = "Computing/IT" });
 
                 Repo.SaveChanges();
 
@@ -58,7 +60,7 @@ namespace Server
                 Repo.SaveChanges();
 
                 Repo.Classes.Add(new Class() { ClassName = "Computing", Students = Repo.Students.ToList(), Owner=Repo.Teachers.Where(t => t.LogonName=="mb").Single() });
-                Repo.Classes.Add(new Class() { ClassName = "Maths", Students = Repo.Students.Where(s => s.Form == "13WT").ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "rb").Single() });
+                Repo.Classes.Add(new Class() { ClassName = "Maths", Students = Repo.Students.Where(s => s.Form == "WT").ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "rb").Single() });
 
                 Repo.SaveChanges();
 
@@ -139,7 +141,11 @@ namespace Server
             {
                 DataMessage Data = (DataMessage)Message;
                 using (DataRepository Repo = new DataRepository())
+                {
+                    Repo.SetProxies(false);
                     Data.Item.Expand(Repo);
+                    Repo.SetProxies(true);
+                }
 
                 if (Data.Item is Booking)
                 {
@@ -191,23 +197,23 @@ namespace Server
                 DbSet<T> Set = Repo.Set<T>();
 
                 if (Delete)
-                    Set.Remove(Set.Where(e => e.Id == Entry.Id).Single());
+                {
+                    Set.Remove(Set.ToList().Single(e => e.Id == Entry.Id));
+                    Repo.SaveChanges();
+                    Listener.Send(new DataMessage(Entry, true));
+                }
                 else
                 {
                     // Check for conflicts if necessary
                     if (!Entry.Conflicts(Set.ToList().Cast<DataModel>().ToList()))
                     {
                         if (Set.Any(m => m.Id == Entry.Id)) // Updating existing item
-                        {
                             Set.Single(m => m.Id == Entry.Id).Update(Entry);
-                        }
                         else
-                        {
                             Set.Add(Entry);
-                        }
                         Repo.SaveChanges();
 
-                        Listener.Send(new DataMessage(Entry, Delete));
+                        Listener.Send(new DataMessage(Entry, false));
                     }
                 }
             }

@@ -81,35 +81,34 @@ namespace Client.Admin
             {
                 Rooms = new ObservableCollection<Room>(Repo.Rooms);
                 Periods = new ObservableCollection<TimeSlot>(Repo.Periods);
-                Teachers = new ObservableCollection<Teacher>(Repo.Teachers);
-                Students = new ObservableCollection<Student>(Repo.Students);
+                Teachers = new ObservableCollection<Teacher>(Repo.Users.OfType<Teacher>());
+                Students = new ObservableCollection<Student>(Repo.Users.OfType<Student>());
                 Departments = new ObservableCollection<Department>(Repo.Departments);
                 Classes = new ObservableCollection<Class>(Repo.Classes);
             }
         }
 
-        private void DataRepository_DataChanged(List<DataModel> OldItems, List<DataModel> NewItems)
+        private void DataRepository_DataChanged(Type ChangedType)
         {
-            // Need to find out which Data type has been changed
-            IEnumerable<DataModel> Temp = OldItems.Union(NewItems);
-            if (Temp.Count() > 0)
+            using (DataRepository Repo = new DataRepository(false))
             {
-                Type t = Temp.First().GetType();
-                using (DataRepository Repo = new DataRepository())
+                if (ChangedType == typeof(Room))
+                    Rooms = new ObservableCollection<Room>(Repo.Rooms);
+                else if (ChangedType == typeof(TimeSlot))
+                    Periods = new ObservableCollection<TimeSlot>(Repo.Periods);
+                else if (ChangedType == typeof(Teacher))
+                    Teachers = new ObservableCollection<Teacher>(Repo.Users.OfType<Teacher>());
+                else if (ChangedType == typeof(Student))
+                    Students = new ObservableCollection<Student>(Repo.Users.OfType<Student>());
+                else if (ChangedType == typeof(User))
                 {
-                    if (t == typeof(Room))
-                        Rooms = new ObservableCollection<Room>(Repo.Rooms);
-                    else if (t == typeof(TimeSlot))
-                        Periods = new ObservableCollection<TimeSlot>(Repo.Periods);
-                    else if (t == typeof(Teacher))
-                        Teachers = new ObservableCollection<Teacher>(Repo.Teachers);
-                    else if (t == typeof(Student))
-                        Students = new ObservableCollection<Student>(Repo.Students);
-                    else if (t == typeof(Department))
-                        Departments = new ObservableCollection<Department>(Repo.Departments);
-                    else if (t == typeof(Class))
-                        Classes = new ObservableCollection<Class>(Repo.Classes);
+                    Teachers = new ObservableCollection<Teacher>(Repo.Users.OfType<Teacher>());
+                    Students = new ObservableCollection<Student>(Repo.Users.OfType<Student>());
                 }
+                else if (ChangedType == typeof(Department))
+                    Departments = new ObservableCollection<Department>(Repo.Departments);
+                else if (ChangedType == typeof(Class))
+                    Classes = new ObservableCollection<Class>(Repo.Classes);
             }
         }
 
@@ -138,8 +137,19 @@ namespace Client.Admin
         }
         private void Button_DeleteRoom_Click(object sender, RoutedEventArgs e)
         {
+            Room r = (Room)List_Rooms.SelectedItem;
+            if (r.Bookings.Count > 0) // Would break some of the bookings
+            {
+                if (MessageBox.Show("Deleting this Room will force the deletion of " + r.Bookings.Count + " bookings.\n" +
+                            "Please confirm this action.", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                    return;
+            }
+
             using (DataRepository Repo = new DataRepository())
-                Repo.Rooms.Remove((Room)List_Rooms.SelectedItem);
+            {
+                r.Bookings.ForEach(b => Repo.Bookings.Remove(b));
+                Repo.Rooms.Remove(r);
+            }
         }
 
         private void Button_AddPeriod_Click(object sender, RoutedEventArgs e)
@@ -167,11 +177,69 @@ namespace Client.Admin
         }
         private void Button_DeletePeriod_Click(object sender, RoutedEventArgs e)
         {
+            TimeSlot t = (TimeSlot)List_Periods.SelectedItem;
+            if (t.Bookings.Count > 0)
+            {
+                if (MessageBox.Show("Deleting this Period will force the deletion of " + t.Bookings.Count + " bookings.\n" +
+                            "Please confirm this action.", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                    return;
+            }
+
             using (DataRepository Repo = new DataRepository())
-                Repo.Periods.Remove((TimeSlot)List_Periods.SelectedItem);
+            {
+                t.Bookings.ForEach(b => Repo.Bookings.Remove(b));
+                Repo.Periods.Remove(t);
+            }
         }
 
+        private void Button_AddTeacher_Click(object sender, RoutedEventArgs e)
+        {
+            EditTeacher(null);
+        }
+        private void Button_EditTeacher_Click(object sender, RoutedEventArgs e)
+        {
+            EditTeacher((Teacher)List_Teachers.SelectedItem);
+        }
+        private void EditTeacher(Teacher Existing)
+        {
+            EditTeacher Wnd = new EditTeacher(Existing);
+            bool? Result = Wnd.ShowDialog();
 
+            if (Result.HasValue && Result.Value)
+            {
+                Teacher New = Wnd.GetTeacher();
+                if (New != null)
+                {
+                    using (DataRepository Repo = new DataRepository())
+                    {
+                        if (Existing == null)
+                            Repo.Users.Add(New);
+                        else
+                        {
+                            Repo.Users.Single(u => u.Id == New.Id).Update(New);
+                            Repo.OnDataChanged(typeof(User));
+                        }
+                    }
+                }
+            }
+        }
+        private void Button_DeleteTeacher_Click(object sender, RoutedEventArgs e)
+        {
+            Teacher t = (Teacher)List_Teachers.SelectedItem;
+            if (t.Bookings.Count > 0)
+            {
+                if (MessageBox.Show("Deleting this Teacher will force the deletion of " + t.Bookings.Count + " bookings and " + t.Classes.Count + " classes.\n" +
+                            "Please confirm this action.", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                    return;
+            }
+
+            using (DataRepository Repo = new DataRepository())
+            {
+                t.Bookings.ForEach(b => Repo.Bookings.Remove(b));
+                t.Classes.ForEach(c => Repo.Classes.Remove(c));
+                Repo.Users.Remove(t);
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string PropertyName)

@@ -50,9 +50,9 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button Name="Button_AddRoom" Content="Add Room" Height="25" Width="75" Margin="5" Grid.Column="0" Click="Button_AddRoom_Click"/>
-                        <Button Name="Button_EditRoom" Content="Edit Room" IsEnabled="{Binding ElementName=List_Rooms, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="75" Margin="5" Grid.Column="1" Click="Button_EditRoom_Click"/>
-                        <Button Name="Button_DeleteRoom" Content="Delete Room" IsEnabled="{Binding ElementName=List_Rooms, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="75" Margin="5" Grid.Column="2" Click="Button_DeleteRoom_Click"/>
+                        <Button Name="Button_AddRoom" Content="Add Room" Height="25" Width="90" Margin="5" Grid.Column="0" Click="Button_AddRoom_Click"/>
+                        <Button Name="Button_EditRoom" Content="Edit Room" IsEnabled="{Binding ElementName=List_Rooms, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="90" Margin="5" Grid.Column="1" Click="Button_EditRoom_Click"/>
+                        <Button Name="Button_DeleteRoom" Content="Delete Room" IsEnabled="{Binding ElementName=List_Rooms, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="90" Margin="5" Grid.Column="2" Click="Button_DeleteRoom_Click"/>
                     </Grid>
                 </Grid>
             </TabItem>
@@ -87,15 +87,51 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button Name="Button_AddPeriod" Content="Add Period" Height="25" Width="75" Margin="5" Grid.Column="0" Click="Button_AddPeriod_Click"/>
-                        <Button Name="Button_EditPeriod" Content="Edit Period" IsEnabled="{Binding ElementName=List_Periods, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="75" Margin="5" Grid.Column="1" Click="Button_EditPeriod_Click"/>
-                        <Button Name="Button_DeletePeriod" Content="Delete Period" IsEnabled="{Binding ElementName=List_Periods, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="75" Margin="5" Grid.Column="2" Click="Button_DeletePeriod_Click"/>
+                        <Button Name="Button_AddPeriod" Content="Add Period" Height="25" Width="90" Margin="5" Grid.Column="0" Click="Button_AddPeriod_Click"/>
+                        <Button Name="Button_EditPeriod" Content="Edit Period" IsEnabled="{Binding ElementName=List_Periods, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="90" Margin="5" Grid.Column="1" Click="Button_EditPeriod_Click"/>
+                        <Button Name="Button_DeletePeriod" Content="Delete Period" IsEnabled="{Binding ElementName=List_Periods, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="90" Margin="5" Grid.Column="2" Click="Button_DeletePeriod_Click"/>
                     </Grid>
                 </Grid>
             </TabItem>
 
             <TabItem Header="Teachers">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
+                    <ListView Name="List_Teachers" SelectionMode="Single" ItemsSource="{Binding Teachers, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="0">
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn DisplayMemberBinding="{Binding FirstName}" Width="80" Header="First Name"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding LastName}" Width="90" Header="Last Name"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Title}" Width="50" Header="Title"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding LogonName}" Width="80" Header="Logon Name"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Access}" Width="100" Header="Access"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Email}" Width="150" Header="Email"/>
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Name="Button_AddTeacher" Content="Add Teacher" Height="25" Width="90" Margin="5" Grid.Column="0" Click="Button_AddTeacher_Click"/>
+                        <Button Name="Button_EditTeacher" Content="Edit Teacher" IsEnabled="{Binding ElementName=List_Teachers, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="90" Margin="5" Grid.Column="1" Click="Button_EditTeacher_Click"/>
+                        <Button Name="Button_DeleteTeacher" Content="Delete Teacher" IsEnabled="{Binding ElementName=List_Teachers, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="90" Margin="5" Grid.Column="2" Click="Button_DeleteTeacher_Click"/>
+                    </Grid>
+                </Grid>
             </TabItem>
 
             <TabItem Header="Students">

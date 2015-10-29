@@ -41,9 +41,12 @@ namespace Data.Models
         /// </summary>
         public virtual List<Booking> Bookings { get; set; }
 
+        public virtual Department Department { get; set; }
+
         public Room()
         {
             Bookings = new List<Booking>();
+            Department = new Department();
 
             RoomName = string.Empty;
             SpecialSeatType = string.Empty;
@@ -63,6 +66,7 @@ namespace Data.Models
             SpecialSeatType = r.SpecialSeatType;
             SpecialSeats = r.SpecialSeats;
             Bookings = r.Bookings;
+            Department = r.Department;
         }
 
         public override void Serialise(IWriter Out)
@@ -76,6 +80,7 @@ namespace Data.Models
 
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
+            Out.Write(Department.Id);
         }
         protected override void Deserialise(IReader In)
         {
@@ -88,12 +93,15 @@ namespace Data.Models
 
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());
+            Department = new Department() { Id = In.ReadInt32() };
         }
         public override bool Expand(IDataRepository Repo)
         {
             try
             {
-                Bookings.ForEach(b => b = Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
+                for (int x = 0; x < Bookings.Count; x++)
+                    Bookings[x] = Repo.Bookings.Single(b => b.Id == Bookings[x].Id);
+                Department = Repo.Departments.Single(d => d.Id == Department.Id);
             }
             catch
             {

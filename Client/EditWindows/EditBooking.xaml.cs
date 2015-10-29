@@ -130,14 +130,14 @@ namespace Client.EditWindows
             {
                 Rooms = new ObservableCollection<Checkable<Room>>(Repo.Rooms.ToList().Select(r1 => new Checkable<Room>(r1, (StartRoom != null && r1.Id == StartRoom.Id) || SelectedRooms.Any(r2 => r1.Id == r2.Id))));
                 Periods = new ObservableCollection<TimeSlot>(Repo.Periods);
-                Students = Repo.Students.ToList().Select(s1 => new Checkable<Student>(s1, SelectedStudents.Any(s2 => s2.Id == s1.Id))).ToList();
+                Students = Repo.Users.OfType<Student>().ToList().Select(s1 => new Checkable<Student>(s1, SelectedStudents.Any(s2 => s2.Id == s1.Id))).ToList();
                 FilteredStudents = new ObservableCollection<Checkable<Student>>(Students);
 
                 Subjects = Repo.Subjects.ToList();
                 if (Subject != null)
                     SelectedSubject = Subject;
 
-                Teachers = Repo.Teachers.ToList();
+                Teachers = Repo.Users.OfType<Teacher>().ToList();
                 if (Teacher != null)
                     SelectedTeacher = Teacher;
                 else if (CurrentUser is Teacher)
@@ -167,8 +167,7 @@ namespace Client.EditWindows
                 return null;
 
             return new Booking(SelectedTimeslot, SelectedRooms.Select(c => c.Value).ToList(), SelectedSubject,
-                SelectedStudents.Select(c => c.Value).ToList(), SelectedTeacher, SelectedBookingType)
-            { Id = BookingId, Date = CurrentDate };
+                SelectedStudents.Select(c => c.Value).ToList(), SelectedTeacher, SelectedBookingType) { Id = BookingId, Date = CurrentDate };
         }
 
         public void UpdateFilter()

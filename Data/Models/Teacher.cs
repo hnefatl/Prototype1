@@ -14,7 +14,7 @@ namespace Data.Models
     [Table("Teachers")]
     public class Teacher
         : User
-    {        
+    {
         public string Title { get; set; }
         public string Email { get; set; }
 
@@ -41,7 +41,7 @@ namespace Data.Models
 
         public override bool Conflicts(List<DataModel> Others)
         {
-            return base.Conflicts(Others) || Others.Cast<Teacher>().Any(t => t.Id!=Id && t.Title!=Title && t.Email!= Email);
+            return base.Conflicts(Others) || Others.OfType<Teacher>().Any(t => t.Id != Id && t.Title != Title && t.Email != Email);
         }
 
         public override void Update(DataModel Other)
@@ -51,6 +51,9 @@ namespace Data.Models
             Teacher t = (Teacher)Other;
             Title = t.Title;
             Email = t.Email;
+
+            Department = t.Department;
+            Classes = t.Classes;
         }
 
         public override void Serialise(IWriter Out)
@@ -81,11 +84,14 @@ namespace Data.Models
         }
         public override bool Expand(IDataRepository Repo)
         {
+            if (!base.Expand(Repo))
+                return false;
+
             try
             {
                 Department = Repo.Departments.Where(d => d.Id == Department.Id).Single();
-                Classes.ForEach(c => c = Repo.Classes.Where(c1 => c1.Id == c.Id).Single());
-                Bookings.ForEach(b => b = Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
+                for (int x = 0; x < Classes.Count; x++)
+                    Classes[x] = Repo.Classes.Single(c => c.Id == Classes[x].Id);
             }
             catch
             {

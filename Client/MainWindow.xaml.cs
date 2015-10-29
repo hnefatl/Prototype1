@@ -34,7 +34,7 @@ namespace Client
         public Connection Connection { get; set; }
 
         protected Task NetTask { get; set; }
-        
+
         protected DateTime _CurrentDay = DateTime.Now.Date;
         public DateTime CurrentDay
         {
@@ -95,9 +95,12 @@ namespace Client
             }
         }
 
-        protected void Data_DataChanged(List<DataModel> OldItems, List<DataModel> NewItems)
+        protected void Data_DataChanged(Type ChangedType)
         {
-            Timetable.Dispatcher.Invoke((Action<User, DateTime>)Timetable.SetTimetable, CurrentUser, CurrentDay);
+            if (!Timetable.Dispatcher.CheckAccess())
+                Timetable.Dispatcher.Invoke((Action<Type>)Data_DataChanged, ChangedType);
+            else
+                Timetable.SetTimetable(CurrentUser, CurrentDay);
         }
 
         protected void Button_PreviousDay_Click(object sender, RoutedEventArgs e)

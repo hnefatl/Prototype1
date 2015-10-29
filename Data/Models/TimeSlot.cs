@@ -125,7 +125,8 @@ namespace Data.Models
         {
             try
             {
-                Bookings.ForEach(b => b = Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
+                for (int x = 0; x < Bookings.Count; x++)
+                    Bookings[x] = Repo.Bookings.Single(b => b.Id == Bookings[x].Id);
             }
             catch
             {

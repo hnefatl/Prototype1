@@ -89,5 +89,19 @@ namespace Data.Models
             LastName = In.ReadString();
             LogonName = In.ReadString();
         }
+
+        public override bool Expand(IDataRepository Repo)
+        {
+            try
+            {
+                for (int x = 0; x < Bookings.Count; x++)
+                    Bookings[x] = Repo.Bookings.Single(b => b.Id == Bookings[x].Id);
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

@@ -42,7 +42,7 @@ namespace Data.Models
 
         public override bool Conflicts(List<DataModel> Others)
         {
-            return base.Conflicts(Others) || Others.Cast<Student>().Any(s => s.Id != Id && s.Year == Year && s.Form == Form);
+            return base.Conflicts(Others) || Others.OfType<Student>().Any(s => s.Id != Id && s.Year == Year && s.Form == Form);
         }
 
         public override void Update(DataModel Other)
@@ -80,10 +80,13 @@ namespace Data.Models
         }
         public override bool Expand(IDataRepository Repo)
         {
+            if (!base.Expand(Repo))
+                return false;
+
             try
             {
-                Bookings.ForEach(b => b = Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
-                Classes.ForEach(c1 => c1 = Repo.Classes.Where(c2 => c2.Id == c1.Id).Single());
+                for (int x = 0; x < Classes.Count; x++)
+                    Classes[x] = Repo.Classes.Single(c => c.Id == Classes[x].Id);
             }
             catch
             {

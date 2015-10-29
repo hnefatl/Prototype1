@@ -133,8 +133,8 @@ namespace Data.Models
                     Rooms[x] = Repo.Rooms.Where(r => Rooms[x].Id == r.Id).Single();
                 Subject = Repo.Subjects.Where(s => s.Id == Subject.Id).Single();
                 for (int x = 0; x < Students.Count; x++)
-                    Students[x] = Repo.Students.Where(s => Students[x].Id == s.Id).Single();
-                Teacher = Repo.Teachers.Where(t => t.Id == Teacher.Id).Single();
+                    Students[x] = (Student)Repo.Users.Where(s => Students[x].Id == s.Id).Single();
+                Teacher = (Teacher)Repo.Users.Where(t => t.Id == Teacher.Id).Single();
             }
             catch
             {

@@ -16,7 +16,7 @@ using Data.Models;
 namespace Client
 {
     public delegate void UserChangeHandler(User NewUser);
-    public delegate void DataChangedHandler(List<DataModel> OldItems, List<DataModel> NewItems);
+    public delegate void DataChangedHandler(Type ChangedType);
     public class DataRepository
         : IDisposable, IDataRepository
     {
@@ -44,16 +44,6 @@ namespace Client
         {
             get { return _Rooms; }
             set { _Rooms = value; }
-        }
-
-        public List<Student> Students
-        {
-            get { return Users.OfType<Student>().ToList(); }
-        }
-
-        public List<Teacher> Teachers
-        {
-            get { return Users.OfType<Teacher>().ToList(); }
         }
 
         List<User> IDataRepository.Users { get { return Users.ToList(); } }
@@ -228,11 +218,10 @@ namespace Client
 
         private static void MessageReceived(Connection Sender, Message Msg)
         {
+            bool Locked = true;
             Monitor.Enter(Lock);
-            bool Unlocked = false;
 
-
-            ReportModelChanges = false; // We've just got this message from the sever, don't echo the results back
+            ReportModelChanges = false; // We've just got this message from the server, don't echo the results back
 
             if (Msg is InitialiseMessage)
             {
@@ -256,9 +245,7 @@ namespace Client
             {
                 DataMessage Data = (DataMessage)Msg;
 
-                Monitor.Exit(Lock);
-                Unlocked = true;
-
+                #region Data parsing
                 if (Data.Item is Booking)
                 {
                     if (!Data.Delete)
@@ -371,11 +358,17 @@ namespace Client
                     else
                         _Periods.Remove(_Periods.Where(b => b.Id == Data.Item.Id).Single());
                 }
+                #endregion
+
+                Monitor.Exit(Lock);
+                Locked = false;
+
+                DataChanged(Data.Item.GetType());
             }
 
             ReportModelChanges = true; // Continue reporting
 
-            if (!Unlocked)
+            if (Locked) // Unlock if necessary
                 Monitor.Exit(Lock);
         }
         private static void Disconnected(Connection Sender, DisconnectMessage Message)
@@ -413,9 +406,12 @@ namespace Client
                     ReportModelChanges = true;
                 }
             }
-            else
-                DataChanged(e.OldItems == null ? new List<DataModel>() : e.OldItems.Cast<DataModel>().ToList(),
-                            e.NewItems == null ? new List<DataModel>() : e.NewItems.Cast<DataModel>().ToList());
+        }
+
+        public void OnDataChanged(Type ChangedType)
+        {
+            if (DataChanged != null)
+                DataChanged(ChangedType);
         }
     }
 }
