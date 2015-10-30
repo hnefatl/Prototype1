@@ -31,9 +31,13 @@ namespace Data.Models
 
         public virtual List<Class> Classes { get; set; }
 
+        public virtual List<Booking> InternalBookings { get; set; }
+        public override List<Booking> Bookings { get { return InternalBookings; } set { InternalBookings = value; } }
+
         public Student()
         {
             Classes = new List<Class>();
+            InternalBookings = new List<Booking>();
 
             Access = AccessMode.Student;
 
@@ -61,8 +65,6 @@ namespace Data.Models
 
             Out.Write(Year);
             Out.Write(Form);
-            Out.Write(Bookings.Count);
-            Bookings.ForEach(b => Out.Write(b.Id));
             Out.Write(Classes.Count);
             Classes.ForEach(c => Out.Write(c.Id));
         }
@@ -72,8 +74,6 @@ namespace Data.Models
 
             Year = In.ReadInt32();
             Form = In.ReadString();
-            Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
-            Bookings.ForEach(b => b.Id = In.ReadInt32());
 
             Classes = Enumerable.Repeat(new Class(), In.ReadInt32()).ToList();
             Classes.ForEach(c => c.Id = In.ReadInt32());

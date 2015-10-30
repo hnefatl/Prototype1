@@ -25,6 +25,9 @@ namespace NetCore
 
         public byte[] ReadBytes(int Count)
         {
+            if (Count <= 0)
+                return new byte[0];
+
             byte[] Buffer = new byte[Count];
             int Read = Base.Read(Buffer, 0, Buffer.Length);
             if (Read != Buffer.Length)

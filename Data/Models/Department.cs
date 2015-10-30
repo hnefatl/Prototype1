@@ -18,10 +18,12 @@ namespace Data.Models
         public string Name { get; set; }
 
         public virtual List<Teacher> Teachers { get; set; }
+        public virtual List<Room> Rooms { get; set; }
 
         public Department()
         {
             Teachers = new List<Teacher>();
+            Rooms = new List<Room>();
 
             Name = string.Empty;
         }
@@ -37,6 +39,7 @@ namespace Data.Models
 
             Name = d.Name;
             Teachers = d.Teachers;
+            Rooms = d.Rooms;
         }
 
         public override void Serialise(IWriter Out)
@@ -46,6 +49,8 @@ namespace Data.Models
             Out.Write(Name);
             Out.Write(Teachers.Count);
             Teachers.ForEach(t => Out.Write(t.Id));
+            Out.Write(Rooms.Count);
+            Rooms.ForEach(r => Out.Write(r.Id));
         }
         protected override void Deserialise(IReader In)
         {
@@ -54,6 +59,8 @@ namespace Data.Models
             Name = In.ReadString();
             Teachers = Enumerable.Repeat(new Teacher(), In.ReadInt32()).ToList();
             Teachers.ForEach(t => t.Id = In.ReadInt32());
+            Rooms = Enumerable.Repeat(new Room(), In.ReadInt32()).ToList();
+            Rooms.ForEach(r => r.Id = In.ReadInt32());
         }
         public override bool Expand(IDataRepository Repo)
         {
@@ -61,6 +68,8 @@ namespace Data.Models
             {
                 for (int x = 0; x < Teachers.Count; x++)
                     Teachers[x] = Repo.Users.OfType<Teacher>().Single(t => t.Id == Teachers[x].Id);
+                for (int x = 0; x < Rooms.Count; x++)
+                    Rooms[x] = Repo.Rooms.Single(r => r.Id == Rooms[x].Id);
             }
             catch
             {

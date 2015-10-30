@@ -39,13 +39,14 @@ namespace Data.Models
         public abstract UserType Discriminator { get; }
 
         [NotMapped]
+        public abstract List<Booking> Bookings { get; set; }
+
+        [NotMapped]
         public virtual bool IsStudent { get { return Access == AccessMode.Student; } }
         [NotMapped]
         public virtual bool IsTeacher { get { return Access == AccessMode.Teacher; } }
         [NotMapped]
         public virtual bool IsAdmin { get { return Access == AccessMode.Admin; } }
-        
-        public virtual List<Booking> Bookings { get; set; }
 
         public User()
         {
@@ -79,6 +80,9 @@ namespace Data.Models
             Out.Write(FirstName);
             Out.Write(LastName);
             Out.Write(LogonName);
+
+            Out.Write(Bookings.Count);
+            Bookings.ForEach(b => Out.Write(b.Id));
         }
         protected override void Deserialise(IReader In)
         {
@@ -88,6 +92,9 @@ namespace Data.Models
             FirstName = In.ReadString();
             LastName = In.ReadString();
             LogonName = In.ReadString();
+
+            Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
+            Bookings.ForEach(b => b.Id = In.ReadInt32());
         }
 
         public override bool Expand(IDataRepository Repo)

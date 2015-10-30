@@ -26,7 +26,7 @@ namespace Server
 
         public virtual DbSet<Teacher> Teachers { get; set; }
 
-        List<User> IDataRepository.Users { get { return Users.Include(u => u.Bookings).ToList(); } }
+        List<User> IDataRepository.Users { get { return Users.ToList(); } }
         public virtual DbSet<User> Users { get; set; }
 
         List<Subject> IDataRepository.Subjects { get { return Subjects.Include(s => s.Bookings).ToList(); } }
@@ -44,10 +44,10 @@ namespace Server
 
         protected static object Lock = new object();
 
-        public DataRepository()
+        public DataRepository(bool Proxies = true)
             : base(@"data source=(LocalDb)\" + ServerProvider + @";AttachDbFilename=" + Drive + @":\Burford\Year 13\Computing\Project\Data\Data.mdf;Database=Data;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
         {
-
+            SetProxies(Proxies);
             Monitor.Enter(Lock);
             Database.SetInitializer(new DropCreateDatabaseAlways<DataRepository>());
         }
@@ -73,11 +73,11 @@ namespace Server
             {
                 Repo.SetProxies(false);
 
-                Frame.Bookings = Repo.Bookings.Include(b => b.Rooms).Include(b => b.Students).ToList();
+                Frame.Bookings = Repo.Bookings.Include(b => b.Subject).Include(b => b.Teacher).Include(b => b.Rooms).Include(b => b.Students).ToList();
                 Frame.Departments = Repo.Departments.Include(d => d.Teachers).ToList();
                 Frame.Periods = Repo.Periods.Include(p => p.Bookings).ToList();
-                Frame.Rooms = Repo.Rooms.Include(r => r.Bookings).ToList();
-                Frame.Users = Repo.Users.Include(s => s.Bookings).ToList();
+                Frame.Rooms = Repo.Rooms.Include(r => r.Department).Include(r => r.Bookings).ToList();
+                Frame.Users = Repo.Users.ToList();
                 Frame.Subjects = Repo.Subjects.Include(s => s.Bookings).ToList();
                 Frame.Classes = Repo.Classes.Include(c => c.Students).ToList();
 

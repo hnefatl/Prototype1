@@ -140,11 +140,14 @@ namespace Server
             else if (Message is DataMessage)
             {
                 DataMessage Data = (DataMessage)Message;
-                using (DataRepository Repo = new DataRepository())
+                if (!Data.Delete)
                 {
-                    Repo.SetProxies(false);
-                    Data.Item.Expand(Repo);
-                    Repo.SetProxies(true);
+                    using (DataRepository Repo = new DataRepository())
+                    {
+                        Repo.SetProxies(false);
+                        Data.Item.Expand(Repo);
+                        Repo.SetProxies(true);
+                    }
                 }
 
                 if (Data.Item is Booking)
@@ -189,33 +192,28 @@ namespace Server
         }
         static void EditDataEntry<T>(T Entry, bool Delete) where T : DataModel
         {
-            using (DataRepository Repo = new DataRepository())
+            using (DataRepository Repo = new DataRepository(false))
             {
-                if (!Entry.Expand(Repo))
-                    return;
-                
                 DbSet<T> Set = Repo.Set<T>();
+                Repo.Bookings.Remove(Repo.Bookings.Single(b => b.Id == 1));
+                Repo.SaveChanges();
 
                 if (Delete)
-                {
                     Set.Remove(Set.ToList().Single(e => e.Id == Entry.Id));
-                    Repo.SaveChanges();
-                    Listener.Send(new DataMessage(Entry, true));
-                }
                 else
                 {
                     // Check for conflicts if necessary
                     if (!Entry.Conflicts(Set.ToList().Cast<DataModel>().ToList()))
                     {
                         if (Set.Any(m => m.Id == Entry.Id)) // Updating existing item
-                            Set.Single(m => m.Id == Entry.Id).Update(Entry);
+                            Set.ToList().Single(m => m.Id == Entry.Id).Update(Entry);
                         else
                             Set.Add(Entry);
-                        Repo.SaveChanges();
-
-                        Listener.Send(new DataMessage(Entry, false));
                     }
                 }
+
+                Repo.SaveChanges();
+                Listener.Send(new DataMessage(Entry, Delete));
             }
         }
 
