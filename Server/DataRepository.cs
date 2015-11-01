@@ -47,8 +47,9 @@ namespace Server
         public DataRepository(bool Proxies = true)
             : base(@"data source=(LocalDb)\" + ServerProvider + @";AttachDbFilename=" + Drive + @":\Burford\Year 13\Computing\Project\Data\Data.mdf;Database=Data;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
         {
-            SetProxies(Proxies);
             Monitor.Enter(Lock);
+            Configuration.LazyLoadingEnabled = false;
+            Configuration.ProxyCreationEnabled = false;
             Database.SetInitializer(new DropCreateDatabaseAlways<DataRepository>());
         }
         protected override void Dispose(bool disposing)
@@ -66,10 +67,10 @@ namespace Server
             base.OnModelCreating(modelBuilder);
         }
 
-        public static DataSnapshot TakeSnapshot()
+        public static DataSnapshot TakeSnapshot(bool Lock = true)
         {
             DataSnapshot Frame = new DataSnapshot();
-            using (DataRepository Repo = new DataRepository())
+            using (DataRepository Repo = new DataRepository(Lock))
             {
                 Repo.SetProxies(false);
 

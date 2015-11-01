@@ -31,7 +31,7 @@ namespace Server
 
                 Repo.SaveChanges();
 
-                Repo.Rooms.Add(new Room() { RoomName = "D6", SpecialSeats = 5, StandardSeats = 10, SpecialSeatType = "Computer", Department = Repo.Departments.Single(d => d.Name=="Computing/IT") });
+                Repo.Rooms.Add(new Room() { RoomName = "D6", SpecialSeats = 5, StandardSeats = 10, SpecialSeatType = "Computer", Department = Repo.Departments.Single(d => d.Name == "Computing/IT") });
                 Repo.Rooms.Add(new Room() { RoomName = "D12", SpecialSeats = 20, StandardSeats = 5, SpecialSeatType = "Workbench", Department = Repo.Departments.Single(d => d.Name == "Computing/IT") });
                 Repo.Rooms.Add(new Room() { RoomName = "Library", SpecialSeats = 20, StandardSeats = 30, SpecialSeatType = "Computer", Department = Repo.Departments.Single(d => d.Name == "Science") });
                 Repo.Rooms.Add(new Room() { RoomName = "Sports Hall", SpecialSeats = 0, StandardSeats = 100, SpecialSeatType = "", Department = Repo.Departments.Single(d => d.Name == "Maths") });
@@ -59,7 +59,7 @@ namespace Server
 
                 Repo.SaveChanges();
 
-                Repo.Classes.Add(new Class() { ClassName = "Computing", Students = Repo.Students.ToList(), Owner=Repo.Teachers.Where(t => t.LogonName=="mb").Single() });
+                Repo.Classes.Add(new Class() { ClassName = "Computing", Students = Repo.Students.ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "mb").Single() });
                 Repo.Classes.Add(new Class() { ClassName = "Maths", Students = Repo.Students.Where(s => s.Form == "WT").ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "rb").Single() });
 
                 Repo.SaveChanges();
@@ -195,15 +195,13 @@ namespace Server
             using (DataRepository Repo = new DataRepository(false))
             {
                 DbSet<T> Set = Repo.Set<T>();
-                Repo.Bookings.Remove(Repo.Bookings.Single(b => b.Id == 1));
-                Repo.SaveChanges();
-
+                
                 if (Delete)
-                    Set.Remove(Set.ToList().Single(e => e.Id == Entry.Id));
+                    Set.Remove(Set.Single(e => e.Id == Entry.Id));
                 else
                 {
                     // Check for conflicts if necessary
-                    if (!Entry.Conflicts(Set.ToList().Cast<DataModel>().ToList()))
+                    if (!Entry.Conflicts(Set.Cast<DataModel>().ToList()))
                     {
                         if (Set.Any(m => m.Id == Entry.Id)) // Updating existing item
                             Set.ToList().Single(m => m.Id == Entry.Id).Update(Entry);
@@ -213,6 +211,9 @@ namespace Server
                 }
 
                 Repo.SaveChanges();
+
+                DataSnapshot Frame = DataRepository.TakeSnapshot(false);
+
                 Listener.Send(new DataMessage(Entry, Delete));
             }
         }
