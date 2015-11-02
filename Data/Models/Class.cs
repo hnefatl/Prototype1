@@ -52,7 +52,7 @@ namespace Data.Models
             base.Deserialise(In);
 
             ClassName = In.ReadString();
-            Owner.Id = In.ReadInt32();
+            Owner=new Teacher() { Id = In.ReadInt32() };
             Students = Enumerable.Repeat(new Student(), In.ReadInt32()).ToList();
             Students.ForEach(s => s.Id = In.ReadInt32());
         }

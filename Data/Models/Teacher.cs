@@ -74,7 +74,7 @@ namespace Data.Models
             base.Deserialise(In);
 
             Title = In.ReadString();
-            Department.Id = In.ReadInt32();
+            Department=new Department() { Id = In.ReadInt32() };
             Classes = Enumerable.Repeat(new Class(), In.ReadInt32()).ToList();
             Classes.ForEach(c => c.Id = In.ReadInt32());
             Email = In.ReadString();

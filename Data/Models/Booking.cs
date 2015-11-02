@@ -114,15 +114,15 @@ namespace Data.Models
 
             Ticks = In.ReadInt64();
             BookingType = (BookingType)In.ReadInt32();
-            TimeSlot.Id = In.ReadInt32();
+            TimeSlot = new TimeSlot() { Id = In.ReadInt32() };
             Rooms = new List<Room>(In.ReadInt32());
             for (int x = 0; x < Rooms.Capacity; x++)
                 Rooms.Add(new Room() { Id = In.ReadInt32() });
-            Subject.Id = In.ReadInt32();
+            Subject = new Subject() { Id = In.ReadInt32() };
             Students = new List<Student>(In.ReadInt32());
             for (int x = 0; x < Students.Capacity; x++)
                 Students.Add(new Student() { Id = In.ReadInt32() });
-            Teacher.Id = In.ReadInt32();
+            Teacher = new Teacher() { Id = In.ReadInt32() };
         }
         public override bool Expand(IDataRepository Repo)
         {
