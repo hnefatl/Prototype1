@@ -33,7 +33,6 @@ namespace Data.Models
 
         public Teacher()
         {
-            Department = new Department();
             InternalBookings = new List<Booking>();
             Classes = new List<Class>();
 

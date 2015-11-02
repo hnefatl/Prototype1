@@ -21,7 +21,6 @@ namespace Data.Models
         public Class()
         {
             ClassName = string.Empty;
-            Owner = new Teacher();
             Students = new List<Student>();
         }
 

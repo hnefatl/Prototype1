@@ -22,10 +22,10 @@ namespace Data.Models
 
         public Department()
         {
+            Name = string.Empty;
+
             Teachers = new List<Teacher>();
             Rooms = new List<Room>();
-
-            Name = string.Empty;
         }
 
         public override bool Conflicts(List<DataModel> Others)

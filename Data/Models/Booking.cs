@@ -55,7 +55,7 @@ namespace Data.Models
         public virtual Teacher Teacher { get; set; }
 
         public Booking()
-            : this(new TimeSlot(), new List<Room>(), new Subject(), new List<Student>(), new Teacher(), BookingType.Single)
+            : this(null, new List<Room>(), null, new List<Student>(), null, BookingType.Single)
         {
         }
         public Booking(TimeSlot Time, List<Room> Rooms, Subject Subject, List<Student> Students, Teacher Teacher, BookingType BookingType)

@@ -212,8 +212,6 @@ namespace Server
 
                 Repo.SaveChanges();
 
-                DataSnapshot Frame = DataRepository.TakeSnapshot(false);
-
                 Listener.Send(new DataMessage(Entry, Delete));
             }
         }

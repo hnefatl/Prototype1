@@ -46,7 +46,6 @@ namespace Data.Models
         public Room()
         {
             Bookings = new List<Booking>();
-            Department = new Department();
 
             RoomName = string.Empty;
             SpecialSeatType = string.Empty;
