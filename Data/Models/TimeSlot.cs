@@ -134,6 +134,10 @@ namespace Data.Models
             }
             return true;
         }
+        public override void Detach()
+        {
+            Bookings.ForEach(b => b.TimeSlot = null);
+        }
 
         public override string ToString()
         {

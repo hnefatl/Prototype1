@@ -77,6 +77,11 @@ namespace Data.Models
             }
             return true;
         }
+        public override void Detach()
+        {
+            Teachers.ForEach(t => t.Department = null);
+            Rooms.ForEach(r => r.Department = null);
+        }
 
         public override string ToString()
         {

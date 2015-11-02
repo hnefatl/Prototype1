@@ -94,6 +94,11 @@ namespace Data.Models
             }
             return true;
         }
+        public override void Detach()
+        {
+            Bookings.ForEach(b => b.Students.Remove(this));
+            Classes.ForEach(c => c.Students.Remove(this));
+        }
 
         public override string ToString()
         {

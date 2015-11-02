@@ -98,6 +98,10 @@ namespace Data.Models
             }
             return true;
         }
+        public override void Detach()
+        {
+            Bookings.ForEach(b => b.Subject = null);
+        }
 
         public override string ToString()
         {

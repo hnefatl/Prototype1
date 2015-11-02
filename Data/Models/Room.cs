@@ -108,6 +108,11 @@ namespace Data.Models
             }
             return true;
         }
+        public override void Detach()
+        {
+            Bookings.ForEach(b => b.Rooms.Remove(this));
+            Department.Rooms.Remove(this);
+        }
 
         public override string ToString()
         {

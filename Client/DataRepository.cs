@@ -260,7 +260,9 @@ namespace Client
                             _Bookings[Index] = (Booking)Data.Item;
                     }
                     else
+                    {
                         _Bookings.Remove(_Bookings.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
+                    }
                 }
                 else if (Data.Item is Class)
                 {

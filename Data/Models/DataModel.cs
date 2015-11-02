@@ -33,6 +33,7 @@ namespace Data.Models
         public abstract void Update(DataModel Other);
 
         public abstract bool Expand(IDataRepository Repo);
+        public abstract void Detach();
 
         public static DataModel DeserialiseExternal(IReader In)
         {

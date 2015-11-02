@@ -96,6 +96,12 @@ namespace Data.Models
             }
             return true;
         }
+        public override void Detach()
+        {
+            Bookings.ForEach(b => b.Teacher = null);
+            Department.Teachers.Remove(this);
+            Classes.ForEach(c => c.Owner = null);
+        }
 
         public override string ToString()
         {

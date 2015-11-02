@@ -70,5 +70,10 @@ namespace Data.Models
             }
             return true;
         }
+        public override void Detach()
+        {
+            Owner.Classes.Remove(this);
+            Students.ForEach(s => s.Classes.Remove(this));
+        }
     }
 }

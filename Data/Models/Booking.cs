@@ -142,6 +142,14 @@ namespace Data.Models
             }
             return true;
         }
+        public override void Detach()
+        {
+            TimeSlot.Bookings.Remove(this);
+            Rooms.ForEach(r => r.Bookings.Remove(this));
+            Subject.Bookings.Remove(this);
+            Students.ForEach(s => s.Bookings.Remove(this));
+            Teacher.Bookings.Remove(this);
+        }
 
         public override bool Equals(object obj)
         {
