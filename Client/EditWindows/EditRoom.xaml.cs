@@ -85,16 +85,16 @@ namespace Client.EditWindows
                 OnPropertyChanged("Department");
             }
         }
-        public string[] Departments { get; }
+        public string[] Departments { get; set; }
 
         protected int RoomId { get; set; }
 
         public EditRoom(Room Current)
         {
-            InitializeComponent();
-
             using (DataRepository Repo = new DataRepository())
                 Departments = Repo.Departments.Select(d => d.Name).ToArray();
+
+            InitializeComponent();
 
             if (Current == null)
             {

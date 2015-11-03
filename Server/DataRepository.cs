@@ -48,8 +48,7 @@ namespace Server
             : base(@"data source=(LocalDb)\" + ServerProvider + @";AttachDbFilename=" + Drive + @":\Burford\Year 13\Computing\Project\Data\Data.mdf;Database=Data;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
         {
             Monitor.Enter(Lock);
-            Configuration.LazyLoadingEnabled = false;
-            Configuration.ProxyCreationEnabled = false;
+            //SetProxies(false);
             Database.SetInitializer(new DropCreateDatabaseAlways<DataRepository>());
         }
         protected override void Dispose(bool disposing)

@@ -128,13 +128,13 @@ namespace Data.Models
         {
             try
             {
-                TimeSlot = Repo.Periods.Where(t => t.Id == TimeSlot.Id).Single();
+                TimeSlot = Repo.Periods.SingleOrDefault(t => t.Id == TimeSlot.Id);
                 for (int x = 0; x < Rooms.Count; x++)
-                    Rooms[x] = Repo.Rooms.Where(r => Rooms[x].Id == r.Id).Single();
-                Subject = Repo.Subjects.Where(s => s.Id == Subject.Id).Single();
+                    Rooms[x] = Repo.Rooms.SingleOrDefault(r => Rooms[x].Id == r.Id);
+                Subject = Repo.Subjects.SingleOrDefault(s => s.Id == Subject.Id);
                 for (int x = 0; x < Students.Count; x++)
-                    Students[x] = (Student)Repo.Users.Where(s => Students[x].Id == s.Id).Single();
-                Teacher = (Teacher)Repo.Users.Where(t => t.Id == Teacher.Id).Single();
+                    Students[x] = (Student)Repo.Users.SingleOrDefault(s => Students[x].Id == s.Id);
+                Teacher = (Teacher)Repo.Users.SingleOrDefault(t => t.Id == Teacher.Id);
             }
             catch
             {
@@ -144,11 +144,14 @@ namespace Data.Models
         }
         public override void Detach()
         {
-            TimeSlot.Bookings.Remove(this);
-            Rooms.ForEach(r => r.Bookings.Remove(this));
-            Subject.Bookings.Remove(this);
-            Students.ForEach(s => s.Bookings.Remove(this));
-            Teacher.Bookings.Remove(this);
+            if (TimeSlot != null)
+                TimeSlot.Bookings.RemoveAll(i => i.Id == Id);
+            Rooms.ForEach(r => { if (r != null) r.Bookings.RemoveAll(b => b.Id == Id); });
+            if (Subject != null)
+                Subject.Bookings.RemoveAll(i => i.Id == Id);
+            Students.ForEach(s => { if (s != null) s.Bookings.RemoveAll(b => b.Id == Id); });
+            if (Teacher != null)
+                Teacher.Bookings.RemoveAll(i => i.Id == Id);
         }
 
         public override bool Equals(object obj)

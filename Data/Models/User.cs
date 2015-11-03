@@ -102,7 +102,7 @@ namespace Data.Models
             try
             {
                 for (int x = 0; x < Bookings.Count; x++)
-                    Bookings[x] = Repo.Bookings.Single(b => b.Id == Bookings[x].Id);
+                    Bookings[x] = Repo.Bookings.SingleOrDefault(b => b.Id == Bookings[x].Id);
             }
             catch
             {

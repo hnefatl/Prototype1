@@ -126,7 +126,7 @@ namespace Data.Models
             try
             {
                 for (int x = 0; x < Bookings.Count; x++)
-                    Bookings[x] = Repo.Bookings.Single(b => b.Id == Bookings[x].Id);
+                    Bookings[x] = Repo.Bookings.SingleOrDefault(b => b.Id == Bookings[x].Id);
             }
             catch
             {
@@ -136,7 +136,7 @@ namespace Data.Models
         }
         public override void Detach()
         {
-            Bookings.ForEach(b => b.TimeSlot = null);
+            Bookings.ForEach(b => { if (b != null) b.TimeSlot = null; });
         }
 
         public override string ToString()

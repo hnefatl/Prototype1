@@ -99,8 +99,8 @@ namespace Data.Models
             try
             {
                 for (int x = 0; x < Bookings.Count; x++)
-                    Bookings[x] = Repo.Bookings.Single(b => b.Id == Bookings[x].Id);
-                Department = Repo.Departments.Single(d => d.Id == Department.Id);
+                    Bookings[x] = Repo.Bookings.SingleOrDefault(b => b.Id == Bookings[x].Id);
+                Department = Repo.Departments.SingleOrDefault(d => d.Id == Department.Id);
             }
             catch
             {
@@ -110,8 +110,9 @@ namespace Data.Models
         }
         public override void Detach()
         {
-            Bookings.ForEach(b => b.Rooms.Remove(this));
-            Department.Rooms.Remove(this);
+            Bookings.ForEach(b => { if (b != null) b.Rooms.RemoveAll(i => i.Id == Id); });
+            if (Department != null)
+                Department.Rooms.RemoveAll(i => i.Id == Id);
         }
 
         public override string ToString()

@@ -12,8 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 using NetCore.Client;
+using NetCore.Messages;
 using Data.Models;
-
 using Client.Admin;
 
 namespace Client
@@ -62,6 +62,7 @@ namespace Client
         protected override void OnClosed(EventArgs e)
         {
             ToolbarIcon.Visible = false;
+            ToolbarIcon.Icon = null; // Actually hides the icon, otherwise it lingers for a bit
             Menu.Dispose();
             ToolbarIcon.Dispose();
 
@@ -77,7 +78,7 @@ namespace Client
         private void ShowMainWindow()
         {
             if (MainWindow != null && !MainWindow.Dispatcher.CheckAccess())
-                MainWindow.Dispatcher.Invoke((Action)ShowMainWindow);
+                MainWindow.Dispatcher.BeginInvoke((Action)ShowMainWindow);
             else
             {
                 if (!MainWindowShown)
@@ -86,7 +87,7 @@ namespace Client
                     MainWindow = new MainWindow(Connection, CurrentUser);
                     // Something really weird happens here - calling the MainWindow constructor causes the click event to be run again.
                     // Stack Trace shows it comes direct from the NotifyIcon itself, not from any accidental callbacks :/
-                    // Some crazy logic and flags avoids the issue, as the root cause seems to be threads updating when the new window is shown and therefore unavoidable.
+                    // Some logic and flags avoids the issue, as the root cause seems to be threads updating when the new window is shown and therefore unavoidable.
 
                     MainWindow.Closed += (s, o) => MainWindowShown = false;
                     MainWindow.Show();
@@ -98,7 +99,7 @@ namespace Client
         private void ShowAdminWindow()
         {
             if (AdminWindow != null && !AdminWindow.Dispatcher.CheckAccess())
-                AdminWindow.Dispatcher.Invoke((Action)ShowAdminWindow);
+                AdminWindow.Dispatcher.BeginInvoke((Action)ShowAdminWindow);
             else
             {
                 if (!AdminWindowShown)
@@ -115,7 +116,8 @@ namespace Client
 
         private void ExitClick(object sender, EventArgs e)
         {
-            Close();
+            Connection.Close(DisconnectType.Expected);
+            Environment.Exit(0);
         }
 
         private void Connection_Disconnect(Connection Sender, NetCore.Messages.DisconnectMessage Message)

@@ -144,9 +144,7 @@ namespace Server
                 {
                     using (DataRepository Repo = new DataRepository())
                     {
-                        Repo.SetProxies(false);
                         Data.Item.Expand(Repo);
-                        Repo.SetProxies(true);
                     }
                 }
 
@@ -192,7 +190,7 @@ namespace Server
         }
         static void EditDataEntry<T>(T Entry, bool Delete) where T : DataModel
         {
-            using (DataRepository Repo = new DataRepository(false))
+            using (DataRepository Repo = new DataRepository())
             {
                 DbSet<T> Set = Repo.Set<T>();
                 
@@ -201,7 +199,7 @@ namespace Server
                 else
                 {
                     // Check for conflicts if necessary
-                    if (!Entry.Conflicts(Set.Cast<DataModel>().ToList()))
+                    if (!Entry.Conflicts(Set.ToList().Cast<DataModel>().ToList()))
                     {
                         if (Set.Any(m => m.Id == Entry.Id)) // Updating existing item
                             Set.ToList().Single(m => m.Id == Entry.Id).Update(Entry);

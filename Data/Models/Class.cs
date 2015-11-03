@@ -52,7 +52,7 @@ namespace Data.Models
             base.Deserialise(In);
 
             ClassName = In.ReadString();
-            Owner=new Teacher() { Id = In.ReadInt32() };
+            Owner = new Teacher() { Id = In.ReadInt32() };
             Students = Enumerable.Repeat(new Student(), In.ReadInt32()).ToList();
             Students.ForEach(s => s.Id = In.ReadInt32());
         }
@@ -60,9 +60,9 @@ namespace Data.Models
         {
             try
             {
-                Owner = (Teacher)Repo.Users.Where(t => t.Id == Owner.Id).Single();
+                Owner = (Teacher)Repo.Users.SingleOrDefault(t => t.Id == Owner.Id);
                 for (int x = 0; x < Students.Count; x++)
-                    Students[x] = Repo.Users.OfType<Student>().Single(s => s.Id == Students[x].Id);
+                    Students[x] = Repo.Users.OfType<Student>().SingleOrDefault(s => s.Id == Students[x].Id);
             }
             catch
             {
@@ -72,8 +72,9 @@ namespace Data.Models
         }
         public override void Detach()
         {
-            Owner.Classes.Remove(this);
-            Students.ForEach(s => s.Classes.Remove(this));
+            if (Owner != null)
+                Owner.Classes.RemoveAll(i => i.Id == Id);
+            Students.ForEach(s => { if (s != null) s.Classes.RemoveAll(i => i.Id == Id); });
         }
     }
 }

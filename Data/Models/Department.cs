@@ -67,9 +67,9 @@ namespace Data.Models
             try
             {
                 for (int x = 0; x < Teachers.Count; x++)
-                    Teachers[x] = Repo.Users.OfType<Teacher>().Single(t => t.Id == Teachers[x].Id);
+                    Teachers[x] = Repo.Users.OfType<Teacher>().SingleOrDefault(t => t.Id == Teachers[x].Id);
                 for (int x = 0; x < Rooms.Count; x++)
-                    Rooms[x] = Repo.Rooms.Single(r => r.Id == Rooms[x].Id);
+                    Rooms[x] = Repo.Rooms.SingleOrDefault(r => r.Id == Rooms[x].Id);
             }
             catch
             {
@@ -79,8 +79,8 @@ namespace Data.Models
         }
         public override void Detach()
         {
-            Teachers.ForEach(t => t.Department = null);
-            Rooms.ForEach(r => r.Department = null);
+            Teachers.ForEach(t => { if (t != null) t.Department = null; });
+            Rooms.ForEach(r => { if (r != null) r.Department = null; });
         }
 
         public override string ToString()

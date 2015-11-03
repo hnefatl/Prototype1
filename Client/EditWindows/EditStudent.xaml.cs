@@ -16,7 +16,7 @@ using Data.Models;
 
 namespace Client.EditWindows
 {
-    public partial class EditTeacher
+    public partial class EditStudent
         : Window, INotifyPropertyChanged
     {
         protected string _FirstName;
@@ -25,80 +25,71 @@ namespace Client.EditWindows
         protected string _LastName;
         public string LastName { get { return _LastName; } set { _LastName = value; OnPropertyChanged("LastName"); } }
 
-        protected string _TeacherTitle;
-        public string TeacherTitle { get { return _TeacherTitle; } set { _TeacherTitle = value; OnPropertyChanged("TeacherTitle"); } }
-
         protected string _LogonName;
         public string LogonName { get { return _LogonName; } set { _LogonName = value; OnPropertyChanged("LogonName"); } }
 
+        protected string _Year;
+        public string Year { get { return _Year; } set { _Year = value; OnPropertyChanged("Year"); } }
+
+        protected string _Form;
+        public string Form { get { return _Form; } set { _Form = value; OnPropertyChanged("Form"); } }
+
         protected string _Access;
         public string Access { get { return _Access; } set { _Access = value; OnPropertyChanged("Access"); } }
-        public string[] AccessModes { get { return Enum.GetNames(typeof(AccessMode)); } }
+        public string[] AccessModes { get; set; }
 
-        protected string _Email;
-        public string Email { get { return _Email; } set { _Email = value; OnPropertyChanged("Email"); } }
-
-        protected string _Department;
-        public string Department { get { return _Department; } set { _Department = value; OnPropertyChanged("Department"); } }
-        public string[] Departments { get; set; }
-
-        protected List<Class> Classes { get; set; }
         protected List<Booking> Bookings { get; set; }
+        protected List<Class> Classes { get; set; }
 
-        public int TeacherId { get; set; }
+        public int StudentId { get; set; }
 
-        public EditTeacher(Teacher Existing)
+        public EditStudent(Student Existing)
         {
-            using (DataRepository Repo = new DataRepository())
-                Departments = Repo.Departments.Select(d => d.Name).ToArray();
-
             InitializeComponent();
 
-            if (Existing == null)
-            {
-                FirstName = string.Empty;
-                LastName = string.Empty;
-                TeacherTitle = string.Empty;
-                LogonName = string.Empty;
-                Access = string.Empty;
-                Email = string.Empty;
-                Department = string.Empty;
-                Classes = new List<Class>();
-                Bookings = new List<Booking>();
-                TeacherId = 0;
-            }
-            else
+            AccessModes = Enum.GetNames(typeof(AccessMode));
+
+            if (Existing != null)
             {
                 FirstName = Existing.FirstName;
                 LastName = Existing.LastName;
-                TeacherTitle = Existing.Title;
                 LogonName = Existing.LogonName;
+                Year = Convert.ToString(Existing.Year);
+                Form = Existing.Form;
                 Access = Enum.GetName(typeof(AccessMode), Existing.Access);
-                Email = Existing.Email;
-                Department = Existing.Department.Name;
-                Classes = Existing.Classes;
                 Bookings = Existing.Bookings;
-                TeacherId = Existing.Id;
+                Classes = Existing.Classes;
+                StudentId = Existing.Id;
+            }
+            else
+            {
+                FirstName = string.Empty;
+                LastName = string.Empty;
+                LogonName = string.Empty;
+                Year = string.Empty;
+                Form = string.Empty;
+                Access = Enum.GetName(typeof(AccessMode), AccessMode.Student);
+                Bookings = new List<Booking>();
+                Classes = new List<Class>();
+                StudentId = 0;
             }
         }
 
-        public Teacher GetTeacher()
+        public Student GetStudent()
         {
-            Teacher New = new Teacher();
+            Student New = new Student();
 
             try
             {
                 New.FirstName = FirstName;
                 New.LastName = LastName;
-                New.Title = TeacherTitle;
                 New.LogonName = LogonName;
+                New.Year = Convert.ToInt32(Year);
+                New.Form = Form;
                 New.Access = (AccessMode)Enum.Parse(typeof(AccessMode), Access);
-                New.Email = Email;
-                using (DataRepository Repo = new DataRepository())
-                    New.Department = Repo.Departments.Single(d => d.Name == Department);
-                New.Classes = Classes;
                 New.Bookings = Bookings;
-                New.Id = TeacherId;
+                New.Classes = Classes;
+                New.Id = StudentId;
             }
             catch
             {
@@ -117,18 +108,20 @@ namespace Client.EditWindows
         {
             string Error = null;
 
-            AccessMode Out;
+            AccessMode OutAccess;
+            int OutInt;
             if (string.IsNullOrWhiteSpace(FirstName))
                 Error = "You must enter a first name.";
             else if (string.IsNullOrWhiteSpace(LastName))
                 Error = "You must enter a last name.";
-            else if (string.IsNullOrWhiteSpace(TeacherTitle))
-                Error = "You must enter a title.";
             else if (string.IsNullOrWhiteSpace(LogonName))
                 Error = "You must enter a logon name.";
-            else if (!Enum.TryParse(Access, out Out)) // Should never happen, we're using a combobox
+            else if (!int.TryParse(Year, out OutInt) || OutInt < 0)
+                Error = "Year must be a non-negative integer.";
+            else if (string.IsNullOrWhiteSpace(Form))
+                Error = "You must enter a Year.";
+            else if (!Enum.TryParse(Access, out OutAccess)) // Should never happen, we're using a combobox
                 Error = "Invalid access mode.";
-            // The possible patterns for emails are crazy, like 200+ character long regexes that still don't match all possibilities. Down to the user to enter a "valid" email.
 
             if (!string.IsNullOrWhiteSpace(Error))
                 MessageBox.Show(Error, "Error", MessageBoxButton.OK);

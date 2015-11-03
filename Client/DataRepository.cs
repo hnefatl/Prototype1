@@ -246,13 +246,13 @@ namespace Client
                 DataMessage Data = (DataMessage)Msg;
 
                 #region Data parsing
+                using (DataRepository Repo = new DataRepository(false))
+                    Data.Item.Expand(Repo);
+
                 if (Data.Item is Booking)
                 {
                     if (!Data.Delete)
                     {
-                        using (DataRepository Repo = new DataRepository(false))
-                            Data.Item.Expand(Repo);
-
                         int Index = _Bookings.IndexOf(_Bookings.SingleOrDefault(i => i.Id == Data.Item.Id));
                         if (Index < 0)
                             _Bookings.Add((Booking)Data.Item);
@@ -261,6 +261,7 @@ namespace Client
                     }
                     else
                     {
+                        Data.Item.Detach();
                         _Bookings.Remove(_Bookings.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
                     }
                 }
@@ -268,9 +269,6 @@ namespace Client
                 {
                     if (!Data.Delete)
                     {
-                        using (DataRepository Repo = new DataRepository(false))
-                            Data.Item.Expand(Repo);
-
                         int Index = _Classes.IndexOf(_Classes.SingleOrDefault(i => i.Id == Data.Item.Id));
                         if (Index < 0)
                             _Classes.Add((Class)Data.Item);
@@ -278,15 +276,15 @@ namespace Client
                             _Classes[Index] = (Class)Data.Item;
                     }
                     else
+                    {
+                        Data.Item.Detach();
                         _Classes.Remove(_Classes.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
+                    }
                 }
                 else if (Data.Item is Department)
                 {
                     if (!Data.Delete)
                     {
-                        using (DataRepository Repo = new DataRepository(false))
-                            Data.Item.Expand(Repo);
-
                         int Index = _Departments.IndexOf(_Departments.SingleOrDefault(i => i.Id == Data.Item.Id));
                         if (Index < 0)
                             _Departments.Add((Department)Data.Item);
@@ -294,15 +292,15 @@ namespace Client
                             _Departments[Index] = (Department)Data.Item;
                     }
                     else
+                    {
+                        Data.Item.Detach();
                         _Departments.Remove(_Departments.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
+                    }
                 }
                 else if (Data.Item is Room)
                 {
                     if (!Data.Delete)
                     {
-                        using (DataRepository Repo = new DataRepository(false))
-                            Data.Item.Expand(Repo);
-
                         int Index = _Rooms.IndexOf(_Rooms.SingleOrDefault(r => r.Id == Data.Item.Id));
                         if (Index < 0)
                             _Rooms.Add((Room)Data.Item);
@@ -310,7 +308,10 @@ namespace Client
                             _Rooms[Index] = (Room)Data.Item;
                     }
                     else
+                    {
+                        Data.Item.Detach();
                         _Rooms.Remove(_Rooms.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
+                    }
                 }
                 else if (Data.Item is User)
                 {
@@ -326,7 +327,10 @@ namespace Client
                             _Users[Index] = (User)Data.Item;
                     }
                     else
+                    {
+                        Data.Item.Detach();
                         _Users.Remove(_Users.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
+                    }
                 }
                 else if (Data.Item is Subject)
                 {
@@ -342,7 +346,10 @@ namespace Client
                             _Subjects[Index] = (Subject)Data.Item;
                     }
                     else
+                    {
+                        Data.Item.Detach();
                         _Subjects.Remove(_Subjects.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
+                    }
                 }
                 else if (Data.Item is TimeSlot)
                 {
@@ -358,7 +365,10 @@ namespace Client
                             _Periods[Index] = (TimeSlot)Data.Item;
                     }
                     else
+                    {
+                        Data.Item.Detach();
                         _Periods.Remove(_Periods.Where(b => b.Id == Data.Item.Id).Single());
+                    }
                 }
                 #endregion
 

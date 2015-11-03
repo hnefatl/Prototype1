@@ -74,21 +74,20 @@ namespace Data.Models
             base.Deserialise(In);
 
             Title = In.ReadString();
-            Department=new Department() { Id = In.ReadInt32() };
+            Department = new Department() { Id = In.ReadInt32() };
             Classes = Enumerable.Repeat(new Class(), In.ReadInt32()).ToList();
             Classes.ForEach(c => c.Id = In.ReadInt32());
             Email = In.ReadString();
         }
         public override bool Expand(IDataRepository Repo)
         {
-            if (!base.Expand(Repo))
-                return false;
+            base.Expand(Repo);
 
             try
             {
-                Department = Repo.Departments.Where(d => d.Id == Department.Id).Single();
+                Department = Repo.Departments.SingleOrDefault(d => d.Id == Department.Id);
                 for (int x = 0; x < Classes.Count; x++)
-                    Classes[x] = Repo.Classes.Single(c => c.Id == Classes[x].Id);
+                    Classes[x] = Repo.Classes.SingleOrDefault(c => c.Id == Classes[x].Id);
             }
             catch
             {
@@ -98,9 +97,10 @@ namespace Data.Models
         }
         public override void Detach()
         {
-            Bookings.ForEach(b => b.Teacher = null);
-            Department.Teachers.Remove(this);
-            Classes.ForEach(c => c.Owner = null);
+            Bookings.ForEach(b => { if (b != null) b.Teacher = null; });
+            if (Department != null)
+                Department.Teachers.RemoveAll(i => i.Id == Id);
+            Classes.ForEach(c => { if (c != null) c.Owner = null; });
         }
 
         public override string ToString()

@@ -80,13 +80,12 @@ namespace Data.Models
         }
         public override bool Expand(IDataRepository Repo)
         {
-            if (!base.Expand(Repo))
-                return false;
+            base.Expand(Repo);
 
             try
             {
                 for (int x = 0; x < Classes.Count; x++)
-                    Classes[x] = Repo.Classes.Single(c => c.Id == Classes[x].Id);
+                    Classes[x] = Repo.Classes.SingleOrDefault(c => c.Id == Classes[x].Id);
             }
             catch
             {
@@ -96,8 +95,8 @@ namespace Data.Models
         }
         public override void Detach()
         {
-            Bookings.ForEach(b => b.Students.Remove(this));
-            Classes.ForEach(c => c.Students.Remove(this));
+            Bookings.ForEach(b => { if (b != null) b.Students.RemoveAll(i => i.Id == Id); });
+            Classes.ForEach(c => { if (c != null) c.Students.RemoveAll(i => i.Id == Id); });
         }
 
         public override string ToString()
