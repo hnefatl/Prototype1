@@ -45,7 +45,7 @@ namespace Data.Models
 
         public override bool Conflicts(List<DataModel> Others)
         {
-            return base.Conflicts(Others) || Others.OfType<Student>().Any(s => s.Id != Id && s.Year == Year && s.Form == Form);
+            return base.Conflicts(Others);
         }
 
         public override void Update(DataModel Other)
@@ -55,7 +55,8 @@ namespace Data.Models
             Student s = (Student)Other;
             Year = s.Year;
             Form = s.Form;
-            Classes = s.Classes;
+            Classes.Clear();
+            Classes.AddRange(s.Classes);
         }
 
         public override void Serialise(IWriter Out)
@@ -91,6 +92,11 @@ namespace Data.Models
                 return false;
             }
             return true;
+        }
+        public override void Attach()
+        {
+            Bookings.ForEach(b => b.Students.Add(this));
+            Classes.ForEach(c => c.Students.Add(this));
         }
         public override void Detach()
         {

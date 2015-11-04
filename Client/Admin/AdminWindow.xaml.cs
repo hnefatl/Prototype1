@@ -138,12 +138,10 @@ namespace Client.Admin
         private void Button_DeleteRoom_Click(object sender, RoutedEventArgs e)
         {
             Room r = (Room)List_Rooms.SelectedItem;
-            if (r.Bookings.Count > 0) // Would break some of the bookings
-            {
-                if (MessageBox.Show("Deleting this Room will force the deletion of " + r.Bookings.Count + " bookings.\n" +
-                            "Please confirm this action.", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.No)
-                    return;
-            }
+
+            if (MessageBox.Show("Deleting this Room will force the deletion of " + r.Bookings.Count + " bookings.\n" +
+                        "Please confirm this action.", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                return;
 
             using (DataRepository Repo = new DataRepository())
             {
@@ -178,12 +176,10 @@ namespace Client.Admin
         private void Button_DeletePeriod_Click(object sender, RoutedEventArgs e)
         {
             TimeSlot t = (TimeSlot)List_Periods.SelectedItem;
-            if (t.Bookings.Count > 0)
-            {
-                if (MessageBox.Show("Deleting this Period will force the deletion of " + t.Bookings.Count + " bookings.\n" +
-                            "Please confirm this action.", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.No)
-                    return;
-            }
+
+            if (MessageBox.Show("Deleting this Period will force the deletion of " + t.Bookings.Count + " bookings.\n" +
+                        "Please confirm this action.", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                return;
 
             using (DataRepository Repo = new DataRepository())
             {
@@ -226,18 +222,61 @@ namespace Client.Admin
         private void Button_DeleteTeacher_Click(object sender, RoutedEventArgs e)
         {
             Teacher t = (Teacher)List_Teachers.SelectedItem;
-            if (t.Bookings.Count > 0)
-            {
-                if (MessageBox.Show("Deleting this Teacher will force the deletion of " + t.Bookings.Count + " bookings and " + t.Classes.Count + " classes.\n" +
-                            "Please confirm this action.", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.No)
-                    return;
-            }
+
+            if (MessageBox.Show("Deleting this Teacher will force the deletion of " + t.Bookings.Count + " bookings and " + t.Classes.Count + " classes.\n" +
+                        "Please confirm this action.", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                return;
 
             using (DataRepository Repo = new DataRepository())
             {
                 t.Bookings.ForEach(b => Repo.Bookings.Remove(b));
                 t.Classes.ForEach(c => Repo.Classes.Remove(c));
                 Repo.Users.Remove(t);
+            }
+        }
+
+        private void Button_AddStudent_Click(object sender, RoutedEventArgs e)
+        {
+            EditStudent(null);
+        }
+        private void Button_EditStudent_Click(object sender, RoutedEventArgs e)
+        {
+            EditStudent((Student)List_Students.SelectedItem);
+        }
+        private void EditStudent(Student Existing)
+        {
+            EditStudent Wnd = new EditStudent(Existing);
+            bool? Result = Wnd.ShowDialog();
+
+            if (Result.HasValue && Result.Value)
+            {
+                Student New = Wnd.GetStudent();
+                if (New != null)
+                {
+                    using (DataRepository Repo = new DataRepository())
+                    {
+                        if (Existing == null)
+                            Repo.Users.Add(New);
+                        else
+                        {
+                            Repo.Users.Single(u => u.Id == New.Id).Update(New);
+                            Repo.OnDataChanged(typeof(User));
+                        }
+                    }
+                }
+            }
+        }
+        private void Button_DeleteStudent_Click(object sender, RoutedEventArgs e)
+        {
+            Student s = (Student)List_Students.SelectedItem;
+
+            if (MessageBox.Show("Deleting this Student will remove it from " + s.Bookings.Count + " bookings and " + s.Classes.Count + " classes.\n" +
+                "Please confirm this action.", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                return;
+
+            using (DataRepository Repo = new DataRepository())
+            {
+                Repo.Users.Remove(s);
             }
         }
 

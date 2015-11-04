@@ -96,7 +96,8 @@ namespace Data.Models
             Start = t.Start;
             End = t.End;
             Name = t.Name;
-            Bookings = t.Bookings;
+            Bookings.Clear();
+            Bookings.AddRange(t.Bookings);
         }
 
         public override void Serialise(IWriter Out)
@@ -133,6 +134,10 @@ namespace Data.Models
                 return false;
             }
             return true;
+        }
+        public override void Attach()
+        {
+            Bookings.ForEach(b => b.TimeSlot = this);
         }
         public override void Detach()
         {

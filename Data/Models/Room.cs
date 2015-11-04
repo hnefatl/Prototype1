@@ -64,7 +64,8 @@ namespace Data.Models
             StandardSeats = r.StandardSeats;
             SpecialSeatType = r.SpecialSeatType;
             SpecialSeats = r.SpecialSeats;
-            Bookings = r.Bookings;
+            Bookings.Clear();
+            Bookings.AddRange(r.Bookings);
             Department = r.Department;
         }
 
@@ -107,6 +108,12 @@ namespace Data.Models
                 return false;
             }
             return true;
+        }
+        public override void Attach()
+        {
+            Bookings.ForEach(b => b.Rooms.Add(this));
+            if (Department != null)
+                Department.Rooms.Add(this);
         }
         public override void Detach()
         {

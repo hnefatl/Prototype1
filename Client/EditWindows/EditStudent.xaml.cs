@@ -45,9 +45,9 @@ namespace Client.EditWindows
 
         public EditStudent(Student Existing)
         {
-            InitializeComponent();
-
             AccessModes = Enum.GetNames(typeof(AccessMode));
+
+            InitializeComponent();
 
             if (Existing != null)
             {

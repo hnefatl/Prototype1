@@ -163,7 +163,7 @@ namespace Client.EditWindows
 
         public Booking GetBooking()
         {
-            if (SelectedTimeslot == null || SelectedRooms == null || SelectedRooms.Count == 0 || SelectedSubject == null || SelectedStudents == null || SelectedStudents.Count == 0 || SelectedTeacher == null)
+            if (SelectedTimeslot == null || SelectedRooms == null || SelectedRooms.Count == 0 || SelectedSubject == null || SelectedStudents == null || SelectedTeacher == null)
                 return null;
 
             return new Booking(SelectedTimeslot, SelectedRooms.Select(c => c.Value).ToList(), SelectedSubject,
@@ -207,9 +207,15 @@ namespace Client.EditWindows
                 Error = "You must select a teacher";
             else
             {
-                using (DataRepository Repo = new DataRepository())
-                    if (GetBooking().Conflicts(Repo.Bookings.Cast<DataModel>().ToList()))
-                        Error = "Booking conflicts with another booking.";
+                Booking b = GetBooking();
+                if (b == null)
+                    Error = "Invalid booking.";
+                else
+                {
+                    using (DataRepository Repo = new DataRepository())
+                        if (b.Conflicts(Repo.Bookings.Cast<DataModel>().ToList()))
+                            Error = "Booking conflicts with another booking.";
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(Error))

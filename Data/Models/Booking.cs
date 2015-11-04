@@ -88,7 +88,8 @@ namespace Data.Models
             TimeSlot = b.TimeSlot;
             Rooms = b.Rooms;
             Subject = b.Subject;
-            Students = b.Students;
+            Students.Clear();
+            Students.AddRange(b.Students);
             Teacher = b.Teacher;
         }
 
@@ -141,6 +142,17 @@ namespace Data.Models
                 return false;
             }
             return true;
+        }
+        public override void Attach()
+        {
+            if (TimeSlot != null)
+                TimeSlot.Bookings.Add(this);
+            Rooms.ForEach(r => r.Bookings.Add(this));
+            if (Subject != null)
+                Subject.Bookings.Add(this);
+            Students.ForEach(s => s.Bookings.Add(this));
+            if (Teacher != null)
+                Teacher.Bookings.Add(this);
         }
         public override void Detach()
         {

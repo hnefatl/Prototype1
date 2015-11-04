@@ -64,7 +64,8 @@ namespace Data.Models
             Subject s = (Subject)Other;
             SubjectName = s.SubjectName;
             Argb = s.Argb;
-            Bookings = s.Bookings;
+            Bookings.Clear();
+            Bookings.AddRange(s.Bookings);
         }
 
         public override void Serialise(IWriter Out)
@@ -97,6 +98,10 @@ namespace Data.Models
                 return false;
             }
             return true;
+        }
+        public override void Attach()
+        {
+            Bookings.ForEach(b => b.Subject = this);
         }
         public override void Detach()
         {

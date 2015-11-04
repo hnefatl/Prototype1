@@ -35,7 +35,8 @@ namespace Data.Models
 
             ClassName = c.ClassName;
             Owner = c.Owner;
-            Students = c.Students;
+            Students.Clear();
+            Students.AddRange(c.Students);
         }
 
         public override void Serialise(IWriter Out)
@@ -69,6 +70,12 @@ namespace Data.Models
                 return false;
             }
             return true;
+        }
+        public override void Attach()
+        {
+            if (Owner != null)
+                Owner.Classes.Add(this);
+            Students.ForEach(s => s.Classes.Add(this));
         }
         public override void Detach()
         {

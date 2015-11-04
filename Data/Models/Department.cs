@@ -38,8 +38,10 @@ namespace Data.Models
             Department d = (Department)Other;
 
             Name = d.Name;
-            Teachers = d.Teachers;
-            Rooms = d.Rooms;
+            Teachers.Clear();
+            Teachers.AddRange(d.Teachers);
+            Rooms.Clear();
+            Rooms.AddRange(d.Rooms);
         }
 
         public override void Serialise(IWriter Out)
@@ -76,6 +78,11 @@ namespace Data.Models
                 return false;
             }
             return true;
+        }
+        public override void Attach()
+        {
+            Teachers.ForEach(t => t.Department = this);
+            Rooms.ForEach(r => r.Department = this);
         }
         public override void Detach()
         {

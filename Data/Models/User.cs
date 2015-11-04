@@ -69,7 +69,8 @@ namespace Data.Models
             LastName = u.LastName;
             LogonName = u.LogonName;
             Access = u.Access;
-            Bookings = u.Bookings;
+            Bookings.Clear();
+            Bookings.AddRange(u.Bookings);
         }
 
         public override void Serialise(IWriter Out)

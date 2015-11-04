@@ -185,6 +185,7 @@ namespace Server
         {
             using (DataRepository Repo = new DataRepository())
             {
+                Repo.SetProxies(true);
                 DbSet<T> Set = Repo.Set<T>();
 
                 if (!Delete)

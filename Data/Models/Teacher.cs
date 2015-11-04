@@ -55,7 +55,8 @@ namespace Data.Models
             Email = t.Email;
 
             Department = t.Department;
-            Classes = t.Classes;
+            Classes.Clear();
+            Classes.AddRange(t.Classes);
         }
 
         public override void Serialise(IWriter Out)
@@ -93,6 +94,13 @@ namespace Data.Models
                 return false;
             }
             return true;
+        }
+        public override void Attach()
+        {
+            Bookings.ForEach(b => b.Teacher = this);
+            if (Department != null)
+                Department.Teachers.Add(this);
+            Classes.ForEach(c => c.Owner = this);
         }
         public override void Detach()
         {
