@@ -33,7 +33,6 @@ namespace Data.Models
 
         public Teacher()
         {
-            InternalBookings = new List<Booking>();
             Classes = new List<Class>();
 
             Access = AccessMode.Teacher;

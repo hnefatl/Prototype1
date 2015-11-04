@@ -37,7 +37,6 @@ namespace Data.Models
         public Student()
         {
             Classes = new List<Class>();
-            InternalBookings = new List<Booking>();
 
             Access = AccessMode.Student;
 

@@ -42,7 +42,7 @@ namespace Server
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 4", Start = new TimeSpan(12, 10, 0), End = new TimeSpan(13, 10, 0) });
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 5", Start = new TimeSpan(14, 0, 0), End = new TimeSpan(15, 0, 0) });
 
-                const string LogonName = DataRepository.Home ? "Keith" : "09135"; // For testing on home versus school computers
+                string LogonName = DataRepository.Home ? "Keith" : "09135"; // For testing on home versus school computers
                 Repo.Students.Add(new Student() { FirstName = "Keith", LastName = "Collister", Form = "WT", Year = 13, LogonName = LogonName, Access = AccessMode.Admin });
                 Repo.Students.Add(new Student() { FirstName = "Max", LastName = "Norman", Form = "WT", Year = 13, LogonName = "Max" });
                 Repo.Students.Add(new Student() { FirstName = "Dan", LastName = "Wrenn", Form = "MB", Year = 13, LogonName = "09154" });
@@ -140,13 +140,6 @@ namespace Server
             else if (Message is DataMessage)
             {
                 DataMessage Data = (DataMessage)Message;
-                if (!Data.Delete)
-                {
-                    using (DataRepository Repo = new DataRepository())
-                    {
-                        Data.Item.Expand(Repo);
-                    }
-                }
 
                 if (Data.Item is Booking)
                 {
@@ -193,7 +186,10 @@ namespace Server
             using (DataRepository Repo = new DataRepository())
             {
                 DbSet<T> Set = Repo.Set<T>();
-                
+
+                if (!Delete)
+                    Entry.Expand(Repo);
+
                 if (Delete)
                     Set.Remove(Set.Single(e => e.Id == Entry.Id));
                 else

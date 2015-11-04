@@ -89,6 +89,8 @@ namespace Client.EditWindows
 
         protected int RoomId { get; set; }
 
+        protected List<Booking> Bookings { get; set; }
+
         public EditRoom(Room Current)
         {
             using (DataRepository Repo = new DataRepository())
@@ -102,6 +104,7 @@ namespace Client.EditWindows
                 StandardSeats = string.Empty;
                 SpecialSeatType = string.Empty;
                 SpecialSeats = string.Empty;
+                Bookings = new List<Booking>();
                 RoomId = 0;
             }
             else
@@ -110,6 +113,7 @@ namespace Client.EditWindows
                 StandardSeats = Convert.ToString(Current.StandardSeats);
                 SpecialSeatType = Current.SpecialSeatType;
                 SpecialSeats = Convert.ToString(Current.SpecialSeats);
+                Bookings = Current.Bookings;
                 RoomId = Current.Id;
             }
         }
@@ -125,6 +129,7 @@ namespace Client.EditWindows
                 New.SpecialSeatType = SpecialSeatType;
                 New.SpecialSeats = Convert.ToInt32(SpecialSeats);
                 New.Id = RoomId;
+                New.Bookings = Bookings;
 
                 using (DataRepository Repo = new DataRepository())
                     New.Department = Repo.Departments.Single(d => d.Name == Department);

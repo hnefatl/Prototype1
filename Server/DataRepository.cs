@@ -13,10 +13,10 @@ namespace Server
     public class DataRepository
         : DbContext, IDataRepository
     {
-        List<Booking> IDataRepository.Bookings { get { return Bookings.Include(b => b.Rooms).Include(b => b.Students).Include(b => b.Subject).Include(b => b.Teacher).ToList(); } }
+        List<Booking> IDataRepository.Bookings { get { return Bookings.Include(b => b.Rooms).Include(b => b.Students).Include(b => b.Subject).Include(b => b.Teacher).Include(b => b.TimeSlot).ToList(); } }
         public virtual DbSet<Booking> Bookings { get; set; }
 
-        List<Department> IDataRepository.Departments { get { return Departments.Include(d => d.Teachers).ToList(); } }
+        List<Department> IDataRepository.Departments { get { return Departments.Include(d => d.Teachers).Include(d => d.Rooms).ToList(); } }
         public virtual DbSet<Department> Departments { get; set; }
 
         List<Room> IDataRepository.Rooms { get { return Rooms.Include(r => r.Bookings).Include(r => r.Department).ToList(); } }
@@ -38,9 +38,9 @@ namespace Server
         List<Class> IDataRepository.Classes { get { return Classes.Include(c => c.Owner).Include(c => c.Students).ToList(); } }
         public virtual DbSet<Class> Classes { get; set; }
 
-        public const bool Home = true;
-        private const string ServerProvider = Home ? "MSSQLLocalDb" : "v11.0";
-        private const string Drive = Home ? "G" : "E";
+        public static readonly bool Home = Environment.UserName == "Keith";
+        private static readonly string ServerProvider = Home ? "MSSQLLocalDb" : "v11.0";
+        private static readonly string Drive = Home ? "G" : "E";
 
         protected static object Lock = new object();
 
@@ -48,7 +48,7 @@ namespace Server
             : base(@"data source=(LocalDb)\" + ServerProvider + @";AttachDbFilename=" + Drive + @":\Burford\Year 13\Computing\Project\Data\Data.mdf;Database=Data;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
         {
             Monitor.Enter(Lock);
-            //SetProxies(false);
+            SetProxies(false);
             Database.SetInitializer(new DropCreateDatabaseAlways<DataRepository>());
         }
         protected override void Dispose(bool disposing)
