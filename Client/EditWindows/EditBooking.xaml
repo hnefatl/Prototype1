@@ -7,7 +7,7 @@
         xmlns:converters="clr-namespace:Client.Converters"
         xmlns:local="clr-namespace:Client.TimetableDisplay"
         mc:Ignorable="d"
-        Title="Edit Booking" Height="680" Width="430"
+        Title="Edit Booking" Height="750" Width="430"
         SizeToContent="Height"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Window.Resources>
@@ -134,6 +134,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Margin="5" VerticalAlignment="Top">
@@ -168,6 +169,10 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
+
+                <Expander Header="Classes" Grid.Row="2">
+                    
+                </Expander>
             </Grid>
         </GroupBox>
 
