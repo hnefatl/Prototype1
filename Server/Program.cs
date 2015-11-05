@@ -110,12 +110,7 @@ namespace Server
             }
             catch (Exception e)
             {
-                lock (Console.Out)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Error: " + e.ToString());
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                }
+                Print("Error: " + e.ToString(), ConsoleColor.Red);
                 Console.ReadKey(true);
             }
             Listener.Dispose();

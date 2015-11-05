@@ -23,13 +23,13 @@ namespace NetCore.Messages.DataMessages
             Snapshot = Frame;
         }
 
-        public override void Serialise(IWriter Out)
+        public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
 
             Snapshot.Serialise(Out);
         }
-        public override void Deserialise(IReader In)
+        public override void Deserialise(Reader In)
         {
             Snapshot.Deserialise(In);
         }

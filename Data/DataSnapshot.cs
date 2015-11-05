@@ -30,7 +30,7 @@ namespace Data
             Classes = new List<Class>();
         }
 
-        public void Serialise(IWriter Out)
+        public void Serialise(Writer Out)
         {
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => b.Serialise(Out));
@@ -53,7 +53,7 @@ namespace Data
             Out.Write(Classes.Count);
             Classes.ForEach(c => c.Serialise(Out));
         }
-        public void Deserialise(IReader In)
+        public void Deserialise(Reader In)
         {
             Bookings = new List<Booking>(In.ReadInt32());
             for (int x = 0; x < Bookings.Capacity; x++)

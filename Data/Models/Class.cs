@@ -39,7 +39,7 @@ namespace Data.Models
             Students.AddRange(c.Students);
         }
 
-        public override void Serialise(IWriter Out)
+        public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
 
@@ -48,7 +48,7 @@ namespace Data.Models
             Out.Write(Students.Count);
             Students.ForEach(s => Out.Write(s.Id));
         }
-        protected override void Deserialise(IReader In)
+        protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);
 

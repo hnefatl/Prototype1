@@ -22,13 +22,13 @@ namespace NetCore.Messages
             this.Message = Message;
         }
 
-        public override void Serialise(IWriter Writer)
+        public override void Serialise(Writer Writer)
         {
             base.Serialise(Writer);
 
             Writer.Write(Message);
         }
-        public override void Deserialise(IReader Reader)
+        public override void Deserialise(Reader Reader)
         {
             Message = Reader.ReadString();
         }

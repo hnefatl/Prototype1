@@ -24,14 +24,14 @@ namespace NetCore.Messages.DataMessages
             this.Delete = Delete;
         }
 
-        public override void Serialise(IWriter Out)
+        public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
 
             Out.Write(Delete);
             Item.Serialise(Out);
         }
-        public override void Deserialise(IReader In)
+        public override void Deserialise(Reader In)
         {
             Delete = In.ReadBool();
             Item = DataModel.DeserialiseExternal(In);

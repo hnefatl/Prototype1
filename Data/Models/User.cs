@@ -73,7 +73,7 @@ namespace Data.Models
             Bookings.AddRange(u.Bookings);
         }
 
-        public override void Serialise(IWriter Out)
+        public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
 
@@ -85,7 +85,7 @@ namespace Data.Models
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
         }
-        protected override void Deserialise(IReader In)
+        protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);
 

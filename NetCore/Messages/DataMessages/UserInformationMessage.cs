@@ -22,7 +22,7 @@ namespace NetCore.Messages.DataMessages
             this.User = User;
         }
 
-        public override void Serialise(IWriter Out)
+        public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
 
@@ -32,7 +32,7 @@ namespace NetCore.Messages.DataMessages
                 User.Serialise(Out);
             }
         }
-        public override void Deserialise(IReader In)
+        public override void Deserialise(Reader In)
         {
             if (In.ReadBool())
             {

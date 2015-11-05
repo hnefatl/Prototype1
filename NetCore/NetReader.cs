@@ -10,20 +10,14 @@ using Shared;
 namespace NetCore
 {
     public class NetReader
-        : IReader
+        : Reader
     {
-        protected Stream Base { get; set; }
-
         public NetReader(Stream Base)
+            :base(Base)
         {
-            this.Base = Base;
-        }
-        public void Dispose()
-        {
-            Base.Dispose();
         }
 
-        public byte[] ReadBytes(int Count)
+        public virtual byte[] ReadBytes(int Count)
         {
             if (Count <= 0)
                 return new byte[0];
@@ -35,38 +29,38 @@ namespace NetCore
 
             return Buffer;
         }
-        public byte ReadByte()
+        public override byte ReadByte()
         {
             return ReadBytes(1)[0];
         }
-        public bool ReadBool()
+        public override bool ReadBool()
         {
             return Convert.ToBoolean(ReadByte());
         }
-        public short ReadInt16()
+        public override short ReadInt16()
         {
             return IPAddress.NetworkToHostOrder(BitConverter.ToInt16(ReadBytes(sizeof(short)), 0));
         }
-        public int ReadInt32()
+        public override int ReadInt32()
         {
             return IPAddress.NetworkToHostOrder(BitConverter.ToInt32(ReadBytes(sizeof(int)), 0));
         }
-        public long ReadInt64()
+        public override long ReadInt64()
         {
             return IPAddress.NetworkToHostOrder(BitConverter.ToInt64(ReadBytes(sizeof(long)), 0));
         }
-        public string ReadString()
+        public override string ReadString()
         {
             int Length = ReadInt32();
             return Encoding.UTF8.GetString(ReadBytes(Length));
         }
 
-        public IAsyncResult BeginReadBytes(int Count, AsyncCallback Callback)
+        public virtual IAsyncResult BeginReadBytes(int Count, AsyncCallback Callback)
         {
             byte[] Buffer = new byte[Count];
             return Base.BeginRead(Buffer, 0, Buffer.Length, Callback, Buffer);
         }
-        public byte[] EndReadBytes(IAsyncResult Handle)
+        public virtual byte[] EndReadBytes(IAsyncResult Handle)
         {
             byte[] Buffer = (byte[])Handle.AsyncState;
 
@@ -80,56 +74,56 @@ namespace NetCore
             return Buffer;
         }
 
-        public IAsyncResult BeginReadByte(AsyncCallback Callback)
+        public virtual IAsyncResult BeginReadByte(AsyncCallback Callback)
         {
             return BeginReadBytes(sizeof(byte), Callback);
         }
-        public byte EndReadByte(IAsyncResult Handle)
+        public virtual byte EndReadByte(IAsyncResult Handle)
         {
             return EndReadBytes(Handle)[0];
         }
 
-        public IAsyncResult BeginReadBool(AsyncCallback Callback)
+        public virtual IAsyncResult BeginReadBool(AsyncCallback Callback)
         {
             return BeginReadByte(Callback);
         }
-        public bool EndReadBool(IAsyncResult Handle)
+        public virtual bool EndReadBool(IAsyncResult Handle)
         {
             return Convert.ToBoolean(EndReadByte(Handle));
         }
 
-        public IAsyncResult BeginReadInt16(AsyncCallback Callback)
+        public virtual IAsyncResult BeginReadInt16(AsyncCallback Callback)
         {
             return BeginReadBytes(sizeof(short), Callback);
         }
-        public short EndReadInt16(IAsyncResult Handle)
+        public virtual short EndReadInt16(IAsyncResult Handle)
         {
             return IPAddress.NetworkToHostOrder(BitConverter.ToInt16(EndReadBytes(Handle), 0));
         }
 
-        public IAsyncResult BeginReadInt32(AsyncCallback Callback)
+        public virtual IAsyncResult BeginReadInt32(AsyncCallback Callback)
         {
             return BeginReadBytes(sizeof(int), Callback);
         }
-        public int EndReadInt32(IAsyncResult Handle)
+        public virtual int EndReadInt32(IAsyncResult Handle)
         {
             return IPAddress.NetworkToHostOrder(BitConverter.ToInt32(EndReadBytes(Handle), 0));
         }
 
-        public IAsyncResult BeginReadInt64(AsyncCallback Callback)
+        public virtual IAsyncResult BeginReadInt64(AsyncCallback Callback)
         {
             return BeginReadBytes(sizeof(long), Callback);
         }
-        public long EndReadInt64(IAsyncResult Handle)
+        public virtual long EndReadInt64(IAsyncResult Handle)
         {
             return IPAddress.NetworkToHostOrder(BitConverter.ToInt64(EndReadBytes(Handle), 0));
         }
 
-        public IAsyncResult BeginReadString(AsyncCallback Callback)
+        public virtual IAsyncResult BeginReadString(AsyncCallback Callback)
         {
             return BeginReadInt32(Callback);
         }
-        public string EndReadString(IAsyncResult Handle)
+        public virtual string EndReadString(IAsyncResult Handle)
         {
             int Length = EndReadInt32(Handle);
 

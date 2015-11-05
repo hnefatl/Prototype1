@@ -8,7 +8,7 @@ namespace Shared
 {
     public interface ISerialisable
     {
-        void Serialise(IWriter Out);
-        void Deserialise(IReader In);
+        void Serialise(Writer Out);
+        void Deserialise(Reader In);
     }
 }

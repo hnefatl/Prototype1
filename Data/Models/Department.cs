@@ -44,7 +44,7 @@ namespace Data.Models
             Rooms.AddRange(d.Rooms);
         }
 
-        public override void Serialise(IWriter Out)
+        public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
 
@@ -54,7 +54,7 @@ namespace Data.Models
             Out.Write(Rooms.Count);
             Rooms.ForEach(r => Out.Write(r.Id));
         }
-        protected override void Deserialise(IReader In)
+        protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);
 

@@ -69,7 +69,7 @@ namespace Data.Models
             Department = r.Department;
         }
 
-        public override void Serialise(IWriter Out)
+        public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
 
@@ -82,7 +82,7 @@ namespace Data.Models
             Bookings.ForEach(b => Out.Write(b.Id));
             Out.Write(Department.Id);
         }
-        protected override void Deserialise(IReader In)
+        protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);
 

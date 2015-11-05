@@ -59,7 +59,7 @@ namespace Data.Models
             Classes.AddRange(t.Classes);
         }
 
-        public override void Serialise(IWriter Out)
+        public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
 
@@ -69,7 +69,7 @@ namespace Data.Models
             Classes.ForEach(c => Out.Write(c.Id));
             Out.Write(Email);
         }
-        protected override void Deserialise(IReader In)
+        protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);
 

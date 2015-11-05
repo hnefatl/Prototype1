@@ -14,12 +14,12 @@ namespace NetCore.Messages
     {
         private static Type[] MessageTypes { get; set; }
 
-        public virtual void Serialise(IWriter Writer)
+        public virtual void Serialise(Writer Writer)
         {
             Writer.Write((byte)0); // Send a single byte as a notification of the message coming (needed for the async style reception).
             Writer.Write(GetType().Name);
         }
-        public abstract void Deserialise(IReader Reader);
+        public abstract void Deserialise(Reader Reader);
 
         protected virtual int GetMessageSize()
         {

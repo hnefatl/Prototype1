@@ -24,14 +24,14 @@ namespace NetCore.Messages
             this.ComputerName = ComputerName;
         }
 
-        public override void Serialise(IWriter Writer)
+        public override void Serialise(Writer Writer)
         {
             base.Serialise(Writer);
 
             Writer.Write(Username);
             Writer.Write(ComputerName);
         }
-        public override void Deserialise(IReader Reader)
+        public override void Deserialise(Reader Reader)
         {
             Username = Reader.ReadString();
             ComputerName = Reader.ReadString();

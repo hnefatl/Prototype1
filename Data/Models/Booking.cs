@@ -93,7 +93,7 @@ namespace Data.Models
             Teacher = b.Teacher;
         }
 
-        public override void Serialise(IWriter Out)
+        public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
 
@@ -109,7 +109,7 @@ namespace Data.Models
                 Out.Write(s.Id);
             Out.Write(Teacher.Id);
         }
-        protected override void Deserialise(IReader In)
+        protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);
 

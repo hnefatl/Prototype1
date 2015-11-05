@@ -6,6 +6,8 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
+using Shared;
+
 namespace Client
 {
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -18,7 +20,7 @@ namespace Client
 
         private static Dictionary<string, object> Inner { get; set; }
 
-        // Static indexers don't work -.-
+        // Static indexers don't work :(
         public static object Get(string Setting)
         {
             return Inner[Setting];
@@ -27,16 +29,10 @@ namespace Client
         {
             return (T)Convert.ChangeType(Get(Setting), typeof(T));
         }
+        
         public static void Set(string Setting, object Value)
         {
-            if (!Value.GetType().IsSerializable)
-                throw new SerializationException("Parameter Value of type " + Value.GetType().ToString() + " is not serialisable.");
-
             Inner[Setting] = Value;
-        }
-        public static void Set<T>(string Setting, T Value)
-        {
-            Set(Setting, Value);
         }
 
         public static void Add(string Setting, object Value)
@@ -63,12 +59,15 @@ namespace Client
             {
                 Inner = new Dictionary<string, object>();
                 //Inner.Add("ServerAddress", "10.105.35.97");
-                //Inner.Add("ServerPort", "34652");
-                BinaryFormatter Reader = new BinaryFormatter();
+                //Inner.Add("ServerPort", 34652);
+
                 using (FileStream File = new FileStream(Path, FileMode.Open))
                 {
-                    while (File.Position != File.Length)
-                        Inner.Add(Convert.ToString(Reader.Deserialize(File)), Reader.Deserialize(File));
+                    using (Reader Reader = GetReader(File))
+                    {
+                        while (File.Position != File.Length)
+                            Inner.Add(Reader.ReadString(), Reader.ReadString());
+                    }
                 }
             }
             catch
@@ -81,13 +80,15 @@ namespace Client
         {
             try
             {
-                BinaryFormatter Writer = new BinaryFormatter();
                 using (FileStream File = new FileStream(Path, FileMode.Create))
                 {
-                    foreach (KeyValuePair<string, object> Setting in Inner)
+                    using (Writer Writer = GetWriter(File))
                     {
-                        Writer.Serialize(File, Setting.Key);
-                        Writer.Serialize(File, Setting.Value);
+                        foreach (KeyValuePair<string, object> Setting in Inner)
+                        {
+                            Writer.Write(Setting.Key);
+                            Writer.Write(Setting.Value);
+                        }
                     }
                 }
             }
@@ -97,6 +98,23 @@ namespace Client
             }
 
             return true;
+        }
+
+        private static Reader GetReader(Stream Base)
+        {
+#if DEBUG
+            return new Shared.TextReader(Base);
+#else
+            return new NetCore.NetReader(Base);
+#endif
+        }
+        private static Writer GetWriter(Stream Base)
+        {
+#if DEBUG
+            return new Shared.TextWriter(Base);
+#else
+            return new NetCore.NetWriter(Base);
+#endif
         }
     }
 }

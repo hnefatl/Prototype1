@@ -20,12 +20,12 @@ namespace Data.Models
 
         public abstract bool Conflicts(List<DataModel> Others);
 
-        public virtual void Serialise(IWriter Out)
+        public virtual void Serialise(Writer Out)
         {
             Out.Write(GetType().FullName);
             Out.Write(Id);
         }
-        protected virtual void Deserialise(IReader In)
+        protected virtual void Deserialise(Reader In)
         {
             Id = In.ReadInt32();
         }
@@ -36,7 +36,7 @@ namespace Data.Models
         public abstract void Attach();
         public abstract void Detach();
 
-        public static DataModel DeserialiseExternal(IReader In)
+        public static DataModel DeserialiseExternal(Reader In)
         {
             string TypeName = In.ReadString();
 
