@@ -19,17 +19,17 @@ namespace Client.EditWindows
     public partial class EditPeriod
         : Window, INotifyPropertyChanged
     {
-        protected string _RoomName;
-        public string RoomName
+        protected string _PeriodName;
+        public string PeriodName
         {
             get
             {
-                return _RoomName;
+                return _PeriodName;
             }
             set
             {
-                _RoomName = value;
-                OnPropertyChanged("RoomName");
+                _PeriodName = value;
+                OnPropertyChanged("PeriodName");
             }
         }
 
@@ -69,14 +69,14 @@ namespace Client.EditWindows
 
             if (Existing == null)
             {
-                RoomName = string.Empty;
+                PeriodName = string.Empty;
                 Start = string.Empty;
                 End = string.Empty;
                 PeriodId = 0;
             }
             else
             {
-                RoomName = Existing.Name;
+                PeriodName = Existing.Name;
                 Start = Convert.ToString(Existing.Start.Hours).PadLeft(2, '0') + ":" + Convert.ToString(Existing.Start.Minutes).PadLeft(2, '0');
                 End = Convert.ToString(Existing.End.Hours).PadLeft(2, '0') + ":" + Convert.ToString(Existing.End.Minutes).PadLeft(2, '0');
                 PeriodId = Existing.Id;
@@ -88,7 +88,7 @@ namespace Client.EditWindows
             TimeSlot New = new TimeSlot();
             try
             {
-                New.Name = RoomName;
+                New.Name = PeriodName;
                 New.Start = TimeSpan.Parse(Start);
                 New.End = TimeSpan.Parse(End);
                 New.Id = PeriodId;
@@ -110,7 +110,7 @@ namespace Client.EditWindows
             string Error = null;
 
             TimeSpan Out;
-            if (string.IsNullOrWhiteSpace(RoomName))
+            if (string.IsNullOrWhiteSpace(PeriodName))
                 Error = "You must enter a room name";
             else if (string.IsNullOrWhiteSpace(Start) || !TimeSpan.TryParse(Start, out Out))
                 Error = "Invalid start time format.";

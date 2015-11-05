@@ -18,7 +18,7 @@ namespace NetCore.Client
     public class Connection
         : IDisposable
     {
-        public TcpClient Inner { get; protected set; }
+        public Socket Inner { get; protected set; }
 
         public bool Connected { get { return Inner.Connected; } }
 
@@ -33,7 +33,7 @@ namespace NetCore.Client
 
         public Connection()
         {
-            Inner = new TcpClient();
+            Inner = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         
             Disconnect = delegate { };
             MessageReceived = delegate { };
@@ -59,13 +59,13 @@ namespace NetCore.Client
             if (Inner.Connected)
                 return false;
 
-            Inner = new TcpClient();
+            Inner = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             try
             {
                 Inner.Connect(Server);
 
-                Stream = Inner.GetStream();
+                Stream = new NetworkStream(Inner);
                 In = new NetReader(Stream);
                 Out = new NetWriter(Stream);
 
@@ -127,7 +127,7 @@ namespace NetCore.Client
             {
                 lock (Inner)
                    if (Connected)
-                        Out.Write(Msg);
+                        Msg.Serialise(Out);
             }
             catch (ObjectDisposedException)
             { return false; }

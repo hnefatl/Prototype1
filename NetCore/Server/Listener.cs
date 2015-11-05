@@ -19,9 +19,9 @@ namespace NetCore.Server
     public class Listener
         : IDisposable
     {
-        protected TcpListener Inner { get; set; }
+        protected Socket Inner { get; set; }
 
-        public IPEndPoint Endpoint { get { return (IPEndPoint)Inner.LocalEndpoint; } }
+        public IPEndPoint Endpoint { get { return (IPEndPoint)Inner.LocalEndPoint; } }
 
         public IList<Client> Clients { get; protected set; }
         public BlockingQueue<ClientMessagePair> Messages { get; protected set; }
@@ -53,8 +53,9 @@ namespace NetCore.Server
             // Allow support for non-List collections of clients (ie. ObservableCollection)
             Clients = ClientListType;
 
-            Inner = new TcpListener(Endpoint);
-            Inner.AllowNatTraversal(true);
+            Inner = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            Inner.Bind(Endpoint);
+            Inner.Listen(50);
 
             Clients = new List<Client>();
             Messages = new BlockingQueue<ClientMessagePair>();
@@ -77,8 +78,6 @@ namespace NetCore.Server
 
             this.BufferMessages = BufferMessages;
 
-            Inner.Start();
-
             Run = true;
             AcceptingTask = Task.Factory.StartNew(Accept);
         }
@@ -94,7 +93,7 @@ namespace NetCore.Server
                 }
                 catch { }
             }
-            Inner.Stop();
+            Inner.Dispose();
 
             AcceptingTask.Wait();
         }
@@ -106,7 +105,7 @@ namespace NetCore.Server
                 Client New = null;
                 try
                 {
-                    New = Client.Create(Inner.AcceptTcpClient());
+                    New = Client.Create(Inner.Accept());
                 }
                 catch (Exception e)
                 {

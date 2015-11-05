@@ -19,9 +19,9 @@ namespace NetCore.Server
     {
         public string Username { get; protected set; }
         public string ComputerName { get; protected set; }
-        public IPEndPoint Remote { get { return (IPEndPoint)Connection.Client.RemoteEndPoint; } }
+        public IPEndPoint Remote { get { return (IPEndPoint)Connection.RemoteEndPoint; } }
 
-        protected TcpClient Connection { get; set; }
+        protected Socket Connection { get; set; }
         public bool Connected { get { return Connection.Connected; } }
 
         protected NetworkStream Stream { get; set; }
@@ -33,14 +33,14 @@ namespace NetCore.Server
 
         private byte[] Buffer { get; set; }
 
-        private Client(ConnectMessage m, TcpClient Connection)
+        private Client(ConnectMessage m, Socket Connection)
         {
             Username = m.Username;
             ComputerName = m.ComputerName;
 
             this.Connection = Connection;
 
-            Stream = Connection.GetStream();
+            Stream = new NetworkStream(Connection);
             In = new NetReader(Stream);
             Out = new NetWriter(Stream);
 
@@ -108,7 +108,7 @@ namespace NetCore.Server
             {
                 lock (Connection)
                     if (Connected)
-                        Out.Write(m);
+                        m.Serialise(Out);
             }
             catch
             {
@@ -124,9 +124,9 @@ namespace NetCore.Server
                 return Username + "@" + ComputerName + " on " + Remote.Address.ToString() + ":" + Remote.Port;
         }
 
-        public static Client Create(TcpClient Connection)
+        public static Client Create(Socket Connection)
         {
-            NetReader Reader = new NetReader(Connection.GetStream()); // Don't Dispose this - it closes the underlying stream
+            NetReader Reader = new NetReader(new NetworkStream(Connection)); // Don't Dispose this - it closes the underlying stream
             Reader.ReadByte(); // Read the notification byte
             return new Client(Message.ReadMessage<ConnectMessage>(Reader), Connection);
         }

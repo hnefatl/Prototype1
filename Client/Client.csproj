@@ -110,6 +110,7 @@
       <DependentUpon>EditBooking.xaml</DependentUpon>
     </Compile>
     <Compile Include="Checkable.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="TimetableDisplay\TimePicker.xaml.cs">
       <DependentUpon>TimePicker.xaml</DependentUpon>
     </Compile>
