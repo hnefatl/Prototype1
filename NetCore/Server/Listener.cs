@@ -35,6 +35,10 @@ namespace NetCore.Server
         protected Task AcceptingTask { get; set; }
         protected bool Run { get; set; }
 
+        public Listener(int Port)
+            : this(new IPEndPoint(IPAddress.Any, Port))
+        {
+        }
         public Listener(string IP, int Port)
             : this(new IPEndPoint(IPAddress.Parse(IP), Port))
         {
@@ -50,6 +54,7 @@ namespace NetCore.Server
             Clients = ClientListType;
 
             Inner = new TcpListener(Endpoint);
+            Inner.AllowNatTraversal(true);
 
             Clients = new List<Client>();
             Messages = new BlockingQueue<ClientMessagePair>();

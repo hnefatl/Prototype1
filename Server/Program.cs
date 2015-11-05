@@ -91,7 +91,7 @@ namespace Server
 
             Print("Initialised data", ConsoleColor.Gray);
 
-            Listener = new Listener("127.0.0.1", 34652);
+            Listener = new Listener(34652);
             try
             {
                 Listener.ClientConnect += ClientConnected;

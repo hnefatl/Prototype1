@@ -10,6 +10,7 @@ using Data.Models;
 using NetCore.Client;
 using NetCore.Messages;
 using Client.Admin;
+using Shared;
 
 namespace Client
 {
@@ -26,11 +27,6 @@ namespace Client
             if (!Settings.Load())
                 Environment.Exit(-1); // Fatal error
 
-            Settings.Clear();
-            Settings.Add("ServerAddress", "127.0.0.1");
-            Settings.Add("ServerPort", "34652");
-            Settings.Save();
-
             Connection = new Connection();
 
             NetHandler();
@@ -42,10 +38,13 @@ namespace Client
         {
             Connection.Disconnect += Connection_Disconnect;
 
+            string Address = Settings.Get<string>("ServerAddress");
+            ushort Port = Settings.Get<ushort>("ServerPort");
+
             while (true)
             {
                 // Try to connect
-                bool Connected = Connection.Connect(Settings.Get<string>("ServerAddress"), Settings.Get<ushort>("ServerPort"), new ConnectMessage(Environment.UserName, Environment.MachineName));
+                bool Connected = Connection.Connect(Address, Port, new ConnectMessage(Environment.UserName, Environment.MachineName));
 
                 if (Connected)
                 {

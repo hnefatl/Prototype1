@@ -18,8 +18,8 @@ namespace Shared
         }
         public override void Dispose()
         {
-            base.Dispose();
             Writer.Dispose();
+            base.Dispose();
         }
 
         public override void Write(byte b)

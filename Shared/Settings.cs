@@ -8,7 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using Shared;
 
-namespace Client
+namespace Shared
 {
     //////////////////////////////////////////////////////////////////////////////////////////////
     // TODO: Ask client how to store client settings - file? Command-Line arguments on startup? //
@@ -16,7 +16,8 @@ namespace Client
 
     public sealed class Settings
     {
-        public static string Path { get { return "Settings.txt"; } }
+        private static string _Path = "Settings.txt";
+        public static string Path { get { return _Path; } set { _Path = value; } }
 
         private static Dictionary<string, object> Inner { get; set; }
 
@@ -29,7 +30,7 @@ namespace Client
         {
             return (T)Convert.ChangeType(Get(Setting), typeof(T));
         }
-        
+
         public static void Set(string Setting, object Value)
         {
             Inner[Setting] = Value;
@@ -58,15 +59,20 @@ namespace Client
             try
             {
                 Inner = new Dictionary<string, object>();
-                //Inner.Add("ServerAddress", "10.105.35.97");
-                //Inner.Add("ServerPort", 34652);
 
                 using (FileStream File = new FileStream(Path, FileMode.Open))
                 {
                     using (Reader Reader = GetReader(File))
                     {
-                        while (File.Position != File.Length)
-                            Inner.Add(Reader.ReadString(), Reader.ReadString());
+                        while (true)
+                        {
+                            string Key = Reader.ReadString();
+                            string Value = Reader.ReadString();
+                            if (Key == null || Value == null)
+                                break;
+
+                            Inner.Add(Key, Value);
+                        }
                     }
                 }
             }
