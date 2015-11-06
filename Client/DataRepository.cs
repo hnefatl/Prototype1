@@ -108,8 +108,6 @@ namespace Client
             {
                 Monitor.Enter(Lock);
 
-                Server.Send(Msg);
-
                 if (InitialisedEvent == null)
                     InitialisedEvent = new ManualResetEvent(false);
                 InitialisedEvent.Reset();
@@ -129,6 +127,8 @@ namespace Client
                 _Subjects.CollectionChanged += Data_CollectionChanged;
                 _Periods.CollectionChanged += Data_CollectionChanged;
                 _Classes.CollectionChanged += Data_CollectionChanged;
+
+                Server.Send(Msg);
             }
             catch
             {

@@ -54,8 +54,9 @@ namespace Data.Models
 
             ClassName = In.ReadString();
             Owner = new Teacher() { Id = In.ReadInt32() };
-            Students = Enumerable.Repeat(new Student(), In.ReadInt32()).ToList();
-            Students.ForEach(s => s.Id = In.ReadInt32());
+            Students = new List<Student>(In.ReadInt32());
+            for (int x = 0; x < Students.Capacity; x++)
+                Students.Add(new Student() { Id = In.ReadInt32() });
         }
         public override bool Expand(IDataRepository Repo)
         {
