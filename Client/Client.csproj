@@ -111,9 +111,6 @@
     </Compile>
     <Compile Include="Checkable.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="TimetableDisplay\TimePicker.xaml.cs">
-      <DependentUpon>TimePicker.xaml</DependentUpon>
-    </Compile>
     <Compile Include="TimetableDisplay\TimetableDisplay.xaml.cs">
       <DependentUpon>TimetableDisplay.xaml</DependentUpon>
     </Compile>
@@ -154,10 +151,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="EditWindows\EditBooking.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="TimetableDisplay\TimePicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
