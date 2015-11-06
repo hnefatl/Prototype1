@@ -84,9 +84,6 @@
     <Compile Include="Admin\AdminWindow.xaml.cs">
       <DependentUpon>AdminWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Admin\SelectClass.xaml.cs">
-      <DependentUpon>SelectClass.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Converters\BookingTypeToStringConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\IntToStringConverter.cs" />
@@ -125,10 +122,6 @@
       <DependentUpon>TrayIcon.xaml</DependentUpon>
     </Compile>
     <Page Include="Admin\AdminWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Admin\SelectClass.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

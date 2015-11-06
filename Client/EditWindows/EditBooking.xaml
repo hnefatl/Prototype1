@@ -142,11 +142,20 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Text="Filter:" Margin="0,7,5,0" Grid.Column="0"/>
-                    <TextBox Name="Text_StudentFilter" Width="150" Margin="0,5,5,0" Grid.Column="1" TextChanged="Text_StudentFilter_TextChanged"/>
+                    <TextBox Name="Text_StudentFilter" Width="125" Margin="0,5,5,0" Grid.Column="1" TextChanged="Text_StudentFilter_TextChanged"/>
                     <ComboBox Name="Combo_FilterType" ItemsSource="{Binding Path=FilterValues, Mode=OneTime}" SelectedIndex="0" Width="100" Margin="0,5,5,0" Grid.Column="2" SelectionChanged="Combo_FilterType_SelectionChanged"/>
+                    <ComboBox Name="Combo_Classes" SelectedIndex="0" Width="100" Margin="0,5,5,0" Grid.Column="3" SelectionChanged="Combo_Classes_SelectionChanged">
+                        <ComboBox.ItemsSource>
+                            <CompositeCollection>
+                                <ComboBoxItem>No Class</ComboBoxItem>
+                                <CollectionContainer Collection="{Binding Classes, Mode=OneWay, Source={x:Reference Wnd}}"/>
+                            </CompositeCollection>
+                        </ComboBox.ItemsSource>
+                    </ComboBox>
                 </Grid>
 
                 <ListView Name="List_Students" ItemsSource="{Binding FilteredStudents}" MinHeight="100" VerticalAlignment="Stretch" Margin="5" Grid.Row="1">

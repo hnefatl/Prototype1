@@ -41,9 +41,12 @@ namespace Client.EditWindows
             }
         }
 
+        protected List<Checkable<Student>> RawStudents { get; set; }
         public List<Checkable<Student>> Students { get; set; }
         public ObservableCollection<Checkable<Student>> FilteredStudents { get; set; }
         public List<Checkable<Student>> SelectedStudents { get { return Students.Where(s => s.Checked).ToList(); } }
+
+        public List<Class> Classes { get; set; }
 
         protected readonly string[] _BookingTypes = Enum.GetNames(typeof(BookingType));
         public string[] BookingTypes { get { return _BookingTypes; } }
@@ -128,9 +131,12 @@ namespace Client.EditWindows
 
             using (DataRepository Repo = new DataRepository())
             {
+                Classes = new List<Class>() { null }; // One null value at start
+                Classes.AddRange(Repo.Classes);
                 Rooms = new ObservableCollection<Checkable<Room>>(Repo.Rooms.ToList().Select(r1 => new Checkable<Room>(r1, (StartRoom != null && r1.Id == StartRoom.Id) || SelectedRooms.Any(r2 => r1.Id == r2.Id))));
                 Periods = new ObservableCollection<TimeSlot>(Repo.Periods);
-                Students = Repo.Users.OfType<Student>().ToList().Select(s1 => new Checkable<Student>(s1, SelectedStudents.Any(s2 => s2.Id == s1.Id))).ToList();
+                RawStudents = Repo.Users.OfType<Student>().Select(s1 => new Checkable<Student>(s1, SelectedStudents.Any(s2 => s2.Id == s1.Id))).ToList();
+                Students = RawStudents.ToList();
                 FilteredStudents = new ObservableCollection<Checkable<Student>>(Students);
 
                 Subjects = Repo.Subjects.ToList();
@@ -193,6 +199,26 @@ namespace Client.EditWindows
         }
         private void Text_StudentFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
+            UpdateFilter();
+        }
+
+        private void Combo_Classes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Students.Clear();
+            if (Combo_Classes.SelectedItem == null)
+            {
+                foreach (Checkable<Student> s in RawStudents)
+                    Students.Add(s);
+            }
+            else
+            {
+                if (Combo_Classes.SelectedItem is Class)
+                {
+                    Class c = (Class)Combo_Classes.SelectedItem;
+                    foreach (Checkable<Student> s in RawStudents.Where(s => c.Students.Contains(s.Value)))
+                        Students.Add(s);
+                }
+            }
             UpdateFilter();
         }
 

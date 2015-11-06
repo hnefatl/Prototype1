@@ -91,6 +91,7 @@ namespace Server
 
             Print("Initialised data", ConsoleColor.Gray);
 
+            bool Closing = false;
             Listener = new Listener(34652);
             try
             {
@@ -102,6 +103,7 @@ namespace Server
 
                 Console.ReadKey(true);
 
+                Closing = true;
                 Listener.Stop();
                 Print("Listener stopped...", ConsoleColor.Red);
                 Listener.ClientConnect -= ClientConnected;
@@ -110,10 +112,17 @@ namespace Server
             }
             catch (Exception e)
             {
-                Print("Error: " + e.ToString(), ConsoleColor.Red);
-                Console.ReadKey(true);
+                if (!Closing)
+                {
+                    Print("Error: " + e.ToString(), ConsoleColor.Red);
+                    Console.ReadKey(true);
+                }
             }
-            Listener.Dispose();
+            try
+            {
+                Listener.Dispose();
+            }
+            catch { }
         }
 
         static void ClientConnected(Listener Sender, Client c)

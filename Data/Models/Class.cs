@@ -83,5 +83,10 @@ namespace Data.Models
                 Owner.Classes.RemoveAll(i => i.Id == Id);
             Students.ForEach(s => { if (s != null) s.Classes.RemoveAll(i => i.Id == Id); });
         }
+
+        public override string ToString()
+        {
+            return ClassName;
+        }
     }
 }
