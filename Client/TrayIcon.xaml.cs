@@ -62,9 +62,9 @@ namespace Client
         protected override void OnClosed(EventArgs e)
         {
             ToolbarIcon.Visible = false;
+            ToolbarIcon.Icon.Dispose();
             ToolbarIcon.Icon = null; // Actually hides the icon, otherwise it lingers for a bit
             Menu.Dispose();
-            ToolbarIcon.Dispose();
 
             base.OnClosed(e);
         }

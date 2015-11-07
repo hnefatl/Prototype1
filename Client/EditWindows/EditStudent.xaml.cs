@@ -17,7 +17,7 @@ using Data.Models;
 namespace Client.EditWindows
 {
     public partial class EditStudent
-        : Window, INotifyPropertyChanged
+        : EditWindow<Student>
     {
         protected string _FirstName;
         public string FirstName { get { return _FirstName; } set { _FirstName = value; OnPropertyChanged("FirstName"); } }
@@ -75,7 +75,7 @@ namespace Client.EditWindows
             }
         }
 
-        public Student GetStudent()
+        public override Student GetItem()
         {
             Student New = new Student();
 
@@ -130,13 +130,6 @@ namespace Client.EditWindows
                 DialogResult = true;
                 Close();
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string PropertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
         }
     }
 }

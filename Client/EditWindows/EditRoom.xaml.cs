@@ -17,7 +17,7 @@ using Data.Models;
 namespace Client.EditWindows
 {
     public partial class EditRoom
-        : Window, INotifyPropertyChanged
+        : EditWindow<Room>
     {
         protected string _RoomName;
         public string RoomName
@@ -118,7 +118,7 @@ namespace Client.EditWindows
             }
         }
 
-        public Room GetRoom()
+        public override Room GetItem()
         {
             Room New = new Room();
 
@@ -144,8 +144,8 @@ namespace Client.EditWindows
 
         private void Button_Back_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
-            Close();
+            base.DialogResult = false;
+            base.Close();
         }
         private void Button_Save_Click(object sender, RoutedEventArgs e)
         {
@@ -175,12 +175,5 @@ namespace Client.EditWindows
                 Close();
             }
         }
-
-        public void OnPropertyChanged(string PropertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

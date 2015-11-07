@@ -19,7 +19,7 @@ using Data.Models;
 namespace Client.EditWindows
 {
     public partial class EditBooking
-        : Window, INotifyPropertyChanged
+        : EditWindow<Booking>
     {
         public User CurrentUser { get; private set; }
 
@@ -123,8 +123,6 @@ namespace Client.EditWindows
         }
         public EditBooking(User CurrentUser, bool NewBooking, int Id, List<Room> SelectedRooms, Room StartRoom, TimeSlot TimeSlot, List<Student> SelectedStudents, Subject Subject, Teacher Teacher, BookingType BookingType) // For editing an existing booking
         {
-            PropertyChanged = delegate { };
-
             this.CurrentUser = CurrentUser;
             SelectedBookingType = BookingType;
             BookingId = Id;
@@ -166,17 +164,27 @@ namespace Client.EditWindows
 
             InitializeComponent();
 
+            // If in release mode, restrict some of the options available 
+#if !DEBUG
+            if (!CurrentUser.IsAdmin) // Only let the teacher be changed if the user is an admin
+                Combo_Teacher.IsEnabled = false;
+
+            if (CurrentUser != Teacher && !CurrentUser.IsAdmin) // Only let any edits be made if the current user is the owner/admin
+                Container.IsEnabled = false;
+#endif
+
             if (NewBooking) // Must be making a new booking
                 Button_Delete.IsEnabled = false;
         }
 
-        public Booking GetBooking()
+        public override Booking GetItem()
         {
             if (SelectedTimeslot == null || SelectedRooms == null || SelectedRooms.Count == 0 || SelectedSubject == null || SelectedStudents == null || SelectedTeacher == null)
                 return null;
 
             return new Booking(SelectedTimeslot, SelectedRooms.Select(c => c.Value).ToList(), SelectedSubject,
-                SelectedStudents.Select(c => c.Value).ToList(), SelectedTeacher, SelectedBookingType) { Id = BookingId, Date = CurrentDate };
+                SelectedStudents.Select(c => c.Value).ToList(), SelectedTeacher, SelectedBookingType)
+            { Id = BookingId, Date = CurrentDate };
         }
 
         public void UpdateFilter()
@@ -233,7 +241,7 @@ namespace Client.EditWindows
                 Error = "You must select a teacher";
             else
             {
-                Booking b = GetBooking();
+                Booking b = GetItem();
                 if (b == null)
                     Error = "Invalid booking.";
                 else
@@ -261,13 +269,6 @@ namespace Client.EditWindows
                 DialogResult = true;
                 Close();
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string PropertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
         }
     }
 }

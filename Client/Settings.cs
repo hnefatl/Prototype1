@@ -108,19 +108,11 @@ namespace Client
 
         private static Reader GetReader(Stream Base)
         {
-#if DEBUG
             return new Shared.TextReader(Base);
-#else
-            return new NetCore.NetReader(Base);
-#endif
         }
         private static Writer GetWriter(Stream Base)
         {
-#if DEBUG
             return new Shared.TextWriter(Base);
-#else
-            return new NetCore.NetWriter(Base);
-#endif
         }
     }
 }

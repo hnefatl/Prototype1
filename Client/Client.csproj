@@ -94,6 +94,12 @@
     <Compile Include="Converters\NullableToVisibilityConverter.cs" />
     <Compile Include="Converters\StringToIntConverter.cs" />
     <Compile Include="DataRepository.cs" />
+    <Compile Include="EditWindows\EditClass.xaml.cs">
+      <DependentUpon>EditClass.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EditWindows\EditDepartment.xaml.cs">
+      <DependentUpon>EditDepartment.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EditWindows\EditPeriod.xaml.cs">
       <DependentUpon>EditPeriod.xaml</DependentUpon>
     </Compile>
@@ -110,6 +116,7 @@
       <DependentUpon>EditBooking.xaml</DependentUpon>
     </Compile>
     <Compile Include="Checkable.cs" />
+    <Compile Include="EditWindows\EditWindow.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TimetableDisplay\TimetableDisplay.xaml.cs">
       <DependentUpon>TimetableDisplay.xaml</DependentUpon>
@@ -119,6 +126,14 @@
       <DependentUpon>TrayIcon.xaml</DependentUpon>
     </Compile>
     <Page Include="Admin\AdminWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditWindows\EditClass.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditWindows\EditDepartment.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

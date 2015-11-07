@@ -215,7 +215,7 @@ namespace Client
                     c.Expand(Repo);
             }
         }
-
+        
         private static void MessageReceived(Connection Sender, Message Msg)
         {
             bool Locked = true;

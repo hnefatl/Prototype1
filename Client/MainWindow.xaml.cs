@@ -78,7 +78,7 @@ namespace Client
 
             bool? Result = Window.ShowDialog();
 
-            Booking b = Window.GetBooking();
+            Booking b = Window.GetItem();
 
             if (b != null && Result.HasValue && Result.Value) // Send new/edit/delete booking
             {

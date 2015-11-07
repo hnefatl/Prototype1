@@ -17,7 +17,7 @@ using Data.Models;
 namespace Client.EditWindows
 {
     public partial class EditPeriod
-        : Window, INotifyPropertyChanged
+        : EditWindow<TimeSlot>
     {
         protected string _PeriodName;
         public string PeriodName
@@ -83,7 +83,7 @@ namespace Client.EditWindows
             }
         }
 
-        public TimeSlot GetPeriod()
+        public override TimeSlot GetItem()
         {
             TimeSlot New = new TimeSlot();
             try
@@ -124,13 +124,6 @@ namespace Client.EditWindows
                 DialogResult = true;
                 Close();
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string PropertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
         }
     }
 }
