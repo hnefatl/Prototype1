@@ -7,8 +7,28 @@
         xmlns:local="clr-namespace:Client.EditWindows"
         xmlns:data="clr-namespace:Data.Models;assembly=Data"
         mc:Ignorable="d"
-        Title="EditClass" Height="300" Width="300">
+        Title="Edit Class" Height="300" Width="390">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="Class Name:" Margin="5" Grid.Row="0"/>
+        <TextBox Text="{Binding ClassName, UpdateSourceTrigger=PropertyChanged}" Margin="3" Width="150" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="1" TabIndex="0"/>
+
+        <TextBlock Text="Teacher:" Margin="5" Grid.Row="1"/>
+        <ComboBox Name="Combo_Teacher" ItemsSource="{Binding Teachers}" SelectedItem="{Binding Teacher, UpdateSourceTrigger=PropertyChanged}" Width="150" HorizontalAlignment="Left" Margin="3" Grid.Row="1" Grid.Column="1"/>
+
+        <local:StudentSelector x:Name="Students" Grid.Row="2" Grid.ColumnSpan="2"/>
+
+        <Button Name="Button_Back" Content="Back" Width="50" Height="20" Margin="5,5,60,5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="1" Click="Button_Back_Click"/>
+        <Button Name="Button_Save" Content="Save" Width="50" Height="20" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="1" Click="Button_Save_Click"/>
     </Grid>
 </local:EditWindow>

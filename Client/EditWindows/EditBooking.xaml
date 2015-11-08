@@ -83,47 +83,7 @@
         <GridSplitter Grid.Row="3" Height="5" HorizontalAlignment="Stretch"/>
 
         <GroupBox Header="Students" Margin="5" Grid.Row="4">
-            <Grid VerticalAlignment="Stretch">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Grid Grid.Row="0" Margin="5" VerticalAlignment="Top">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Text="Filter:" Margin="0,7,5,0" Grid.Column="0"/>
-                    <TextBox Name="Text_StudentFilter" Width="125" Margin="0,5,5,0" Grid.Column="1" TextChanged="Text_StudentFilter_TextChanged"/>
-                    <ComboBox Name="Combo_FilterType" ItemsSource="{Binding Path=FilterValues, Mode=OneTime}" SelectedIndex="0" Width="100" Margin="0,5,5,0" Grid.Column="2" SelectionChanged="Combo_FilterType_SelectionChanged"/>
-                    <ComboBox Name="Combo_Classes" ItemsSource="{Binding ClassNames, Mode=OneWay}" SelectedIndex="0" Width="100" Margin="0,5,5,0" Grid.Column="3" SelectionChanged="Combo_Classes_SelectionChanged"/>
-                </Grid>
-
-                <ListView Name="List_Students" ItemsSource="{Binding FilteredStudents}" VerticalAlignment="Stretch" Margin="5" Grid.Row="1">
-                    <ListView.View>
-                        <GridView>
-                            <GridView.Columns>
-                                <GridViewColumn Width="30">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox IsChecked="{Binding Checked}"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-
-                                <GridViewColumn Header="First Name" Width="125" DisplayMemberBinding="{Binding Value.FirstName}"/>
-                                <GridViewColumn Header="Last Name" Width="125" DisplayMemberBinding="{Binding Value.LastName}"/>
-                                <GridViewColumn Header="Form" Width="40" DisplayMemberBinding="{Binding Value.Form}"/>
-                                <GridViewColumn Header="Year" Width="40" DisplayMemberBinding="{Binding Value.Year}"/>
-                            </GridView.Columns>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
-            </Grid>
+            <local:StudentSelector x:Name="StudentSelector"/>
         </GroupBox>
 
         <GridSplitter Grid.Row="5" Height="5" HorizontalAlignment="Stretch"/>

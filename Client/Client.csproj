@@ -117,6 +117,9 @@
     </Compile>
     <Compile Include="Checkable.cs" />
     <Compile Include="EditWindows\EditWindow.cs" />
+    <Compile Include="EditWindows\StudentSelector.xaml.cs">
+      <DependentUpon>StudentSelector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="TimetableDisplay\TimetableDisplay.xaml.cs">
       <DependentUpon>TimetableDisplay.xaml</DependentUpon>
@@ -150,6 +153,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="EditWindows\EditTeacher.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditWindows\StudentSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

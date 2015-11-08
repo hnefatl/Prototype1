@@ -144,8 +144,8 @@ namespace Client.EditWindows
 
         private void Button_Back_Click(object sender, RoutedEventArgs e)
         {
-            base.DialogResult = false;
-            base.Close();
+            DialogResult = false;
+            Close();
         }
         private void Button_Save_Click(object sender, RoutedEventArgs e)
         {

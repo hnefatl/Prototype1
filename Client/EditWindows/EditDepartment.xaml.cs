@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 using Data.Models;
 
@@ -19,6 +20,29 @@ namespace Client.EditWindows
     public partial class EditDepartment
         : EditWindow<Department>
     {
+        protected string _DepartmentName;
+        public string DepartmentName
+        {
+            get { return _DepartmentName; }
+            set { _DepartmentName = value; OnPropertyChanged("DepartmentName"); }
+        }
+
+        protected ObservableCollection<Checkable<Department>> _Departments;
+        public ObservableCollection<Checkable<Department>> Departments
+        {
+            get { return _Departments; }
+            set { _Departments = value; OnPropertyChanged("Departments"); }
+        }
+        
+        protected ObservableCollection<Checkable<Room>> _Rooms;
+        public ObservableCollection<Checkable<Room>> Rooms
+        {
+            get { return _Rooms; }
+            set { _Rooms = value; OnPropertyChanged("Rooms"); }
+        }
+
+        protected int DepartmentId { get; set; }
+
         public EditDepartment(Department Existing)
         {
             InitializeComponent();
@@ -27,6 +51,32 @@ namespace Client.EditWindows
         public override Department GetItem()
         {
             return null;
+        }
+
+        private void Button_Back_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
+        private void Button_Save_Click(object sender, RoutedEventArgs e)
+        {
+            string Error = null;
+
+            using (DataRepository Repo = new DataRepository())
+            {
+                if (string.IsNullOrWhiteSpace(DepartmentName))
+                    Error = "You must enter a department name.";
+                else if (Repo.Departments.Any(d => d.Id != DepartmentId && d.Name == DepartmentName))
+                    Error = "Another department with that name already exists.";
+            }
+
+            if (Error != null)
+                MessageBox.Show(Error, "Error", MessageBoxButton.OK);
+            else
+            {
+                DialogResult = true;
+                Close();
+            }
         }
     }
 }

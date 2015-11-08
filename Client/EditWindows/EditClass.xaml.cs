@@ -10,6 +10,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 using Data.Models;
 
@@ -32,6 +34,7 @@ namespace Client.EditWindows
             set { _Teacher = value; OnPropertyChanged("Teacher"); }
         }
         public string[] Teachers { get; set; }
+        public int[] TeacherIds { get; set; }
 
         public int ClassId { get; set; }
 
@@ -39,10 +42,23 @@ namespace Client.EditWindows
         {
             using (DataRepository Repo = new DataRepository())
             {
-                Teachers = Repo.Users.OfType<Teacher>().Select(t => t.InformalName).ToArray();
+                IEnumerable<Teacher> ts = Repo.Users.OfType<Teacher>();
+                Teachers = ts.Select(t => t.InformalName).ToArray();
+                TeacherIds = ts.Select(t => t.Id).ToArray();
             }
 
             InitializeComponent();
+
+            if(Existing == null)
+            {
+                ClassName = string.Empty;
+                ClassId = 0;
+            }
+            else
+            {
+                ClassName = Existing.ClassName;
+                ClassId = Existing.Id;
+            }
         }
 
         public override Class GetItem()
@@ -51,7 +67,14 @@ namespace Client.EditWindows
 
             try
             {
+                New.Id = ClassId;
+                New.ClassName = ClassName;
 
+                using (DataRepository Repo = new DataRepository())
+                {
+                    New.Owner = Repo.Users.OfType<Teacher>().Single(t => t.Id == TeacherIds[Combo_Teacher.SelectedIndex]);
+                    New.Students = Students.SelectedStudents;
+                }
             }
             catch
             {
@@ -59,6 +82,32 @@ namespace Client.EditWindows
             }
 
             return New;
+        }
+
+        private void Button_Back_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
+        private void Button_Save_Click(object sender, RoutedEventArgs e)
+        {
+            string Error = null;
+
+            using (DataRepository Repo = new DataRepository())
+            {
+                if (string.IsNullOrWhiteSpace(ClassName))
+                    Error = "You must enter a class name.";
+                else if (Repo.Classes.Any(c => c.Id != ClassId && c.ClassName == ClassName))
+                    Error = "Another class with that name already exists.";
+            }
+
+            if (Error != null)
+                MessageBox.Show(Error, "Error", MessageBoxButton.OK);
+            else
+            {
+                DialogResult = true;
+                Close();
+            }
         }
     }
 }
