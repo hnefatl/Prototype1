@@ -7,7 +7,8 @@
         xmlns:local="clr-namespace:Client.EditWindows"
         xmlns:data="clr-namespace:Data.Models;assembly=Data"
         mc:Ignorable="d"
-        Title="Edit Class" Height="300" Width="390">
+        Title="Edit Class" Height="300" Width="390"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

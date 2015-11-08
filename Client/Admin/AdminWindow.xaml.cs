@@ -249,7 +249,7 @@ namespace Client.Admin
         {
             Department d = (Department)List_Departments.SelectedItem;
 
-            if (MessageBox.Show("Deleting this Department will force the deletion of " + d.Teachers.Count + " teachers, and " + d.Rooms + " rooms.\n" +
+            if (MessageBox.Show("Deleting this Department will force the deletion of " + d.Teachers.Count + " teachers, and " + d.Rooms.Count + " rooms.\n" +
                 "Please confirm this action.", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.No)
                 return;
 
