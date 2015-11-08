@@ -27,13 +27,13 @@ namespace Client.EditWindows
             set { _DepartmentName = value; OnPropertyChanged("DepartmentName"); }
         }
 
-        protected ObservableCollection<Checkable<Department>> _Departments;
-        public ObservableCollection<Checkable<Department>> Departments
+        protected ObservableCollection<Checkable<Teacher>> _Teachers;
+        public ObservableCollection<Checkable<Teacher>> Teachers
         {
-            get { return _Departments; }
-            set { _Departments = value; OnPropertyChanged("Departments"); }
+            get { return _Teachers; }
+            set { _Teachers = value; OnPropertyChanged("Teachers"); }
         }
-        
+
         protected ObservableCollection<Checkable<Room>> _Rooms;
         public ObservableCollection<Checkable<Room>> Rooms
         {
@@ -45,12 +45,43 @@ namespace Client.EditWindows
 
         public EditDepartment(Department Existing)
         {
+            using (DataRepository Repo = new DataRepository())
+            {
+                Teachers = new ObservableCollection<Checkable<Teacher>>(Repo.Users.OfType<Teacher>().Select(t => new Checkable<Teacher>(t, Existing != null && Existing.Teachers.Contains(t))));
+                Rooms = new ObservableCollection<Checkable<Room>>(Repo.Rooms.Select(r => new Checkable<Room>(r, Existing != null && Existing.Rooms.Contains(r))));
+            }
+
             InitializeComponent();
+
+            if (Existing == null)
+            {
+                DepartmentId = 0;
+                DepartmentName = string.Empty;
+            }
+            else
+            {
+                DepartmentId = Existing.Id;
+                DepartmentName = Existing.Name;
+            }
         }
 
         public override Department GetItem()
         {
-            return null;
+            Department New = new Department();
+
+            try
+            {
+                New.Id = DepartmentId;
+                New.Name = DepartmentName;
+                New.Teachers = Teachers.Where(t => t.Checked).Select(t => t.Value).ToList();
+                New.Rooms = Rooms.Where(r => r.Checked).Select(r => r.Value).ToList();
+            }
+            catch
+            {
+                return null;
+            }
+
+            return New;
         }
 
         private void Button_Back_Click(object sender, RoutedEventArgs e)

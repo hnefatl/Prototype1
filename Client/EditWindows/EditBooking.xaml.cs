@@ -137,6 +137,8 @@ namespace Client.EditWindows
 
             InitializeComponent();
 
+            StudentSelector.Students.Where(s => SelectedStudents.Contains(s.Value)).ToList().ForEach(s => s.Checked = true);
+
             // If in release mode, restrict some of the options available 
 #if !DEBUG
             if (!CurrentUser.IsAdmin) // Only let the teacher be changed if the user is an admin

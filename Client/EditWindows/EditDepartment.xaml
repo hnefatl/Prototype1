@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:Client.EditWindows"
         xmlns:data="clr-namespace:Data.Models;assembly=Data"
         mc:Ignorable="d"
-        Title="Edit Department" Height="500" Width="400">
+        Title="Edit Department" Height="500" Width="500">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -35,8 +35,36 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            
-                            <GridViewColumn Header=""/>
+
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.FirstName}" Width="80" Header="First Name"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.LastName}" Width="110" Header="Last Name"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.Title}" Width="50" Header="Title"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.LogonName}" Width="80" Header="Logon Name"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.Access}" Width="80" Header="Access"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.Email}" Width="150" Header="Email"/>
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </GroupBox>
+
+        <GroupBox Header="Rooms" Margin="5" Grid.Row="2" Grid.ColumnSpan="2">
+            <ListView Name="List_Rooms" SelectionMode="Single" ItemsSource="{Binding Rooms}" Margin="5">
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Width="30">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding Checked}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.RoomName}" Width="80" Header="Room Name"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.StandardSeats}" Width="110" Header="Standard Seats"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.SpecialSeatType}" Width="100" Header="Special seat type"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Value.SpecialSeats}" Width="80" Header="Special seats"/>
                         </GridView.Columns>
                     </GridView>
                 </ListView.View>

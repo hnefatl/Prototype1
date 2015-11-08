@@ -34,8 +34,7 @@ namespace Client.EditWindows
 
         public List<string> FilterValues { get { return Filters.Keys.ToList(); } }
 
-        protected List<Checkable<Student>> RawStudents { get; set; }
-        protected List<Checkable<Student>> Students { get; set; }
+        public List<Checkable<Student>> Students { get; set; }
         public ObservableCollection<Checkable<Student>> FilteredStudents { get; set; }
         public List<Student> SelectedStudents { get { return Students.Where(s => s.Checked).Select(s => s.Value).ToList(); } }
 
@@ -50,17 +49,18 @@ namespace Client.EditWindows
                 ClassNames = Repo.Classes.Select(c => c.ClassName).ToList();
                 ClassNames.Insert(0, "All students");
 
-                RawStudents = Repo.Users.OfType<Student>().Select(s => new Checkable<Student>(s)).ToList();
-                Students = RawStudents.ToList();
+                Students = Repo.Users.OfType<Student>().Select(s => new Checkable<Student>(s)).ToList();
                 FilteredStudents = new ObservableCollection<Checkable<Student>>(Students);
             }
 
             InitializeComponent();
         }
-
-
+        
         public void UpdateFilter()
         {
+            if (!IsInitialized)
+                return;
+
             if (!Dispatcher.CheckAccess())
                 Dispatcher.Invoke((Action)UpdateFilter);
             else
@@ -68,7 +68,17 @@ namespace Client.EditWindows
                 string Filter = Text_StudentFilter.Text;
                 string FilterType = FilterValues[Combo_FilterType.SelectedIndex];
 
-                IEnumerable<Checkable<Student>> Filtered = Students.Where(s => Filters[FilterType](s, Filter));
+                IEnumerable<Checkable<Student>> Filtered = null;
+                if (Combo_Classes.SelectedIndex == 0) // First item is always "No class"
+                {
+                    Filtered = Students.Where(s => Filters[FilterType](s, Filter));
+                }
+                else
+                {
+                    Class Class = Classes.Single(c => c.ClassName == (string)Combo_Classes.SelectedItem);
+                    Filtered = Students.Where(s => Filters[FilterType](s, Filter) && Class.Students.Contains(s.Value));
+                }
+
 
                 FilteredStudents.Clear();
                 foreach (Checkable<Student> s in Filtered)
@@ -84,21 +94,8 @@ namespace Client.EditWindows
         {
             UpdateFilter();
         }
-
         private void Combo_Classes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Students.Clear();
-            if (Combo_Classes.SelectedIndex == 0) // First item is always "No class"
-            {
-                foreach (Checkable<Student> s in RawStudents)
-                    Students.Add(s);
-            }
-            else
-            {
-                Class Class = Classes.Single(c => c.ClassName == (string)Combo_Classes.SelectedItem);
-                foreach (Checkable<Student> s in RawStudents.Where(s => Class.Students.Contains(s.Value)))
-                    Students.Add(s);
-            }
             UpdateFilter();
         }
 

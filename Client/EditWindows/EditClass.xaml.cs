@@ -49,7 +49,7 @@ namespace Client.EditWindows
 
             InitializeComponent();
 
-            if(Existing == null)
+            if (Existing == null)
             {
                 ClassName = string.Empty;
                 ClassId = 0;
@@ -58,6 +58,7 @@ namespace Client.EditWindows
             {
                 ClassName = Existing.ClassName;
                 ClassId = Existing.Id;
+                Students.Students.Where(s => Existing.Students.Contains(s.Value)).ToList().ForEach(s => s.Checked = true);
             }
         }
 
