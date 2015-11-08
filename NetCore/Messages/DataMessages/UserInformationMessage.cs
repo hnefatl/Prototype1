@@ -12,14 +12,16 @@ namespace NetCore.Messages.DataMessages
         : Message
     {
         public User User { get; set; }
+        public Room Room { get; set; }
 
         public UserInformationMessage()
-            : this(null)
+            : this(null, null)
         {
         }
-        public UserInformationMessage(User User)
+        public UserInformationMessage(User User, Room Room)
         {
             this.User = User;
+            this.Room = Room;
         }
 
         public override void Serialise(Writer Out)
@@ -28,16 +30,17 @@ namespace NetCore.Messages.DataMessages
 
             Out.Write(User != null);
             if (User != null)
-            {
                 User.Serialise(Out);
-            }
+            Out.Write(Room != null);
+            if (Room != null)
+                Room.Serialise(Out);
         }
         public override void Deserialise(Reader In)
         {
             if (In.ReadBool())
-            {
                 User = (User)DataModel.DeserialiseExternal(In);
-            }
+            if (In.ReadBool())
+                Room = (Room)DataModel.DeserialiseExternal(In);
         }
     }
 }

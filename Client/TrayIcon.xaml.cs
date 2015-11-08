@@ -10,10 +10,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Timers;
 
 using NetCore.Client;
 using NetCore.Messages;
 using Data.Models;
+using Data;
 using Client.Admin;
 
 namespace Client
@@ -23,6 +25,7 @@ namespace Client
     {
         public Connection Connection { get; protected set; }
         public User CurrentUser { get; protected set; }
+        public Room CurrentRoom { get; protected set; }
 
         protected System.Windows.Forms.NotifyIcon ToolbarIcon { get; set; }
         protected System.Windows.Forms.ContextMenu Menu { get; set; }
@@ -33,12 +36,17 @@ namespace Client
         protected AdminWindow AdminWindow { get; set; }
         protected bool AdminWindowShown { get; set; }
 
-        public TrayIcon(Connection Connection, User CurrentUser)
+        protected Timer Timer { get; set; }
+        protected TimeSlot LastSlot { get; set; }
+        protected const int MessageDuration = 5000;
+
+        public TrayIcon(Connection Connection, User CurrentUser, Room CurrentRoom)
         {
             InitializeComponent();
 
             this.Connection = Connection;
             this.CurrentUser = CurrentUser;
+            this.CurrentRoom = CurrentRoom;
 
             Connection.Disconnect += Connection_Disconnect;
 
@@ -58,9 +66,18 @@ namespace Client
                 Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Exit", ExitClick));
                 ToolbarIcon.ContextMenu = Menu;
             }
+
+            Timer = new Timer(TimeSpan.FromSeconds(30).TotalMilliseconds); // Every 30 seconds, fire an event
+            Timer.Elapsed += Timer_Elapsed;
+            Timer.Start();
+
+            Timer_Elapsed(null, null); // Fire the timer event immediately
         }
         protected override void OnClosed(EventArgs e)
         {
+            Timer.Stop();
+            Timer.Dispose();
+
             ToolbarIcon.Visible = false;
             ToolbarIcon.Icon.Dispose();
             ToolbarIcon.Icon = null; // Actually hides the icon, otherwise it lingers for a bit
@@ -69,6 +86,25 @@ namespace Client
             base.OnClosed(e);
         }
 
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            DataSnapshot Frame = DataRepository.TakeSnapshot();
+            TimeSlot CurrentSlot = Frame.Periods.SingleOrDefault(t => t.IsCurrent(DateTime.Now));
+            if (CurrentSlot == null)
+                return;
+
+            Booking Booking = Frame.Bookings.SingleOrDefault(b => b.MatchesDay(DateTime.Now.Date) && b.TimeSlot == CurrentSlot && b.Rooms.Contains(CurrentRoom));
+            if (Booking != null)
+            {
+                if (LastSlot == null || LastSlot != CurrentSlot)
+                {
+                    LastSlot = CurrentSlot;
+                    ToolbarIcon.ShowBalloonTip(MessageDuration, "Scheduled booking", "A lesson is taking place in this room this period (" + CurrentSlot.Name + ").\n" +
+                        "Teacher: " + Booking.Teacher.FormalName + "\n" +
+                        "Subject: " + Booking.Subject.SubjectName, System.Windows.Forms.ToolTipIcon.Info);
+                }
+            }
+        }
 
         private void ToolbarIcon_Click(object sender, System.Windows.Forms.MouseEventArgs e)
         {

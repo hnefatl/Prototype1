@@ -84,6 +84,12 @@ namespace Data.Models
             Name = string.Empty;
         }
 
+        public bool IsCurrent(DateTime Time)
+        {
+            TimeSpan Mod = Time - Time.Date;
+            return Start <= Mod && End >= Mod;
+        }
+
         public override bool Conflicts(List<DataModel> Others)
         {
             return Others.Cast<TimeSlot>().Any(t => t.Id != Id && t.Name == Name || (t.Start == Start && t.End == End));

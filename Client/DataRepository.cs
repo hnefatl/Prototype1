@@ -84,6 +84,7 @@ namespace Client
         private static ManualResetEvent InitialisedEvent { get; set; }
         private static ManualResetEvent UserEvent { get; set; }
         private static User CurrentUser { get; set; }
+        private static Room CurrentRoom { get; set; }
 
         public static event UserChangeHandler UserChange = delegate { };
         protected static void OnUserChange(User New)
@@ -102,7 +103,7 @@ namespace Client
             if (LockData)
                 Monitor.Enter(Lock); // Only allow one DataRepository to be instantiated at a time. Block until all other ones are Disposed.
         }
-        public static User Initialise(Connection Server, ConnectMessage Msg)
+        public static Tuple<User, Room> Initialise(Connection Server, ConnectMessage Msg)
         {
             try
             {
@@ -150,7 +151,7 @@ namespace Client
                 return null;
             }
 
-            return CurrentUser;
+            return new Tuple<User, Room>(CurrentUser, CurrentRoom);
         }
 
         public void Dispose()
@@ -230,14 +231,19 @@ namespace Client
             }
             else if (Msg is UserInformationMessage)
             {
-                OnUserChange((Msg as UserInformationMessage).User);
-                User User = (Msg as UserInformationMessage).User;
+                UserInformationMessage m = (Msg as UserInformationMessage);
+                OnUserChange(m.User);
+                User User = m.User;
+                Room Room = m.Room;
 
                 if (User == null)
                     throw new ArgumentNullException("Received a null user.");
+                if (Room == null)
+                    throw new ArgumentNullException("Received a null room.");
 
                 DataSnapshot Frame = TakeSnapshot(false);
-                CurrentUser = Frame.Users.Where(u => u.Id == User.Id).SingleOrDefault();
+                CurrentUser = Frame.Users.SingleOrDefault(u => u.Id == User.Id);
+                CurrentRoom = Frame.Rooms.SingleOrDefault(r => r.Id == Room.Id);
 
                 UserEvent.Set();
             }

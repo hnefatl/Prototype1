@@ -128,6 +128,8 @@ namespace Client.EditWindows
                 Error = "You must enter a logon name.";
             else if (!Enum.TryParse(Access, out Out)) // Should never happen, we're using a combobox
                 Error = "Invalid access mode.";
+            else if (string.IsNullOrWhiteSpace(Department))
+                Error = "You must enter a Department.";
             // The possible patterns for emails are crazy, like 200+ character long regexes that still don't match all possibilities. Down to the user to enter a "valid" email.
 
             if (!string.IsNullOrWhiteSpace(Error))

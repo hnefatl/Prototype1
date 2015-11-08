@@ -43,9 +43,30 @@ namespace Data.Models
 
         public virtual Department Department { get; set; }
 
+        protected List<string> _ComputerNames = new List<string>();
+        [NotMapped]
+        public List<string> ComputerNames
+        {
+            get { return _ComputerNames; }
+            set
+            {
+                if (value.Any(s => s.Contains(ComputerNameSeperator)))
+                    throw new ArgumentException("Computer name cannot contain '" + ComputerNameSeperator + "'.");
+                _ComputerNames = value;
+            }
+        }
+        public string ComputerNamesJoined
+        {
+            get { return string.Join("" + ComputerNameSeperator, ComputerNames); }
+            set { ComputerNames = value.Split(ComputerNameSeperator).ToList(); }
+        }
+
+        public const char ComputerNameSeperator = '|';
+
         public Room()
         {
             Bookings = new List<Booking>();
+            ComputerNames = new List<string>();
 
             RoomName = string.Empty;
             SpecialSeatType = string.Empty;
@@ -77,6 +98,7 @@ namespace Data.Models
             Out.Write(StandardSeats);
             Out.Write(SpecialSeats);
             Out.Write(SpecialSeatType);
+            Out.Write(ComputerNamesJoined);
 
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
@@ -90,6 +112,7 @@ namespace Data.Models
             StandardSeats = In.ReadInt32();
             SpecialSeats = In.ReadInt32();
             SpecialSeatType = In.ReadString();
+            ComputerNamesJoined = In.ReadString();
 
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());

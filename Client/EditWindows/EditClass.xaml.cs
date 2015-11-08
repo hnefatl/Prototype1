@@ -52,14 +52,18 @@ namespace Client.EditWindows
             if (Existing == null)
             {
                 ClassName = string.Empty;
+                Teacher = string.Empty;
                 ClassId = 0;
             }
             else
             {
                 ClassName = Existing.ClassName;
+                Teacher = Existing.Owner.InformalName;
                 ClassId = Existing.Id;
-                Students.Students.Where(s => Existing.Students.Contains(s.Value)).ToList().ForEach(s => s.Checked = true);
             }
+
+            if (Existing != null)
+                Students.Students.Where(s => Existing.Students.Contains(s.Value)).ToList().ForEach(s => s.Checked = true);
         }
 
         public override Class GetItem()
@@ -98,6 +102,8 @@ namespace Client.EditWindows
             {
                 if (string.IsNullOrWhiteSpace(ClassName))
                     Error = "You must enter a class name.";
+                else if (string.IsNullOrWhiteSpace(Teacher))
+                    Error = "You must enter a Teacher.";
                 else if (Repo.Classes.Any(c => c.Id != ClassId && c.ClassName == ClassName))
                     Error = "Another class with that name already exists.";
             }

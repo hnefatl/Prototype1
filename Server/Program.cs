@@ -31,8 +31,9 @@ namespace Server
 
                 Repo.SaveChanges();
 
-                Repo.Rooms.Add(new Room() { RoomName = "D6", SpecialSeats = 5, StandardSeats = 10, SpecialSeatType = "Computer", Department = Repo.Departments.Single(d => d.Name == "Computing/IT") });
-                Repo.Rooms.Add(new Room() { RoomName = "D12", SpecialSeats = 20, StandardSeats = 5, SpecialSeatType = "Workbench", Department = Repo.Departments.Single(d => d.Name == "Computing/IT") });
+                List<string> ComputerNames = GenerateComputerNames();
+                Repo.Rooms.Add(new Room() { RoomName = "D6", SpecialSeats = 5, StandardSeats = 10, SpecialSeatType = "Computer", Department = Repo.Departments.Single(d => d.Name == "Computing/IT"), ComputerNames = ComputerNames });
+                Repo.Rooms.Add(new Room() { RoomName = "D12", SpecialSeats = 20, StandardSeats = 5, SpecialSeatType = "Workbench", Department = Repo.Departments.Single(d => d.Name == "Computing/IT"), ComputerNames = ComputerNames });
                 Repo.Rooms.Add(new Room() { RoomName = "Library", SpecialSeats = 20, StandardSeats = 30, SpecialSeatType = "Computer", Department = Repo.Departments.Single(d => d.Name == "Science") });
                 Repo.Rooms.Add(new Room() { RoomName = "Sports Hall", SpecialSeats = 0, StandardSeats = 100, SpecialSeatType = "", Department = Repo.Departments.Single(d => d.Name == "Maths") });
 
@@ -130,7 +131,7 @@ namespace Server
             Print(c.ToString() + " connected", ConsoleColor.Green);
             DataSnapshot Frame = DataRepository.TakeSnapshot();
             c.Send(new InitialiseMessage(Frame));
-            c.Send(new UserInformationMessage(Frame.Users.Where(u => u.LogonName == c.Username).SingleOrDefault()));
+            c.Send(new UserInformationMessage(Frame.Users.Where(u => u.LogonName == c.Username).SingleOrDefault(), Frame.Rooms.Where(r => r.ComputerNames.Contains(c.ComputerName)).FirstOrDefault()));
         }
         static void ClientDisconnect(Listener Sender, Client c, DisconnectMessage Message)
         {
@@ -223,6 +224,20 @@ namespace Server
                 Console.WriteLine(Text);
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
+        }
+
+
+
+        static List<string> GenerateComputerNames()
+        {
+            List<string> Results = new List<string>();
+
+            for (int x = 6; x <= 12; x += 6)
+                for (int y = 0; y <= 40; y++)
+                    Results.Add("D" + x + "" + y);
+            Results.Add("KEITH-PC");
+
+            return Results;
         }
     }
 }

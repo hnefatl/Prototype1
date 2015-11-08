@@ -87,6 +87,14 @@ namespace Client.EditWindows
         }
         public string[] Departments { get; set; }
 
+        protected string _Computers;
+        public string Computers
+        {
+            get { return _Computers; }
+            set { _Computers = value; OnPropertyChanged("Computers"); }
+        }
+        public string[] ComputerLines { get { return Computers.Split('\n'); } }
+
         protected int RoomId { get; set; }
 
         protected List<Booking> Bookings { get; set; }
@@ -105,6 +113,7 @@ namespace Client.EditWindows
                 SpecialSeatType = string.Empty;
                 SpecialSeats = string.Empty;
                 Bookings = new List<Booking>();
+                Computers = string.Empty;
                 RoomId = 0;
             }
             else
@@ -113,7 +122,9 @@ namespace Client.EditWindows
                 StandardSeats = Convert.ToString(Current.StandardSeats);
                 SpecialSeatType = Current.SpecialSeatType;
                 SpecialSeats = Convert.ToString(Current.SpecialSeats);
+                Department = Current.Department.Name;
                 Bookings = Current.Bookings;
+                Computers = Current.ComputerNamesJoined.Replace(Room.ComputerNameSeperator, '\n');
                 RoomId = Current.Id;
             }
         }
@@ -130,6 +141,7 @@ namespace Client.EditWindows
                 New.SpecialSeats = Convert.ToInt32(SpecialSeats);
                 New.Id = RoomId;
                 New.Bookings = Bookings;
+                New.ComputerNames = ComputerLines.ToList();
 
                 using (DataRepository Repo = new DataRepository())
                     New.Department = Repo.Departments.Single(d => d.Name == Department);
@@ -160,6 +172,10 @@ namespace Client.EditWindows
                 Error = "Special seats must be a non-negative integer";
             else if (Temp != 0 && string.IsNullOrWhiteSpace(SpecialSeatType))
                 Error = "You must enter a special seat type (eg Workbench, Computer)";
+            else if (ComputerLines.Any(s => s.Contains(Room.ComputerNameSeperator)))
+                Error = "A computer name cannot contain '" + Room.ComputerNameSeperator + "'.";
+            else if (string.IsNullOrWhiteSpace(Department))
+                Error = "You must select a department.";
             else
             {
                 using (DataRepository Repo = new DataRepository())

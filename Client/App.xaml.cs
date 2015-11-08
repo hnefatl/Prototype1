@@ -19,7 +19,7 @@ namespace Client
     {
         public Connection Connection { get; set; }
         public User CurrentUser { get; set; }
-
+        public Room CurrentRoom { get; set; }
 
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -31,7 +31,7 @@ namespace Client
 
             NetHandler();
 
-            MainWindow = new TrayIcon(Connection, CurrentUser);
+            MainWindow = new TrayIcon(Connection, CurrentUser, CurrentRoom);
         }
 
         protected void NetHandler()
@@ -48,7 +48,9 @@ namespace Client
 
                 if (Connected)
                 {
-                    CurrentUser = DataRepository.Initialise(Connection, new ConnectMessage(Environment.UserName, Environment.MachineName));
+                    Tuple<User, Room> Result = DataRepository.Initialise(Connection, new ConnectMessage(Environment.UserName, Environment.MachineName));
+                    CurrentUser = Result.Item1;
+                    CurrentRoom = Result.Item2;
                     if (CurrentUser == null) // Failed to initialise
                         continue;
 
