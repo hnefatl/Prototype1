@@ -56,9 +56,6 @@ namespace NetCore.Client
         }
         public bool Connect(IPEndPoint Server, ConnectMessage ConnectionMessage)
         {
-            if (Inner.Connected)
-                return false;
-
             Inner = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             try

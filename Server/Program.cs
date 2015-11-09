@@ -46,6 +46,7 @@ namespace Server
                 string LogonName = DataRepository.Home ? "Keith" : "09135"; // For testing on home versus school computers
                 Repo.Students.Add(new Student() { FirstName = "Keith", LastName = "Collister", Form = "WT", Year = 13, LogonName = LogonName, Access = AccessMode.Admin });
                 Repo.Students.Add(new Student() { FirstName = "Max", LastName = "Norman", Form = "WT", Year = 13, LogonName = "Max" });
+                Repo.Students.Add(new Student() { FirstName = "Euan", LastName = "Rossie", Form = "WT", Year = 13, LogonName = "09185" });
                 Repo.Students.Add(new Student() { FirstName = "Dan", LastName = "Wrenn", Form = "MB", Year = 13, LogonName = "09154" });
 
                 Repo.Subjects.Add(new Subject() { SubjectName = "Maths", Colour = Colors.Red });
@@ -234,7 +235,7 @@ namespace Server
 
             for (int x = 6; x <= 12; x += 6)
                 for (int y = 0; y <= 40; y++)
-                    Results.Add("D" + x + "" + y);
+                    Results.Add("D" + x + "D" + y);
             Results.Add("KEITH-PC");
 
             return Results;

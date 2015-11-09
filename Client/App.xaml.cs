@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Threading;
+using System.Threading.Tasks;
 
 using Data.Models;
 using NetCore.Client;
@@ -21,6 +22,9 @@ namespace Client
         public User CurrentUser { get; set; }
         public Room CurrentRoom { get; set; }
 
+        protected Task NetTask { get; set; }
+
+        protected new TrayIcon MainWindow { get { return (TrayIcon)base.MainWindow; } set { base.MainWindow = value; } }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -54,6 +58,8 @@ namespace Client
                     if (CurrentUser == null) // Failed to initialise
                         continue;
 
+                    if (MainWindow != null)
+                        MainWindow.Show();
                     break;
                 }
                 Thread.Sleep(1000); // Wait for an interval then try again
@@ -62,12 +68,28 @@ namespace Client
 
         protected void Connection_Disconnect(Connection Sender, DisconnectMessage Message)
         {
-            Connection.Disconnect -= Connection_Disconnect;
-            
-            Environment.Exit(34652);
-            //MessageBox.Show("Lost connection to the server. Will continue trying to connect in the background.");
+            if (!Dispatcher.CheckAccess())
+                Dispatcher.Invoke((Action<Connection, DisconnectMessage>)Connection_Disconnect, Sender, Message);
+            else
+            {
+                Connection.Disconnect -= Connection_Disconnect;
 
-            //NetTask = Task.Factory.StartNew(NetHandler); // Start reconnecting
+                foreach (Window w in Windows)
+                {
+                    if (w != MainWindow)
+                    {
+                        if (!w.Dispatcher.CheckAccess())
+                            w.Dispatcher.Invoke((Action)w.Close);
+                        else
+                            w.Close();
+                    }
+                }
+                MainWindow.Hide();
+
+                MessageBox.Show("Lost connection to the server. Will continue trying to connect in the background.");
+
+                NetTask = Task.Factory.StartNew(NetHandler); // Start reconnecting
+            }
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
@@ -75,6 +97,7 @@ namespace Client
             try
             {
                 Connection.Close(DisconnectType.Expected);
+                NetTask.Dispose();
             }
             catch { }
         }

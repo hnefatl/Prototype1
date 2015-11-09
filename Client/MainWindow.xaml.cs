@@ -66,31 +66,34 @@ namespace Client
 
         private void Timetable_TileClicked(TimetableTile Tile)
         {
-            EditBooking Window = null;
-
-            bool NewBooking = Tile.Booking == null;
-
-            if (NewBooking) // New booking
-                Window = new EditBooking(CurrentUser, true, Tile.Time, Tile.Room);
-            else // Editing booking
-                Window = new EditBooking(CurrentUser, false, Tile.Booking);
-            Window.CurrentDate = CurrentDay;
-
-            bool? Result = Window.ShowDialog();
-
-            Booking b = Window.GetItem();
-
-            if (b != null && Result.HasValue && Result.Value) // Send new/edit/delete booking
+            if (!CurrentUser.IsStudent)
             {
-                bool Delete = Window.DeleteBooking;
-                b.Id = Tile.Booking == null ? 0 : Tile.Booking.Id;
+                EditBooking Window = null;
 
-                using (DataRepository Repo = new DataRepository())
+                bool NewBooking = Tile.Booking == null;
+
+                if (NewBooking) // New booking
+                    Window = new EditBooking(CurrentUser, true, Tile.Time, Tile.Room);
+                else // Editing booking
+                    Window = new EditBooking(CurrentUser, false, Tile.Booking);
+                Window.CurrentDate = CurrentDay;
+
+                bool? Result = Window.ShowDialog();
+
+                Booking b = Window.GetItem();
+
+                if (b != null && Result.HasValue && Result.Value) // Send new/edit/delete booking
                 {
-                    if (Delete)
-                        Repo.Bookings.Remove(Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
-                    else
-                        Repo.Bookings.Add(b);
+                    bool Delete = Window.DeleteBooking;
+                    b.Id = Tile.Booking == null ? 0 : Tile.Booking.Id;
+
+                    using (DataRepository Repo = new DataRepository())
+                    {
+                        if (Delete)
+                            Repo.Bookings.Remove(Repo.Bookings.Where(b2 => b2.Id == b.Id).Single());
+                        else
+                            Repo.Bookings.Add(b);
+                    }
                 }
             }
         }

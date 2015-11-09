@@ -58,11 +58,16 @@ namespace Client
             ToolbarIcon.Icon = Properties.Resources.ToolbarIcon;
             ToolbarIcon.Visible = true;
 
-            if (CurrentUser.Access == AccessMode.Admin)
+            Menu = new System.Windows.Forms.ContextMenu();
+            if (CurrentUser.Access == AccessMode.Teacher)
             {
-                Menu = new System.Windows.Forms.ContextMenu();
-                Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Standard View", (s, e) => ToolbarIcon_Click(s, null)));
-                Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Admin View", (s, e) => ShowAdminWindow()));
+                Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("View Bookings", (s, e) => ToolbarIcon_Click(s, null)));
+
+                if (CurrentUser.Access == AccessMode.Admin)
+                {
+                    Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Customise system", (s, e) => ShowAdminWindow()));
+                }
+
                 Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Exit", ExitClick));
                 ToolbarIcon.ContextMenu = Menu;
             }
@@ -162,6 +167,17 @@ namespace Client
                 MainWindow.Dispatcher.Invoke((Action)Close);
             if (AdminWindowShown)
                 AdminWindow.Dispatcher.Invoke((Action)Close);
+        }
+
+        public new void Show()
+        {
+            base.Show();
+            ToolbarIcon.Visible = true;
+        }
+        public new void Hide()
+        {
+            base.Hide();
+            ToolbarIcon.Visible = false;
         }
     }
 }
