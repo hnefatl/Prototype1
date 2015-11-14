@@ -59,7 +59,7 @@ namespace Client
             ToolbarIcon.Visible = true;
 
             Menu = new System.Windows.Forms.ContextMenu();
-            if (CurrentUser.Access == AccessMode.Teacher)
+            if (CurrentUser.Access == AccessMode.Teacher || CurrentUser.Access == AccessMode.Admin)
             {
                 Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("View Bookings", (s, e) => ToolbarIcon_Click(s, null)));
 

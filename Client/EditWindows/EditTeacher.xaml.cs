@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 
 using Data.Models;
 
@@ -130,7 +131,8 @@ namespace Client.EditWindows
                 Error = "Invalid access mode.";
             else if (string.IsNullOrWhiteSpace(Department))
                 Error = "You must enter a Department.";
-            // The possible patterns for emails are crazy, like 200+ character long regexes that still don't match all possibilities. Down to the user to enter a "valid" email.
+            else if (!Regex.IsMatch(Email, @"[\w.-]+@[\w]+\.[.\w]+"))
+                Error = "Invalid email address.";
 
             if (!string.IsNullOrWhiteSpace(Error))
                 MessageBox.Show(Error, "Error", MessageBoxButton.OK);

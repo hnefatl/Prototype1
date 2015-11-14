@@ -144,7 +144,7 @@ namespace Client.EditWindows
             if (!CurrentUser.IsAdmin) // Only let the teacher be changed if the user is an admin
                 Combo_Teacher.IsEnabled = false;
 
-            if (CurrentUser != Teacher && !CurrentUser.IsAdmin) // Only let any edits be made if the current user is the owner/admin
+            if (Teacher != null && CurrentUser != Teacher && !CurrentUser.IsAdmin) // Only let any edits be made if the current user is the owner/admin
                 Container.IsEnabled = false;
 #endif
 
