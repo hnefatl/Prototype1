@@ -43,7 +43,7 @@ namespace Data.Models
 
         public override bool Conflicts(List<DataModel> Others)
         {
-            return base.Conflicts(Others) || Others.OfType<Teacher>().Any(t => t.Id != Id && t.Title != Title && t.Email != Email);
+            return base.Conflicts(Others) || Others.OfType<Teacher>().Any(t => t.Id != Id && t.Title == Title && t.Email == Email);
         }
 
         public override void Update(DataModel Other)

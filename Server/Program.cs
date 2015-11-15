@@ -55,7 +55,7 @@ namespace Server
 
                 Repo.SaveChanges();
 
-                Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "mb", FirstName = "Mary", LastName = "Bogdiukiewicz", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single() });
+                Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "mb", FirstName = "Mary", LastName = "Bogdiukiewicz", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single(), Email = "hnefatl@gmail.com" });
                 Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "jk", FirstName = "J....", LastName = "Kenny", Department = Repo.Departments.Where(d => d.Name == "Science").Single() });
                 Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "rb", FirstName = "R....", LastName = "Britton", Department = Repo.Departments.Where(d => d.Name == "Maths").Single() });
 
@@ -149,46 +149,51 @@ namespace Server
 
                 if (Data.Item is Booking)
                 {
-                    EditDataEntry((Booking)Data.Item, Data.Delete);
-                    Output = (Data.Delete ? "Delete" : "Add") + " Booking received from " + c.ToString();
+                    bool Edited = EditDataEntry((Booking)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : Edited ? "Edit" : "Add") + " Booking received from " + c.ToString();
+                    if (MailHelper.Send((Booking)Data.Item, Edited))
+                        Output += "    Email sent to teacher.";
+                    else
+                        Output += "    Email failed to send.";
                 }
                 else if (Data.Item is Class)
                 {
-                    EditDataEntry((Class)Data.Item, Data.Delete);
-                    Output = (Data.Delete ? "Delete" : "Add") + " Class received from " + c.ToString();
+                    bool Edited = EditDataEntry((Class)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : Edited ? "Edit" : "Add") + " Class received from " + c.ToString();
                 }
                 else if (Data.Item is Department)
                 {
-                    EditDataEntry((Department)Data.Item, Data.Delete);
-                    Output = (Data.Delete ? "Delete" : "Add") + " Department received from " + c.ToString();
+                    bool Edited = EditDataEntry((Department)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : Edited ? "Edit" : "Add") + " Department received from " + c.ToString();
                 }
                 else if (Data.Item is Room)
                 {
-                    EditDataEntry((Room)Data.Item, Data.Delete);
-                    Output = (Data.Delete ? "Delete" : "Add") + " Room received from " + c.ToString();
+                    bool Edited = EditDataEntry((Room)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : Edited ? "Edit" : "Add") + " Room received from " + c.ToString();
                 }
                 else if (Data.Item is Subject)
                 {
-                    EditDataEntry((Subject)Data.Item, Data.Delete);
-                    Output = (Data.Delete ? "Delete" : "Add") + " Subject received from " + c.ToString();
+                    bool Edited = EditDataEntry((Subject)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : Edited ? "Edit" : "Add") + " Subject received from " + c.ToString();
                 }
                 else if (Data.Item is User)
                 {
-                    EditDataEntry((User)Data.Item, Data.Delete);
-                    Output = (Data.Delete ? "Delete" : "Add") + " User received from " + c.ToString();
+                    bool Edited = EditDataEntry((User)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : Edited ? "Edit" : "Add") + " User received from " + c.ToString();
                 }
                 else if (Data.Item is TimeSlot)
                 {
-                    EditDataEntry((TimeSlot)Data.Item, Data.Delete);
-                    Output = (Data.Delete ? "Delete" : "Add") + " Period received from " + c.ToString();
+                    bool Edited = EditDataEntry((TimeSlot)Data.Item, Data.Delete);
+                    Output = (Data.Delete ? "Delete" : Edited ? "Edit" : "Add") + " Period received from " + c.ToString();
                 }
             }
 
             if (Output != null)
                 Print(Output, ConsoleColor.Gray);
         }
-        static void EditDataEntry<T>(T Entry, bool Delete) where T : DataModel
+        static bool EditDataEntry<T>(T Entry, bool Delete) where T : DataModel
         {
+            bool Edited = false;
             using (DataRepository Repo = new DataRepository())
             {
                 Repo.SetProxies(true);
@@ -205,9 +210,15 @@ namespace Server
                     if (!Entry.Conflicts(Set.ToList().Cast<DataModel>().ToList()))
                     {
                         if (Set.Any(m => m.Id == Entry.Id)) // Updating existing item
+                        {
                             Set.ToList().Single(m => m.Id == Entry.Id).Update(Entry);
+                            Edited = true;
+                        }
                         else
+                        {
                             Set.Add(Entry);
+                            Edited = false;
+                        }
                     }
                 }
 
@@ -215,6 +226,7 @@ namespace Server
 
                 Listener.Send(new DataMessage(Entry, Delete));
             }
+            return Edited;
         }
 
         static void Print(string Text, ConsoleColor Colour)
