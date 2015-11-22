@@ -112,9 +112,9 @@ namespace Client.EditWindows
             TimeSpan Out;
             if (string.IsNullOrWhiteSpace(PeriodName))
                 Error = "You must enter a room name";
-            else if (string.IsNullOrWhiteSpace(Start) || !TimeSpan.TryParse(Start, out Out))
+            else if (string.IsNullOrWhiteSpace(Start) || !TimeSpan.TryParse(Start, out Out) || !CompatibleTime(Out))
                 Error = "Invalid start time format.";
-            else if (string.IsNullOrWhiteSpace(End) || !TimeSpan.TryParse(End, out Out))
+            else if (string.IsNullOrWhiteSpace(End) || !TimeSpan.TryParse(End, out Out) || !CompatibleTime(Out))
                 Error = "Invalid end time format";
 
             if (!string.IsNullOrWhiteSpace(Error))
@@ -124,6 +124,11 @@ namespace Client.EditWindows
                 DialogResult = true;
                 Close();
             }
+        }
+
+        private bool CompatibleTime(TimeSpan t)
+        {
+            return t.Hours < 24 && t.Hours >= 0 && t.Minutes >= 0 && t.Seconds >= 0;
         }
     }
 }
