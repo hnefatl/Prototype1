@@ -82,7 +82,7 @@
 
         <GridSplitter Grid.Row="3" Height="5" HorizontalAlignment="Stretch"/>
 
-        <GroupBox Header="Students" Margin="5" Grid.Row="4">
+        <GroupBox Header="Students" Margin="5" Grid.Row="4" Height="270">
             <local:StudentSelector x:Name="StudentSelector"/>
         </GroupBox>
 

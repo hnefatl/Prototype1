@@ -59,18 +59,14 @@ namespace Client
             ToolbarIcon.Visible = true;
 
             Menu = new System.Windows.Forms.ContextMenu();
-            if (CurrentUser.Access == AccessMode.Teacher || CurrentUser.Access == AccessMode.Admin)
+            Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("View Bookings", (s, e) => ToolbarIcon_Click(s, null)));
+
+            if (CurrentUser.Access == AccessMode.Admin)
             {
-                Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("View Bookings", (s, e) => ToolbarIcon_Click(s, null)));
-
-                if (CurrentUser.Access == AccessMode.Admin)
-                {
-                    Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Customise system", (s, e) => ShowAdminWindow()));
-                }
-
+                Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Customise system", (s, e) => ShowAdminWindow()));
                 Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Exit", ExitClick));
-                ToolbarIcon.ContextMenu = Menu;
             }
+            ToolbarIcon.ContextMenu = Menu;
 
             Timer = new Timer(TimeSpan.FromSeconds(30).TotalMilliseconds); // Every 30 seconds, fire an event
             Timer.Elapsed += Timer_Elapsed;

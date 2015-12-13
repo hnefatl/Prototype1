@@ -28,6 +28,7 @@ namespace Server
                 Repo.Departments.Add(new Department() { Name = "Maths" });
                 Repo.Departments.Add(new Department() { Name = "Science" });
                 Repo.Departments.Add(new Department() { Name = "Computing/IT" });
+                Repo.Departments.Add(new Department() { Name = "History" });
 
                 Repo.SaveChanges();
 
@@ -47,22 +48,31 @@ namespace Server
                 Repo.Students.Add(new Student() { FirstName = "Keith", LastName = "Collister", Form = "WT", Year = 13, LogonName = LogonName, Access = AccessMode.Admin });
                 Repo.Students.Add(new Student() { FirstName = "Max", LastName = "Norman", Form = "WT", Year = 13, LogonName = "Max" });
                 Repo.Students.Add(new Student() { FirstName = "Euan", LastName = "Rossie", Form = "WT", Year = 13, LogonName = "09185" });
-                Repo.Students.Add(new Student() { FirstName = "Dan", LastName = "Wrenn", Form = "MB", Year = 13, LogonName = "09154" });
+                Repo.Students.Add(new Student() { FirstName = "Mia", LogonName = "Mia", LastName = "West", Form = "MB", Year = 13 });
+                Repo.Students.Add(new Student() { FirstName = "Matthew", LogonName = "Matthew", LastName = "Pilkington", Form = "WT", Year = 13 });
+                Repo.Students.Add(new Student() { FirstName = "Euan", LogonName = "Euan", LastName = "Rossie", Form = "KE", Year = 13 });
+                Repo.Students.Add(new Student() { FirstName = "Kaleb", LogonName = "Kaleb", LastName = "Poole", Form = "BR", Year = 11 });
+                Repo.Students.Add(new Student() { FirstName = "Sam", LogonName = "Sam", LastName = "Kitto", Form = "BR", Year = 11 });
+                Repo.Students.Add(new Student() { FirstName = "Isobel", LogonName = "Isobel", LastName = "Stephens", Form = "MI", Year = 11 });
 
                 Repo.Subjects.Add(new Subject() { SubjectName = "Maths", Colour = Colors.Red });
                 Repo.Subjects.Add(new Subject() { SubjectName = "Physics", Colour = Colors.Orange });
                 Repo.Subjects.Add(new Subject() { SubjectName = "Computing", Colour = Colors.Blue });
+                Repo.Subjects.Add(new Subject() { SubjectName = "History", Colour = Colors.Green });
 
                 Repo.SaveChanges();
 
                 Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "mb", FirstName = "Mary", LastName = "Bogdiukiewicz", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single(), Email = "hnefatl@gmail.com" });
-                Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "jk", FirstName = "J....", LastName = "Kenny", Department = Repo.Departments.Where(d => d.Name == "Science").Single() });
-                Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "rb", FirstName = "R....", LastName = "Britton", Department = Repo.Departments.Where(d => d.Name == "Maths").Single() });
+                Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "pc", FirstName = "Patrick", LastName = "Count", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single() });
+                Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "jk", FirstName = "James", LastName = "Kenny", Department = Repo.Departments.Where(d => d.Name == "Science").Single() });
+                Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "rb", FirstName = "Rosemary", LastName = "Britton", Department = Repo.Departments.Where(d => d.Name == "Maths").Single() });
+                Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "ed", FirstName = "Emma", LastName = "Denny", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("History")).Single(), Email = "hnefatl@gmail.com" });
 
                 Repo.SaveChanges();
 
-                Repo.Classes.Add(new Class() { ClassName = "Computing", Students = Repo.Students.ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "mb").Single() });
-                Repo.Classes.Add(new Class() { ClassName = "Maths", Students = Repo.Students.Where(s => s.Form == "WT").ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "rb").Single() });
+                Repo.Classes.Add(new Class() { ClassName = "Computing Yr13", Students = Repo.Students.Where(s => s.Year == 11).ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "mb").Single() });
+                Repo.Classes.Add(new Class() { ClassName = "Maths Yr13", Students = Repo.Students.Where(s => s.Form == "WT").ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "rb").Single() });
+                Repo.Classes.Add(new Class() { ClassName = "History Yr11", Students = Repo.Students.Where(s => s.Year == 11).ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "rb").Single() });
 
                 Repo.SaveChanges();
 
