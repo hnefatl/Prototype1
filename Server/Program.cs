@@ -47,10 +47,11 @@ namespace Server
                 string LogonName = DataRepository.Home ? "Keith" : "09135"; // For testing on home versus school computers
                 Repo.Students.Add(new Student() { FirstName = "Keith", LastName = "Collister", Form = "WT", Year = 13, LogonName = LogonName, Access = AccessMode.Admin });
                 Repo.Students.Add(new Student() { FirstName = "Max", LastName = "Norman", Form = "WT", Year = 13, LogonName = "Max" });
+                Repo.Students.Add(new Student() { FirstName = "Dan", LastName = "Wrenn", Form = "MB", Year = 13, LogonName = "Dan" });
+                Repo.Students.Add(new Student() { FirstName = "Peter", LastName = "Champion", Form = "WT", Year = 13, LogonName = "Peter" });
                 Repo.Students.Add(new Student() { FirstName = "Euan", LastName = "Rossie", Form = "WT", Year = 13, LogonName = "09185" });
                 Repo.Students.Add(new Student() { FirstName = "Mia", LogonName = "Mia", LastName = "West", Form = "MB", Year = 13 });
                 Repo.Students.Add(new Student() { FirstName = "Matthew", LogonName = "Matthew", LastName = "Pilkington", Form = "WT", Year = 13 });
-                Repo.Students.Add(new Student() { FirstName = "Euan", LogonName = "Euan", LastName = "Rossie", Form = "KE", Year = 13 });
                 Repo.Students.Add(new Student() { FirstName = "Kaleb", LogonName = "Kaleb", LastName = "Poole", Form = "BR", Year = 11 });
                 Repo.Students.Add(new Student() { FirstName = "Sam", LogonName = "Sam", LastName = "Kitto", Form = "BR", Year = 11 });
                 Repo.Students.Add(new Student() { FirstName = "Isobel", LogonName = "Isobel", LastName = "Stephens", Form = "MI", Year = 11 });
@@ -70,7 +71,7 @@ namespace Server
 
                 Repo.SaveChanges();
 
-                Repo.Classes.Add(new Class() { ClassName = "Computing Yr13", Students = Repo.Students.Where(s => s.Year == 11).ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "mb").Single() });
+                Repo.Classes.Add(new Class() { ClassName = "Computing Yr13", Students = Repo.Students.Where(s => s.FirstName == "Keith" || s.FirstName == "Max" || s.FirstName == "Dan" || s.FirstName == "Peter").ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "mb").Single() });
                 Repo.Classes.Add(new Class() { ClassName = "Maths Yr13", Students = Repo.Students.Where(s => s.Form == "WT").ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "rb").Single() });
                 Repo.Classes.Add(new Class() { ClassName = "History Yr11", Students = Repo.Students.Where(s => s.Year == 11).ToList(), Owner = Repo.Teachers.Where(t => t.LogonName == "rb").Single() });
 
