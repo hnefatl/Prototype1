@@ -64,9 +64,9 @@ namespace Server
                 Repo.SaveChanges();
 
                 Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "mb", FirstName = "Mary", LastName = "Bogdiukiewicz", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single(), Email = "hnefatl@gmail.com" });
-                Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "pc", FirstName = "Patrick", LastName = "Count", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single() });
-                Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "jk", FirstName = "James", LastName = "Kenny", Department = Repo.Departments.Where(d => d.Name == "Science").Single() });
-                Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "rb", FirstName = "Rosemary", LastName = "Britton", Department = Repo.Departments.Where(d => d.Name == "Maths").Single() });
+                Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "pc", FirstName = "Patrick", LastName = "Count", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single(), Email = "hnefatl@gmail.com" });
+                Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "jk", FirstName = "James", LastName = "Kenny", Department = Repo.Departments.Where(d => d.Name == "Science").Single(), Email = "hnefatl@gmail.com" });
+                Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "rb", FirstName = "Rosemary", LastName = "Britton", Department = Repo.Departments.Where(d => d.Name == "Maths").Single(), Email = "hnefatl@gmail.com" });
                 Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "ed", FirstName = "Emma", LastName = "Denny", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("History")).Single(), Email = "hnefatl@gmail.com" });
 
                 Repo.SaveChanges();
@@ -160,6 +160,9 @@ namespace Server
 
                 if (Data.Item is Booking)
                 {
+                    using (DataRepository Repo = new DataRepository())
+                        Data.Item.Expand(Repo);
+
                     bool Edited = EditDataEntry((Booking)Data.Item, Data.Delete);
                     Output = (Data.Delete ? "Delete" : Edited ? "Edit" : "Add") + " Booking received from " + c.ToString();
                     if (MailHelper.Send((Booking)Data.Item, Edited))
