@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />
+    <None Include="Data.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

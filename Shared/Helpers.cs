@@ -17,11 +17,5 @@ namespace Shared
         {
             return BitConverter.ToInt32(new byte[] { c.B, c.G, c.R, c.A }, 0);
         }
-
-        public static void ForEach<T>(this IList<T> Collection, Action<T> Function)
-        {
-            for (int x = 0; x < Collection.Count; x++)
-                Function(Collection[x]);
-        }
     }
 }

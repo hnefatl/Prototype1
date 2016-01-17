@@ -140,14 +140,14 @@ namespace Server
 
         static void ClientConnected(Listener Sender, Client c)
         {
-            Print(c.ToString() + " connected", ConsoleColor.Green);
+            Print(c.ToString() + " connected. Connected clients: " + Sender.Clients.Count, ConsoleColor.Green);
             DataSnapshot Frame = DataRepository.TakeSnapshot();
             c.Send(new InitialiseMessage(Frame));
             c.Send(new UserInformationMessage(Frame.Users.Where(u => u.LogonName == c.Username).SingleOrDefault(), Frame.Rooms.Where(r => r.ComputerNames.Contains(c.ComputerName)).FirstOrDefault()));
         }
         static void ClientDisconnect(Listener Sender, Client c, DisconnectMessage Message)
         {
-            Print(c.ToString() + " disconnected. Reason: " + Message.Reason.ToString(), ConsoleColor.DarkGreen);
+            Print(c.ToString() + " disconnected. Reason: " + Message.Reason.ToString() + ". Connected clients: " + Sender.Clients.Count, ConsoleColor.DarkGreen);
         }
         static void ClientMessageReceived(Listener Sender, Client c, Message Message)
         {

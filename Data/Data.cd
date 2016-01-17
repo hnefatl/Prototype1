@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Data.DataSnapshot" BaseTypeListCollapsed="true">
+    <Position X="10.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABBGAAAAEgAAAAACAAAAACACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSnapshot.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Data.Models.Booking">
+    <Position X="9" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQcBAAAAAAAAAAIAgIAAAABCgKAACIABAAAAAAAAIiA=</HashCode>
+      <FileName>Models\Booking.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Models.Class">
+    <Position X="5.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQYBAACAAACAAAIEAAAAAAAAAKAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Class.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Models.DataModel">
+    <Position X="8.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQQDAAAAIAAAAAIAAAAAAAAAAKAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\DataModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data.Models.Department">
+    <Position X="10.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQQBAAAAAAAAAAIEAAAAAAQCAKAAAAAAAAAAAgAAAAA=</HashCode>
+      <FileName>Models\Department.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Models.Room">
+    <Position X="2" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQQBAAIAAAAiAQIEAAAAAAAAEKAAAAgAAAEAABAAAAA=</HashCode>
+      <FileName>Models\Room.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Models.Student">
+    <Position X="10.75" Y="8" Width="1.5" />
+    <InheritanceLine Type="Data.Models.User" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="13.062" Y="8.819" />
+        <Point X="13.062" Y="9.688" />
+        <Point X="12.25" Y="9.688" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>CQQBAAIIBAEgAAIMAAAAAAAAAKAAAAAAEACAAAEAAAA=</HashCode>
+      <FileName>Models\Student.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Models.Subject">
+    <Position X="7.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQQBAAAAAAAgAAIEAAAAAAAAAKAAAAAAAAAAAjAAAAA=</HashCode>
+      <FileName>Models\Subject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Models.Teacher">
+    <Position X="14.25" Y="8" Width="1.5" />
+    <InheritanceLine Type="Data.Models.User" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="13.438" Y="8.819" />
+        <Point X="13.438" Y="9.688" />
+        <Point X="14.25" Y="9.688" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>CQQBAAIIACEgAEIMAAAAAAAAEKAAAAAAAACAAAAAAAA=</HashCode>
+      <FileName>Models\Teacher.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Models.TimeSlot">
+    <Position X="3.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>GQYBAAAAACAgQAIEoAIAAAQAgKAAgIBAAAAACAAAAiA=</HashCode>
+      <FileName>Models\TimeSlot.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data.Models.User">
+    <Position X="12.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQQBAEAIAEAgAFAIAAAACAAACCAAAAAAAACAAAAAAAg=</HashCode>
+      <FileName>Models\User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Data.IDataRepository">
+    <Position X="12" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABGAAAAEgAAAAACAAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IDataRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Data.IExpandsData">
+    <Position X="13.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IExpandsData.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Data.Models.BookingType">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAACAAAAAAAAAAAgAAAAAAgA=</HashCode>
+      <FileName>Models\Booking.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Data.Models.AccessMode">
+    <Position X="6.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAQAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\User.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Data.Models.UserType">
+    <Position X="6.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\User.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

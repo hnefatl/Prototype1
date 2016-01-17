@@ -40,8 +40,7 @@ namespace Server
 
         public static readonly bool Home = Environment.UserName == "Keith";
         private static readonly string ServerProvider = Home ? "MSSQLLocalDb" : "v11.0";
-
-        //AttachDbFilename=" + Drive + @":\Burford\Year 13\Computing\Project\Data\Data.mdf
+        
         private static string _Path = "Data.mdf";
         public static string Path { get { return _Path; } set { _Path = value; } }
 

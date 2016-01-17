@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="NetCore.Client.Connection" BaseTypeListCollapsed="true">
+    <Position X="18.75" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAwAAEAAQCAAQAAAAEAAAIAAAAAIAAAAAAAAAACAQCA=</HashCode>
+      <FileName>Client\Connection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="NetCore.Messages.ConnectMessage">
+    <Position X="17" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAIAAAAAQAAAAAAACAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\ConnectMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetCore.Messages.DisconnectMessage">
+    <Position X="20.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAIAAIAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\DisconnectMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetCore.Messages.Message">
+    <Position X="21.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAMAAAAAAAAAABAACAAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>Messages\Message.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="NetCore.Messages.MessageExtensions">
+    <Position X="18.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Messages\Message.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetCore.Messages.TestMessage">
+    <Position X="18.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAIAAAAAAAAAAAAACAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Messages\TestMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetCore.Messages.DataMessages.DataMessage">
+    <Position X="22.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAAEACEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\DataMessages\DataMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetCore.Messages.DataMessages.InitialiseMessage">
+    <Position X="25.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAgAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\DataMessages\InitialiseMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetCore.Messages.DataMessages.UserInformationMessage">
+    <Position X="24" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAABAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\DataMessages\UserInformationMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetCore.BlockingQueue&lt;T&gt;">
+    <Position X="17" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BlockingQueue.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Models.DataModel" BaseTypeListCollapsed="true">
+    <Position X="27.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQQDAAAAIAAAAAIAAAAAAAAAAKAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="NetCore.NetReader">
+    <Position X="27.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQCAAgAAAAIAAAAAAAAAAjCAUEAAIABAkgAAAQ=</HashCode>
+      <FileName>NetReader.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetCore.NetWriter">
+    <Position X="27.5" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>NetWriter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetCore.Server.Client" BaseTypeListCollapsed="true">
+    <Position X="24" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAwAAAAAQCAQQAEEAUAAAAAAAAAIQEAAIAAAAACAQCA=</HashCode>
+      <FileName>Server\Client.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="NetCore.Server.Listener" BaseTypeListCollapsed="true">
+    <Position X="17" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EJAAAFAAACAAAAAAAGAAAAAAAAAAAAAIJEAAAQAAAAI=</HashCode>
+      <FileName>Server\Listener.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="NetCore.Server.ClientMessagePair">
+    <Position X="20.5" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAQ=</HashCode>
+      <FileName>Server\ClientMessagePair.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="NetCore.Messages.DisconnectType">
+    <Position X="18.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Messages\DisconnectMessage.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Delegate Name="NetCore.Client.DisconnectHandler">
+    <Position X="22.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgCA=</HashCode>
+      <FileName>Client\Connection.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="NetCore.Client.MessageReceivedHandler">
+    <Position X="22.25" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>Client\Connection.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="NetCore.Server.MessageReceivedHandler">
+    <Position X="25.75" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>Server\Client.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="NetCore.Server.DisconnectHandler">
+    <Position X="25.75" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKA=</HashCode>
+      <FileName>Server\Client.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="NetCore.Server.ClientConnectHandler">
+    <Position X="22.25" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAAAABAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Server\Listener.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="NetCore.Server.ClientDisconnectHandler">
+    <Position X="20.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAAAABAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>Server\Listener.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="NetCore.Server.ClientMessageReceivedHandler">
+    <Position X="20.5" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAQAAAAAAAAAAAAABAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Server\Listener.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
