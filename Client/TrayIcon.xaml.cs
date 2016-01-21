@@ -100,6 +100,7 @@ namespace Client
                 if (LastSlot == null || LastSlot != CurrentSlot)
                 {
                     LastSlot = CurrentSlot;
+                    ToolbarIcon.Visible = true;
                     ToolbarIcon.ShowBalloonTip(MessageDuration, "Scheduled booking", "A lesson is taking place in this room this period (" + CurrentSlot.Name + ").\n" +
                         "Teacher: " + Booking.Teacher.FormalName + "\n" +
                         "Subject: " + Booking.Subject.SubjectName, System.Windows.Forms.ToolTipIcon.Info);
