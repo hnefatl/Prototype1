@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers.cs" />
+    <Compile Include="NetReader.cs" />
+    <Compile Include="NetWriter.cs" />
     <Compile Include="Reader.cs" />
     <Compile Include="ISerialisable.cs" />
     <Compile Include="TextWriter.cs" />

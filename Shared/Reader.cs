@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace Shared
 {
+    // Abstract class providing a hierarchy for reading data from a stream.
     public abstract class Reader
         : IDisposable
     {
+        // The stream to read from
         protected Stream Base { get; set; }
 
         public Reader(Stream Base)
@@ -28,6 +26,7 @@ namespace Shared
         public abstract long ReadInt64();
         public abstract string ReadString();
         
+        // Writes a generic type by checking the type against supported ones.
         public virtual T Read<T>()
         {
             Type t = typeof(T);

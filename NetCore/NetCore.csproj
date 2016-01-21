@@ -48,8 +48,6 @@
     <Compile Include="Messages\DataMessages\UserInformationMessage.cs" />
     <Compile Include="Messages\DisconnectMessage.cs" />
     <Compile Include="Messages\TestMessage.cs" />
-    <Compile Include="NetReader.cs" />
-    <Compile Include="NetWriter.cs" />
     <Compile Include="Server\Client.cs" />
     <Compile Include="Messages\ConnectMessage.cs" />
     <Compile Include="Messages\Message.cs" />

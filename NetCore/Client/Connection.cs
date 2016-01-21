@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading;
 
 using NetCore.Messages;
+using Shared;
 
 namespace NetCore.Client
 {

@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 
 namespace Shared
 {
+    // Reads data from a stream using standard encoding.
     public class TextReader
         : Reader
     {
+        // Internal wrapper object
         protected StreamReader Reader { get; set; }
 
         public TextReader(Stream Base)
@@ -18,8 +18,9 @@ namespace Shared
         }
         public override void Dispose()
         {
-            base.Dispose();
+            // Dispose of the wrapper first, then the base class.
             Reader.Dispose();
+            base.Dispose();
         }
 
         public override byte ReadByte()

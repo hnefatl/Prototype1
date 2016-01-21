@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 namespace Shared
 {
+    // Writes data to the output Stream using standard text encoding
     public class TextWriter
         : Writer
     {
+        // Internal wrapper object
         protected StreamWriter Writer { get; set; }
 
         public TextWriter(Stream Base)
@@ -18,6 +17,7 @@ namespace Shared
         }
         public override void Dispose()
         {
+            // Dispose the Writer, then dispose the base class
             Writer.Dispose();
             base.Dispose();
         }

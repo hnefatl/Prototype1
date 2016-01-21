@@ -1,24 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using System.IO;
 
 namespace Shared
 {
+    // Provides an abstract hierarchy for writing .NET objects to a Stream.
     public abstract class Writer
         : IDisposable
     {
+        // The output stream to write to
         protected Stream Base { get; set; }
 
         public Writer(Stream Base)
         {
             this.Base = Base;
         }
+        // Disposes of the output stream
         public virtual void Dispose()
         {
+            Base.Flush();
             Base.Dispose();
         }
 
@@ -29,6 +29,7 @@ namespace Shared
         public abstract void Write(long l);
         public abstract void Write(string s);
 
+        // Writes a loosely typed Object if it's of a supported type.
         public virtual void Write(object Item)
         {
             Type t = Item.GetType();

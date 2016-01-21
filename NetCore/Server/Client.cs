@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.IO;
 
 using NetCore.Messages;
+using Shared;
 
 namespace NetCore.Server
 {
