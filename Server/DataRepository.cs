@@ -53,9 +53,9 @@ namespace Server
             SetProxies(false);
             Database.SetInitializer(new DropCreateDatabaseAlways<DataRepository>());
         }
-        protected override void Dispose(bool disposing)
+        protected override void Dispose(bool Disposing)
         {
-            base.Dispose(disposing);
+            base.Dispose(Disposing);
 
             Monitor.Exit(Lock);
         }

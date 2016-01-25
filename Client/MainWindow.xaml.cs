@@ -66,7 +66,7 @@ namespace Client
 
         private void Timetable_TileClicked(TimetableTile Tile)
         {
-            if (!CurrentUser.IsStudent)
+            if (!CurrentUser.IsStudent && (Tile.Booking == null || Tile.Booking.Teacher.Id == CurrentUser.Id))
             {
                 EditBooking Window = null;
 

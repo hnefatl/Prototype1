@@ -138,15 +138,9 @@ namespace Client.EditWindows
             InitializeComponent();
 
             StudentSelector.Students.Where(s => SelectedStudents.Contains(s.Value)).ToList().ForEach(s => s.Checked = true);
-
-            // If in release mode, restrict some of the options available 
-#if !DEBUG
+            
             if (!CurrentUser.IsAdmin) // Only let the teacher be changed if the user is an admin
                 Combo_Teacher.IsEnabled = false;
-
-            if (Teacher != null && CurrentUser != Teacher && !CurrentUser.IsAdmin) // Only let any edits be made if the current user is the owner/admin
-                Container.IsEnabled = false;
-#endif
 
             if (NewBooking) // Must be making a new booking
                 Button_Delete.IsEnabled = false;

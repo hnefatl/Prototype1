@@ -22,7 +22,7 @@ namespace Shared
 
             byte[] Buffer = new byte[Count];
             int Remaining = Count;
-            // Not guaranteed to read all bytes on first try - rety until all read
+            // Not guaranteed to read all bytes on first try - retry until all read
             while (Remaining > 0)
                 Remaining -= Base.Read(Buffer, Buffer.Length - Remaining, Remaining);
 

@@ -36,6 +36,7 @@ namespace Data.Models
 
         public virtual AccessMode Access { get; set; }
 
+        // Used to differentiate between "Students" and "Teachers" while storing both in the same table.
         public abstract UserType Discriminator { get; }
 
         [NotMapped]

@@ -62,10 +62,10 @@ namespace Client
             Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("View Bookings", (s, e) => ToolbarIcon_Click(s, null)));
 
             if (CurrentUser.Access == AccessMode.Admin)
-            {
                 Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Customise system", (s, e) => ShowAdminWindow()));
+
+            if (CurrentUser.Access == AccessMode.Admin || CurrentUser.Access == AccessMode.Teacher)
                 Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Exit", ExitClick));
-            }
             ToolbarIcon.ContextMenu = Menu;
 
             Timer = new Timer(TimeSpan.FromSeconds(30).TotalMilliseconds); // Every 30 seconds, fire an event
