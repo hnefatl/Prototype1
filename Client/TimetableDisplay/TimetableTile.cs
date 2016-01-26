@@ -72,17 +72,23 @@ namespace Client.TimetableDisplay
             // original colour, we must scale by 1/s, giving us (r,g,b) again.
 
             byte[] YUV = RGBToYUV(new byte[] { c.R, c.G, c.B });
-            YUV[0] = Clamp((int)Math.Round(BrightnessCurve(YUV[0] / 255f) * 255f));
+
+            // Calculate the new brightness using the provided colour curve. The default is x^3
+            float NewBrightness = BrightnessCurve(YUV[0] / 255f);
+            
+            YUV[0] = Clamp((int)Math.Round(NewBrightness * 255f));
             byte[] ScaledRGB = YUVToRGB(YUV);
 
             return new Color() { A = c.A, R = ScaledRGB[0], G = ScaledRGB[1], B = ScaledRGB[2] };
         }
-        private byte[] RGBToYUV(byte[] c)
+        private byte[] RGBToYUV(byte[] RGB)
         {
+            if (RGB.Length != 3)
+                throw new ArgumentException("Invalid number of bytes provided.");
             // Calculations from https://msdn.microsoft.com/en-us/library/aa917087.aspx?f=255&MSPPError=-2147217396
-            int R = c[0];
-            int G = c[1];
-            int B = c[2];
+            int R = RGB[0];
+            int G = RGB[1];
+            int B = RGB[2];
 
             int Y = ((66 * R + 129 * G + 25 * B + 128) >> 8) + 16;
             int U = ((-38 * R - 74 * G + 112 * B + 128) >> 8) + 128;
@@ -90,12 +96,14 @@ namespace Client.TimetableDisplay
 
             return new byte[] { Clamp(Y), Clamp(U), Clamp(V) };
         }
-        private byte[] YUVToRGB(byte[] c)
+        private byte[] YUVToRGB(byte[] YUV)
         {
+            if (YUV.Length != 3)
+                throw new ArgumentException("Invalid number of bytes provided.");
             // Calculations from https://msdn.microsoft.com/en-us/library/aa917087.aspx?f=255&MSPPError=-2147217396
-            int C = c[0] - 16;
-            int D = c[1] - 128;
-            int E = c[2] - 128;
+            int C = YUV[0] - 16;
+            int D = YUV[1] - 128;
+            int E = YUV[2] - 128;
 
             int R = (298 * C + 409 * E + 128) >> 8;
             int G = (298 * C - 100 * D - 208 * E + 128) >> 8;
