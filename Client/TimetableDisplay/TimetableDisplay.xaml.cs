@@ -81,6 +81,7 @@ namespace Client.TimetableDisplay
                 Container.Children.Add(LeftTile);
             }
 
+            // x = -1 is the leftmost column, which needs special treatment
             for (int x = -1; x < Frame.Periods.Count; x++)
             {
                 Grid TopTile = new Grid();
@@ -122,39 +123,12 @@ namespace Client.TimetableDisplay
                 {
                     Booking Current = RelevantBookings.Where(b => b.TimeSlot == Frame.Periods[x] && b.Rooms.Contains(Frame.Rooms[y])).SingleOrDefault();
 
-                    Tiles[y, x] = new TimetableTile();
-                    Tiles[y, x].Booking = Current;
-                    Tiles[y, x].Room = Frame.Rooms[y];
-                    Tiles[y, x].Time = Frame.Periods[x];
+                    Tiles[y, x] = new TimetableTile(Current, Frame.Periods[x], Frame.Rooms[y], CurrentUser);
 
                     Container.Children.Add(Tiles[y, x]);
                     Tiles[y, x].SetValue(Grid.RowProperty, y + 1); // Set y
                     Tiles[y, x].SetValue(Grid.ColumnProperty, x + 1); // Set x
                     Tiles[y, x].MouseLeftButtonDown += (o, e) => TileClicked((TimetableTile)o);
-                    Tiles[y, x].HorizontalAlignment = HorizontalAlignment.Stretch;
-                    Tiles[y, x].VerticalAlignment = VerticalAlignment.Stretch;
-
-                    if (Current != null)
-                    {
-                        Tiles[y, x].Children.Add(new TextBlock() { Text = Current.Subject.SubjectName, FontSize = 16, Margin = new Thickness(5, 5, 5, 0), TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis });
-                        Tiles[y, x].Children.Add(new TextBlock() { Text = Current.Teacher.Title + " " + Current.Teacher.LastName, FontSize = 16, Margin = new Thickness(5, 5, 5, 0), TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis });
-
-                        // TODO: Still need some sort of marker to show which lessons the student's involved in
-                        //if (CurrentUser is Student)
-                        //    if (Current.Students.Contains(CurrentUser))
-                        //        Tiles[y, x].Children.Add(new TextBlock() { Text = "Involved", FontSize = 16, Margin = new Thickness(5, 5, 5, 0), VerticalAlignment = VerticalAlignment.Bottom, TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis });
-
-                        Tiles[y, x].Brush = new SolidColorBrush(Current.Subject.Colour);
-                    }
-                    else
-                    {
-                        Border AlignmentHelp = new Border();
-                        AlignmentHelp.Height = TileHeight;
-                        AlignmentHelp.Child = new TextBlock() { Text = "Empty", FontSize = 16, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-
-                        Tiles[y, x].Brush = SystemColors.WindowBrush;
-                        Tiles[y, x].Children.Add(AlignmentHelp);
-                    }
                 }
             }
         }

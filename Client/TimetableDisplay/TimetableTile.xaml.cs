@@ -9,40 +9,50 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.ComponentModel;
+
 using Data.Models;
+using System.Windows.Media.Animation;
 
 namespace Client.TimetableDisplay
 {
-    public class TimetableTile
-        : StackPanel
+    public partial class TimetableTile
+        : UserControl
     {
-        public TimeSlot Time { get; set; }
-        public Room Room { get; set; }
-        public Booking Booking { get; set; }
+        public TimeSlot Time { get; protected set; }
+        public Room Room { get; protected set; }
+        public Booking Booking { get; protected set; }
 
-        protected SolidColorBrush _Brush;
-        public SolidColorBrush Brush
-        {
-            get
-            {
-                return _Brush;
-            }
-            set
-            {
-                _Brush = value;
-                Background = new SolidColorBrush(Brush.Color);
-            }
-        }
 
-        public TimetableTile()
+        public SolidColorBrush Brush { get; protected set; }
+
+        public TimetableTile(Booking Booking, TimeSlot Time, Room Room, User CurrentUser)
         {
-            MouseEnter += TimetableTile_MouseEnter;
-            MouseLeave += TimetableTile_MouseLeave;
+            DataContext = this;
+
+            this.Booking = Booking;
+            this.Time = Time;
+            this.Room = Room;
 
             BrightnessCurve = DefaultBrightnessCurve;
 
-            Orientation = Orientation.Vertical;
+            Brush = SystemColors.WindowBrush;
+            if (Booking != null)
+                Brush = new SolidColorBrush(Booking.Subject.Colour);
+            Background = Brush;
+
+            InitializeComponent();
+
+            MouseEnter += TimetableTile_MouseEnter;
+            MouseLeave += TimetableTile_MouseLeave;
+
+            if (Booking != null && CurrentUser != null && (CurrentUser is Student) && Booking.Students.Any(s => s.Id == CurrentUser.Id))
+            {
+                Storyboard PulseEffect = (Storyboard)Resources["PulseEffect"];
+                PulseEffect.Begin(Outer);
+            }
         }
 
         protected void TimetableTile_MouseEnter(object sender, MouseEventArgs e)
@@ -51,7 +61,7 @@ namespace Client.TimetableDisplay
         }
         protected void TimetableTile_MouseLeave(object sender, MouseEventArgs e)
         {
-            Background = new SolidColorBrush(Brush.Color); // Copy to prevent referencing
+            Background = new SolidColorBrush(Brush.Color);
         }
 
         public float DefaultBrightnessCurve(float Y)
@@ -75,7 +85,7 @@ namespace Client.TimetableDisplay
 
             // Calculate the new brightness using the provided colour curve. The default is x^3
             float NewBrightness = BrightnessCurve(YUV[0] / 255f);
-            
+
             YUV[0] = Clamp((int)Math.Round(NewBrightness * 255f));
             byte[] ScaledRGB = YUVToRGB(YUV);
 

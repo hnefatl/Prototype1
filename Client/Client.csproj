@@ -87,6 +87,7 @@
     <Compile Include="Converters\BookingTypeToStringConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\IntToStringConverter.cs" />
+    <Compile Include="Converters\InverseVisibilityConverter.cs" />
     <Compile Include="Converters\TimeToStringConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="Converters\InverseNullableBooleanConverter.cs" />
@@ -124,7 +125,9 @@
     <Compile Include="TimetableDisplay\TimetableDisplay.xaml.cs">
       <DependentUpon>TimetableDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TimetableDisplay\TimetableTile.cs" />
+    <Compile Include="TimetableDisplay\TimetableTile.xaml.cs">
+      <DependentUpon>TimetableTile.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TrayIcon.xaml.cs">
       <DependentUpon>TrayIcon.xaml</DependentUpon>
     </Compile>
@@ -177,6 +180,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TimetableDisplay\TimetableDisplay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TimetableDisplay\TimetableTile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
