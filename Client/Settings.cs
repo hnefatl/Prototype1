@@ -10,10 +10,6 @@ using Shared;
 
 namespace Client
 {
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    // TODO: Ask client how to store client settings - file? Command-Line arguments on startup? //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
     public sealed class Settings
     {
         private static string _Path = "Settings.txt";
@@ -60,19 +56,16 @@ namespace Client
             {
                 Inner = new Dictionary<string, object>();
 
-                using (FileStream File = new FileStream(Path, FileMode.Open))
+                using (Shared.TextReader In = new Shared.TextReader(File.OpenRead(Path)))
                 {
-                    using (Reader Reader = GetReader(File))
+                    while (true)
                     {
-                        while (true)
-                        {
-                            string Key = Reader.ReadString();
-                            string Value = Reader.ReadString();
-                            if (Key == null || Value == null)
-                                break;
+                        string Key = In.ReadString();
+                        string Value = In.ReadString();
+                        if (Key == null || Value == null)
+                            break;
 
-                            Inner.Add(Key, Value);
-                        }
+                        Inner.Add(Key, Value);
                     }
                 }
             }
@@ -86,15 +79,12 @@ namespace Client
         {
             try
             {
-                using (FileStream File = new FileStream(Path, FileMode.Create))
+                using (Shared.TextWriter Out = new Shared.TextWriter(File.OpenWrite(Path)))
                 {
-                    using (Writer Writer = GetWriter(File))
+                    foreach (KeyValuePair<string, object> Setting in Inner)
                     {
-                        foreach (KeyValuePair<string, object> Setting in Inner)
-                        {
-                            Writer.Write(Setting.Key);
-                            Writer.Write(Setting.Value);
-                        }
+                        Out.Write(Setting.Key);
+                        Out.Write(Setting.Value);
                     }
                 }
             }
@@ -104,15 +94,6 @@ namespace Client
             }
 
             return true;
-        }
-
-        private static Reader GetReader(Stream Base)
-        {
-            return new Shared.TextReader(Base);
-        }
-        private static Writer GetWriter(Stream Base)
-        {
-            return new Shared.TextWriter(Base);
         }
     }
 }

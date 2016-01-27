@@ -109,14 +109,21 @@ namespace Client.EditWindows
         {
             string Error = null;
 
-            TimeSpan Out;
-            if (string.IsNullOrWhiteSpace(PeriodName))
-                Error = "You must enter a room name";
-            else if (string.IsNullOrWhiteSpace(Start) || !TimeSpan.TryParse(Start, out Out) || !CompatibleTime(Out))
-                Error = "Invalid start time format.";
-            else if (string.IsNullOrWhiteSpace(End) || !TimeSpan.TryParse(End, out Out) || !CompatibleTime(Out))
-                Error = "Invalid end time format";
-
+            using (DataRepository Repo = new DataRepository())
+            {
+                TimeSpan StartOut;
+                TimeSpan EndOut;
+                if (string.IsNullOrWhiteSpace(PeriodName))
+                    Error = "You must enter a period name.";
+                else if (string.IsNullOrWhiteSpace(Start) || !TimeSpan.TryParse(Start, out StartOut) || !CompatibleTime(StartOut))
+                    Error = "Invalid start time format. Must be in the format \"hh:mm\"";
+                else if (string.IsNullOrWhiteSpace(End) || !TimeSpan.TryParse(End, out EndOut) || !CompatibleTime(EndOut))
+                    Error = "Invalid end time format. Must be in the format \"hh:mm\"";
+                else if (StartOut > EndOut)
+                    Error = "Start time must be before End time.";
+                else if (Repo.Periods.Any(p => p.Name == PeriodName))
+                    Error = "Another Period with that name already exists.";
+            }
             if (!string.IsNullOrWhiteSpace(Error))
                 MessageBox.Show(Error, "Error", MessageBoxButton.OK);
             else

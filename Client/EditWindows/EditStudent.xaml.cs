@@ -119,7 +119,7 @@ namespace Client.EditWindows
             else if (!int.TryParse(Year, out OutInt) || OutInt < 0)
                 Error = "Year must be a non-negative integer.";
             else if (string.IsNullOrWhiteSpace(Form))
-                Error = "You must enter a Year.";
+                Error = "You must enter a Form.";
             else if (!Enum.TryParse(Access, out OutAccess)) // Should never happen, we're using a combobox
                 Error = "Invalid access mode.";
 

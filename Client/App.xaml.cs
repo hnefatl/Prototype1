@@ -29,7 +29,10 @@ namespace Client
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             if (!Settings.Load())
+            {
+                MessageBox.Show("Failed to load settings. Please contact an administrator.");
                 Environment.Exit(-1); // Fatal error
+            }
 
             Connection = new Connection();
 

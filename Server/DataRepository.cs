@@ -40,14 +40,14 @@ namespace Server
 
         public static readonly bool Home = Environment.UserName == "Keith";
         private static readonly string ServerProvider = Home ? "MSSQLLocalDb" : "v11.0";
-        
+
         private static string _Path = "Data.mdf";
         public static string Path { get { return _Path; } set { _Path = value; } }
 
         protected static object Lock = new object();
 
         public DataRepository(bool Proxies = true)
-            : base(@"data source=(LocalDb)\" + ServerProvider + @";AttachDbFilename=" + Environment.CurrentDirectory + "\\" + Path + ";Database=Data;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
+            : base(@"data source=(LocalDb)\" + ServerProvider + @";AttachDbFilename=" + Settings.DatabasePath + ";Database=Data;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
         {
             Monitor.Enter(Lock);
             SetProxies(false);

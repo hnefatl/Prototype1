@@ -31,7 +31,7 @@ namespace Server
                 Repo.Departments.Add(new Department() { Name = "History" });
 
                 Repo.SaveChanges();
-                
+
                 List<string> ComputerNames = GenerateComputerNames();
                 Repo.Rooms.Add(new Room() { RoomName = "D6", SpecialSeats = 5, StandardSeats = 10, SpecialSeatType = "Computer", Department = Repo.Departments.Single(d => d.Name == "Computing/IT"), ComputerNames = ComputerNames });
                 Repo.Rooms.Add(new Room() { RoomName = "D12", SpecialSeats = 20, StandardSeats = 5, SpecialSeatType = "Workbench", Department = Repo.Departments.Single(d => d.Name == "Computing/IT"), ComputerNames = ComputerNames });
@@ -105,8 +105,12 @@ namespace Server
 
             Print("Initialised data", ConsoleColor.Gray);
 
+            Settings.Load();
+            Print("Loaded settings", ConsoleColor.Gray);
+
+
             bool Closing = false;
-            Listener = new Listener(34652);
+            Listener = new Listener(Settings.Port);
             try
             {
                 Listener.ClientConnect += ClientConnected;

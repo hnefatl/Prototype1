@@ -16,6 +16,7 @@ namespace Shared
         }
         public virtual void Dispose()
         {
+            Base.Flush();
             Base.Dispose();
         }
 

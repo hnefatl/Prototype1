@@ -18,9 +18,9 @@ namespace Shared
         }
         public override void Dispose()
         {
-            // Dispose of the wrapper first, then the base class.
-            Reader.Dispose();
+            // Dispose of the base class first, then the wrapper.
             base.Dispose();
+            Reader.Dispose();
         }
 
         public override byte ReadByte()
