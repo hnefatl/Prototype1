@@ -166,7 +166,7 @@ namespace Client.EditWindows
             int Temp;
             if (string.IsNullOrWhiteSpace(RoomName))
                 Error = "You must enter a room name.";
-            else if (!int.TryParse(StandardSeats, out Temp) || Temp < 0)
+            else if (!int.TryParse(StandardSeats, out Temp) || Temp <= 0)
                 Error = "Standard seats must be a non-negative integer";
             else if (!int.TryParse(SpecialSeats, out Temp) || Temp < 0)
                 Error = "Special seats must be a non-negative integer";

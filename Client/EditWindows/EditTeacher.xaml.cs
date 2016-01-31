@@ -131,7 +131,7 @@ namespace Client.EditWindows
                 Error = "Invalid access mode.";
             else if (string.IsNullOrWhiteSpace(Department))
                 Error = "You must enter a Department.";
-            else if (!Regex.IsMatch(Email, @"[\w.-]+@[\w]+\.[.\w]+"))
+            else if (!string.IsNullOrEmpty(Email) && !Regex.IsMatch(Email, @"[\w.-]+@[\w]+\.[.\w]+"))
                 Error = "Invalid email address.";
 
             if (!string.IsNullOrWhiteSpace(Error))
