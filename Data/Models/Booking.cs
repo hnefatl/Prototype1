@@ -1,26 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
-using System.Data.Entity;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using Shared;
 
 namespace Data.Models
 {
-    /// <summary>
-    /// A Booking is a effectively a single lesson.
-    /// </summary>
+    // A Booking is a effectively a single lesson.
     [Table("Bookings")]
     public class Booking
         : DataModel
     {
-        /// <summary>
-        /// The Date of the booking (the time part is irrelevant)
-        /// </summary>
+        // The Date of the booking (the time part is irrelevant)
         [NotMapped]
         public DateTime Date
         {
@@ -33,22 +26,17 @@ namespace Data.Models
                 Ticks = value.Date.ToBinary();
             }
         }
+        // Representation of the Date as a primitive datatype for storage in the database
         public long Ticks { get; set; }
 
         public BookingType BookingType { get; set; }
-
-        /// <summary>
-        /// The duration of the booking (used to work out which period for display purposes)
-        /// </summary>
+        
+        // The duration of the booking (used to work out which period for display purposes)
         public virtual TimeSlot TimeSlot { get; set; }
-
-        /// <summary>
-        /// Rooms used by this booking
-        /// </summary>
+        
+        // Rooms used by this booking
         public virtual List<Room> Rooms { get; set; }
-        /// <summary>
-        /// The subject of this booking
-        /// </summary>
+        // The subject of this booking
         public virtual Subject Subject { get; set; }
 
         public virtual List<Student> Students { get; set; }
@@ -203,21 +191,13 @@ namespace Data.Models
 
     public enum BookingType
     {
-        /// <summary>
-        /// A one off booking
-        /// </summary>
+        // A one off booking
         Single,
-        /// <summary>
-        /// Occurs every 7 days
-        /// </summary>
+        // Occurs every 7 days
         Weekly,
-        /// <summary>
-        /// Occurs every 14 days
-        /// </summary>
+        // Occurs every 14 days
         Fortnightly,
-        /// <summary>
-        /// Occurs every 30 days
-        /// </summary>
+        // Occurs every 4 weeks
         Monthly,
     }
 }

@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Data;
-using System.Data.Entity;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using Shared;
 
 namespace Data.Models
 {
-    /// <summary>
-    /// Contains all the students and relevant info
-    /// </summary>
+    // Contains all the students and relevant info
     [Table("Students")]
     public class Student
         : User
@@ -21,7 +15,7 @@ namespace Data.Models
         public int Year { get; set; } // Eg. 13
         public string Form { get; set; } // Eg. WT
 
-        [NotMapped]
+        [NotMapped] // Utility property to get the full form name 
         public string FullForm { get { return Year + Form; } }
 
         public override string InformalName { get { return FirstName + " " + LastName; } }

@@ -38,9 +38,9 @@ namespace NetCore.Messages.DataMessages
         public override void Deserialise(Reader In)
         {
             if (In.ReadBool())
-                User = (User)DataModel.DeserialiseExternal(In);
+                User = DataModel.DeserialiseExternal<User>(In);
             if (In.ReadBool())
-                Room = (Room)DataModel.DeserialiseExternal(In);
+                Room = DataModel.DeserialiseExternal<Room>(In);
         }
     }
 }

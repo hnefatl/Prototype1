@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Data.Models;
 using Shared;
@@ -9,7 +7,7 @@ using Shared;
 namespace Data
 {
     public class DataSnapshot
-        : ISerialisable
+        : ISerialisable, IDataRepository
     {
         public List<Booking> Bookings { get; set; }
         public List<Department> Departments { get; set; }
@@ -57,31 +55,31 @@ namespace Data
         {
             Bookings = new List<Booking>(In.ReadInt32());
             for (int x = 0; x < Bookings.Capacity; x++)
-                Bookings.Add((Booking)DataModel.DeserialiseExternal(In));
+                Bookings.Add(DataModel.DeserialiseExternal<Booking>(In));
 
             Departments = new List<Department>(In.ReadInt32());
             for (int x = 0; x < Departments.Capacity; x++)
-                Departments.Add((Department)DataModel.DeserialiseExternal(In));
+                Departments.Add(DataModel.DeserialiseExternal<Department>(In));
 
             Periods = new List<TimeSlot>(In.ReadInt32());
             for (int x = 0; x < Periods.Capacity; x++)
-                Periods.Add((TimeSlot)DataModel.DeserialiseExternal(In));
+                Periods.Add(DataModel.DeserialiseExternal<TimeSlot>(In));
 
             Rooms = new List<Room>(In.ReadInt32());
             for (int x = 0; x < Rooms.Capacity; x++)
-                Rooms.Add((Room)DataModel.DeserialiseExternal(In));
+                Rooms.Add(DataModel.DeserialiseExternal<Room>(In));
 
             Users = new List<User>(In.ReadInt32());
             for (int x = 0; x < Users.Capacity; x++)
-                Users.Add((User)DataModel.DeserialiseExternal(In));
+                Users.Add(DataModel.DeserialiseExternal<User>(In));
 
             Subjects = new List<Subject>(In.ReadInt32());
             for (int x = 0; x < Subjects.Capacity; x++)
-                Subjects.Add((Subject)DataModel.DeserialiseExternal(In));
+                Subjects.Add(DataModel.DeserialiseExternal<Subject>(In));
             
             Classes = new List<Class>(In.ReadInt32());
             for (int x = 0; x < Classes.Capacity; x++)
-                Classes.Add((Class)DataModel.DeserialiseExternal(In));
+                Classes.Add(DataModel.DeserialiseExternal<Class>(In));
         }
     }
 }

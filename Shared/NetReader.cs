@@ -54,10 +54,10 @@ namespace Shared
         public override string ReadString()
         {
             int Length = ReadInt32(); // Read the length of the data first
-            return Encoding.UTF8.GetString(ReadBytes(Length));
+            return Encoding.BigEndianUnicode.GetString(ReadBytes(Length));
         }
 
-        // Asycnhronous methods using Begin-End paradigm
+        // Asynchronous methods using Begin-End paradigm
         public virtual IAsyncResult BeginReadBytes(int Count, AsyncCallback Callback)
         {
             byte[] Buffer = new byte[Count]; // Allocate the memory to be used
@@ -70,6 +70,7 @@ namespace Shared
             // Retrieve the buffer as the state
             byte[] Buffer = (byte[])Handle.AsyncState;
 
+            // Retrieve the number of bytes read
             int Read = Base.EndRead(Handle);
 
             // Check for a valid read (correct number of bytes)
@@ -134,10 +135,10 @@ namespace Shared
         {
             int Length = EndReadInt32(Handle);
 
-            return Encoding.UTF8.GetString(ReadBytes(Length));
+            return Encoding.BigEndianUnicode.GetString(ReadBytes(Length));
         }
 
-        // Static utility function to determine the number of bytes required to send a particular object.
+        // Utility function to determine the number of bytes required to send a particular object.
         public static int NetworkLength(object o)
         {
             if (o is short)
@@ -149,7 +150,7 @@ namespace Shared
             else if (o is byte)
                 return sizeof(byte);
             else if (o is string) // Sends size of contents + actual contents
-                return sizeof(int) + Encoding.UTF8.GetByteCount((string)o);
+                return sizeof(int) + Encoding.BigEndianUnicode.GetByteCount((string)o);
             else
                 throw new NotSupportedException();
         }

@@ -28,7 +28,6 @@
       <HashCode>CQQDAAAAIAAAAAIAAAAAAAAAAKAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\DataModel.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Data.Models.Department">
     <Position X="10.75" Y="4.25" Width="1.5" />
@@ -92,13 +91,6 @@
     <TypeIdentifier>
       <HashCode>AAAABGAAAAEgAAAAACAAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IDataRepository.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
-  <Interface Name="Data.IExpandsData">
-    <Position X="9" Y="11" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>IExpandsData.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Enum Name="Data.Models.BookingType">

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using Shared;
@@ -27,16 +25,17 @@ namespace Data.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        public string LogonName { get; set; }
+        public string LogonName { get; set; } // User's school username
 
-        [NotMapped]
+        [NotMapped] // InformalName isn't stored in the DB, but constructed from First and Last names
         public abstract string InformalName { get; }
-        [NotMapped]
+        [NotMapped] // Again, not stored in the DB but constructed
         public abstract string FormalName { get; }
 
+        // Access level in the system (used for all authentication checks)
         public virtual AccessMode Access { get; set; }
 
-        // Used to differentiate between "Students" and "Teachers" while storing both in the same table.
+        // Used to differentiate between Students and Teachers while storing both in the same table.
         public abstract UserType Discriminator { get; }
 
         [NotMapped]

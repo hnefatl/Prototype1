@@ -42,8 +42,8 @@ namespace Shared
         public override void Write(string s)
         {
             // Write the length of the string, then the actual string data
-            Write(Encoding.UTF8.GetByteCount(s));
-            Write(Encoding.UTF8.GetBytes(s));
+            Write(Encoding.BigEndianUnicode.GetByteCount(s));
+            Write(Encoding.BigEndianUnicode.GetBytes(s));
         }
     }
 }
