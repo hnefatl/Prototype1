@@ -1,40 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Data;
-using System.Data.Entity;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using Shared;
 
 namespace Data.Models
 {
+    // Contains all teachers and properties
     [Table("Teachers")]
     public class Teacher
         : User
     {
-        public string Title { get; set; }
-        public string Email { get; set; }
+        public string Title { get; set; } // Eg. Mr, Mrs
+        public string Email { get; set; } // Eg. email@gmail.com
 
         public override string InformalName { get { return FirstName + " " + LastName; } }
         public override string FormalName { get { return Title + " " + LastName; } }
 
-        public override AccessMode Access { get; set; }
-
         public override UserType Discriminator { get { return UserType.Teacher; } }
 
         public virtual Department Department { get; set; }
-        public virtual List<Class> Classes { get; set; }
-
-        public virtual List<Booking> InternalBookings { get; set; }
-        public override List<Booking> Bookings { get { return InternalBookings; } set { InternalBookings = value; } }
 
         public Teacher()
         {
-            Classes = new List<Class>();
-
             Access = AccessMode.Teacher;
 
             Title = string.Empty;
@@ -43,6 +32,7 @@ namespace Data.Models
 
         public override bool Conflicts(List<DataModel> Others)
         {
+            // Return true if the base conflicts or the properties introduced in this class conflict
             return base.Conflicts(Others) || Others.OfType<Teacher>().Any(t => t.Id != Id && t.Title == Title && t.Email == Email);
         }
 
@@ -61,6 +51,7 @@ namespace Data.Models
 
         public override void Serialise(Writer Out)
         {
+            // Output base class properties followed by this class's properties
             base.Serialise(Out);
 
             Out.Write(Title);
@@ -71,6 +62,7 @@ namespace Data.Models
         }
         protected override void Deserialise(Reader In)
         {
+            // Deserialise base class then this class
             base.Deserialise(In);
 
             Title = In.ReadString();
@@ -79,6 +71,7 @@ namespace Data.Models
             Classes.ForEach(c => c.Id = In.ReadInt32());
             Email = In.ReadString();
         }
+        // Obtain IDs of related objects
         public override bool Expand(IDataRepository Repo)
         {
             base.Expand(Repo);
@@ -95,6 +88,7 @@ namespace Data.Models
             }
             return true;
         }
+        // Branch out references
         public override void Attach()
         {
             Bookings.ForEach(b => b.Teacher = this);
@@ -102,17 +96,13 @@ namespace Data.Models
                 Department.Teachers.Add(this);
             Classes.ForEach(c => c.Owner = this);
         }
+        // Remove references
         public override void Detach()
         {
             Bookings.ForEach(b => { if (b != null) b.Teacher = null; });
             if (Department != null)
                 Department.Teachers.RemoveAll(i => i.Id == Id);
             Classes.ForEach(c => { if (c != null) c.Owner = null; });
-        }
-
-        public override string ToString()
-        {
-            return InformalName;
         }
     }
 }

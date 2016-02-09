@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
-using System.Data.Entity;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using Shared;
@@ -15,9 +12,12 @@ namespace Data.Models
     public class Department
         : DataModel
     {
+        // Name of the department (eg Computing, Maths)
         public string Name { get; set; }
 
+        // Teachers in the department
         public virtual List<Teacher> Teachers { get; set; }
+        // Rooms owned by the department
         public virtual List<Room> Rooms { get; set; }
 
         public Department()
@@ -30,9 +30,10 @@ namespace Data.Models
 
         public override bool Conflicts(List<DataModel> Others)
         {
+            // Conflicts occur on matching names and ID
             return Others.Cast<Department>().Any(d => d.Id != Id && d.Name == Name);
         }
-
+        
         public override void Update(DataModel Other)
         {
             Department d = (Department)Other;
@@ -44,6 +45,7 @@ namespace Data.Models
             Rooms.AddRange(d.Rooms);
         }
 
+        // Serialise properties and IDs
         public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
@@ -54,6 +56,7 @@ namespace Data.Models
             Out.Write(Rooms.Count);
             Rooms.ForEach(r => Out.Write(r.Id));
         }
+        // Deserialise properties and IDs
         protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);

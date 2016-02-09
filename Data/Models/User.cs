@@ -13,7 +13,7 @@ namespace Data.Models
         Teacher,
         Admin,
     }
-    public enum UserType // Internal discriminator for the database between Students and Teachers (for their respective tables)
+    public enum UserType // Internal discriminator for the database between Students and Teachers
     {
         Student,
         Teacher,
@@ -37,11 +37,13 @@ namespace Data.Models
 
         // Used to differentiate between Students and Teachers while storing both in the same table.
         public abstract UserType Discriminator { get; }
+        
+        // All bookings the user's involved in
+        public List<Booking> Bookings { get; set; }
+        // All classes the user's involved in
+        public virtual List<Class> Classes { get; set; }
 
-        [NotMapped]
-        public abstract List<Booking> Bookings { get; set; }
-
-        [NotMapped]
+        [NotMapped] // Helpful unmapped properties, good for UI bindings
         public virtual bool IsStudent { get { return Access == AccessMode.Student; } }
         [NotMapped]
         public virtual bool IsTeacher { get { return Access == AccessMode.Teacher; } }
@@ -54,13 +56,16 @@ namespace Data.Models
             LastName = string.Empty;
 
             Bookings = new List<Booking>();
+            Classes = new List<Class>();
         }
 
         public override bool Conflicts(List<DataModel> Others)
         {
+            // Conflicts occur if the same ID and same LogonName are used elsewhere
             return Others.Cast<User>().Any(u => u.Id != Id && u.LogonName == LogonName);
         }
 
+        // Update this entry's data to match those provided
         public override void Update(DataModel Other)
         {
             User u = (User)Other;
@@ -73,6 +78,7 @@ namespace Data.Models
             Bookings.AddRange(u.Bookings);
         }
 
+        // Serialise all required properties
         public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
@@ -85,6 +91,7 @@ namespace Data.Models
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
         }
+        // Deserialise all properties
         protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);
@@ -98,6 +105,7 @@ namespace Data.Models
             Bookings.ForEach(b => b.Id = In.ReadInt32());
         }
 
+        // Obtain references to all related items by ID
         public override bool Expand(IDataRepository Repo)
         {
             try
@@ -110,6 +118,11 @@ namespace Data.Models
                 return false;
             }
             return true;
+        }
+
+        public override string ToString()
+        {
+            return InformalName;
         }
     }
 }

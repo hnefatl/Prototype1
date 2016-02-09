@@ -23,15 +23,8 @@ namespace Data.Models
 
         public override UserType Discriminator { get { return UserType.Student; } }
 
-        public virtual List<Class> Classes { get; set; }
-
-        public virtual List<Booking> InternalBookings { get; set; }
-        public override List<Booking> Bookings { get { return InternalBookings; } set { InternalBookings = value; } }
-
         public Student()
         {
-            Classes = new List<Class>();
-
             Access = AccessMode.Student;
 
             Form = string.Empty;
@@ -53,8 +46,10 @@ namespace Data.Models
             Classes.AddRange(s.Classes);
         }
 
+        // Serialise all properties to the stream
         public override void Serialise(Writer Out)
         {
+            // Serialise the base class' properties
             base.Serialise(Out);
 
             Out.Write(Year);
@@ -62,6 +57,7 @@ namespace Data.Models
             Out.Write(Classes.Count);
             Classes.ForEach(c => Out.Write(c.Id));
         }
+        // Deserialise from the stream
         protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);
@@ -72,6 +68,7 @@ namespace Data.Models
             Classes = Enumerable.Repeat(new Class(), In.ReadInt32()).ToList();
             Classes.ForEach(c => c.Id = In.ReadInt32());
         }
+        // Obtain references to related entities
         public override bool Expand(IDataRepository Repo)
         {
             base.Expand(Repo);
@@ -87,20 +84,17 @@ namespace Data.Models
             }
             return true;
         }
+        // Set references to this from other related objects
         public override void Attach()
         {
             Bookings.ForEach(b => b.Students.Add(this));
             Classes.ForEach(c => c.Students.Add(this));
         }
+        // Remove references before deletion
         public override void Detach()
         {
             Bookings.ForEach(b => { if (b != null) b.Students.RemoveAll(i => i.Id == Id); });
             Classes.ForEach(c => { if (c != null) c.Students.RemoveAll(i => i.Id == Id); });
-        }
-
-        public override string ToString()
-        {
-            return FirstName + " " + LastName;
         }
     }
 }
