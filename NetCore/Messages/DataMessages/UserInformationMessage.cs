@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Data.Models;
 using Shared;
 
 namespace NetCore.Messages.DataMessages
 {
+    // Sent by the Server to the Client on connection
     public class UserInformationMessage
         : Message
     {
+        // The User that the logged on user corresponds to
         public User User { get; set; }
+        // Identifies the Room the user is currently in
         public Room Room { get; set; }
 
         public UserInformationMessage()

@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Data.Entity;
 
-using NetCore;
 using NetCore.Server;
 using NetCore.Messages;
 using NetCore.Messages.DataMessages;
 using Data;
 using Data.Models;
-using Shared;
 
 namespace Server
 {
     class Program
     {
+        // This is the actual "Server" - runs all the networking code.
+        // All this class does is specify handlers for events provided by the listener
         static Listener Listener { get; set; }
 
         static void Main(string[] args)
@@ -105,22 +103,30 @@ namespace Server
 
             Print("Initialised data", ConsoleColor.Gray);
 
+            // Load the settings from the Settings.txt file
             Settings.Load();
             Print("Loaded settings", ConsoleColor.Gray);
 
 
+            // Flag to represent whether the server is in the middle of shutting down
             bool Closing = false;
+            // Initialise the Listener with the port defined in the settings file
             Listener = new Listener(Settings.Port);
             try
             {
+                // Hook up the event handlers - these define the actual action taken by the server
                 Listener.ClientConnect += ClientConnected;
                 Listener.ClientDisconnect += ClientDisconnect;
                 Listener.ClientMessageReceived += ClientMessageReceived;
+
+                // Start and don't buffer messages - use events instead
                 Listener.Start(false);
                 Print("Listener started...", ConsoleColor.Green);
 
+                // Wait for a keypress (to signal exit)
                 Console.ReadKey(true);
 
+                // Shut down the server, unhook the handlers
                 Closing = true;
                 Listener.Stop();
                 Print("Listener stopped...", ConsoleColor.Red);
@@ -130,6 +136,8 @@ namespace Server
             }
             catch (Exception e)
             {
+                // If an exception is fired while the server's shutting down,
+                // it's usually a send error and is safe to ignore
                 if (!Closing)
                 {
                     Print("Error: " + e.ToString(), ConsoleColor.Red);
@@ -143,33 +151,54 @@ namespace Server
             catch { }
         }
 
+        // Called when client connects to the server
         static void ClientConnected(Listener Sender, Client c)
         {
+            // Notification message
             Print(c.ToString() + " connected. Connected clients: " + Sender.Clients.Count, ConsoleColor.Green);
+
+            // Take an frame of the current database
             DataSnapshot Frame = DataRepository.TakeSnapshot();
+            // Send the data initialisation message
             c.Send(new InitialiseMessage(Frame));
+            // Send info on the user that's logged in
             c.Send(new UserInformationMessage(Frame.Users.Where(u => u.LogonName == c.Username).SingleOrDefault(), Frame.Rooms.Where(r => r.ComputerNames.Contains(c.ComputerName)).FirstOrDefault()));
         }
+
+        // Called when a client disconnects
         static void ClientDisconnect(Listener Sender, Client c, DisconnectMessage Message)
         {
+            // Just print a message notifying of the disconnection
             Print(c.ToString() + " disconnected. Reason: " + Message.Reason.ToString() + ". Connected clients: " + Sender.Clients.Count, ConsoleColor.DarkGreen);
         }
+
+        // Called when a client sends a message
         static void ClientMessageReceived(Listener Sender, Client c, Message Message)
         {
+            // Output holds the text to be displayed at the end
             string Output = null;
+
+            // Special case for TestMessages - just print their contents
             if (Message is TestMessage)
                 Output = "Message received from " + c.ToString();
             else if (Message is DataMessage)
             {
+                // We're dealing with a DataMessage
                 DataMessage Data = (DataMessage)Message;
 
                 if (Data.Item is Booking)
                 {
+                    // Get references from the received object to the existing ones in the database
                     using (DataRepository Repo = new DataRepository())
                         Data.Item.Expand(Repo);
 
+                    // Store whether the data was edited or created
                     bool Edited = EditDataEntry((Booking)Data.Item, Data.Delete);
+
+                    // Form the output based on whether the item was deleted, edited, or created
                     Output = (Data.Delete ? "Delete" : Edited ? "Edit" : "Add") + " Booking received from " + c.ToString();
+
+                    // Send an email and append an appropriate message to the end
                     if (MailHelper.Send((Booking)Data.Item, Edited))
                         Output += "    Email sent to teacher.";
                     else
@@ -177,6 +206,7 @@ namespace Server
                 }
                 else if (Data.Item is Class)
                 {
+                    // Edit the data and form a suitable output
                     bool Edited = EditDataEntry((Class)Data.Item, Data.Delete);
                     Output = (Data.Delete ? "Delete" : Edited ? "Edit" : "Add") + " Class received from " + c.ToString();
                 }
@@ -207,21 +237,27 @@ namespace Server
                 }
             }
 
+            // If the output's been set, print it
             if (Output != null)
                 Print(Output, ConsoleColor.Gray);
         }
+
+        // This function alters the database with a specific item, returning
+        // true if the item was edited and false if it was created
         static bool EditDataEntry<T>(T Entry, bool Delete) where T : DataModel
         {
             bool Edited = false;
             using (DataRepository Repo = new DataRepository())
             {
                 Repo.SetProxies(true);
+                // Get the relevant table
                 DbSet<T> Set = Repo.Set<T>();
 
+                // If we're not deleting, then we want references to related items
                 if (!Delete)
                     Entry.Expand(Repo);
 
-                if (Delete)
+                if (Delete) // Remove if deleting
                     Set.Remove(Set.Single(e => e.Id == Entry.Id));
                 else
                 {
@@ -230,10 +266,11 @@ namespace Server
                     {
                         if (Set.Any(m => m.Id == Entry.Id)) // Updating existing item
                         {
+                            // Call Update on the object to preserve references
                             Set.ToList().Single(m => m.Id == Entry.Id).Update(Entry);
                             Edited = true;
                         }
-                        else
+                        else // Add new item
                         {
                             Set.Add(Entry);
                             Edited = false;
@@ -241,15 +278,19 @@ namespace Server
                     }
                 }
 
+                // Flush changes
                 Repo.SaveChanges();
 
+                // Send the update to all clients
                 Listener.Send(new DataMessage(Entry, Delete));
             }
             return Edited;
         }
 
+        // This simple function prints the desired text in the given colour
         static void Print(string Text, ConsoleColor Colour)
         {
+            // Thread safe
             lock (Console.Out)
             {
                 Console.ForegroundColor = Colour;

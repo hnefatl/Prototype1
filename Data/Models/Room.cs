@@ -1,66 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Data;
-using System.Data.Entity;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using Shared;
 
 namespace Data.Models
 {
-    /// <summary>
-    /// Rooms are the area that can be booked, and contains some useful info
-    /// </summary>
+    // Rooms are the area that can be booked
     [Table("Rooms")]
     public class Room
         : DataModel
     {
-        /// <summary>
-        /// Recognisable name of the room (eg D6, D12, Library)
-        /// </summary>
+        // Recognisable name of the room (eg D6, D12, Library)
         public string RoomName { get; set; }
-        /// <summary>
-        /// Number of "standard seats" that don't consume specific resources. Usually just number of available desks.
-        /// </summary>
+
+        // Number of "standard seats". Usually just number of available desks
         public int StandardSeats { get; set; }
-        /// <summary>
-        /// Number of "special seats" that consume specific resources, for example a computer, workbench etc.
-        /// </summary>
+
+        // Number of "special seats", for example a computer, workbench etc
         public int SpecialSeats { get; set; }
 
-        /// <summary>
-        /// Type of "Special Seat", so eg "Computer", "Workbench".
-        /// </summary>
+        // Type of "Special Seat", so eg "Computer", "Workbench"
         public string SpecialSeatType { get; set; }
 
-        /// <summary>
-        /// Bookings using this room
-        /// </summary>
+        // Bookings using this room
         public virtual List<Booking> Bookings { get; set; }
 
         public virtual Department Department { get; set; }
 
         protected List<string> _ComputerNames = new List<string>();
-        [NotMapped]
+        [NotMapped] // The list of names of computers in a room (eg D12C2)
         public List<string> ComputerNames
         {
             get { return _ComputerNames; }
             set
             {
+                // Can't have a room containing the character used to delimit computer names
                 if (value.Any(s => s.Contains(ComputerNameSeperator)))
                     throw new ArgumentException("Computer name cannot contain '" + ComputerNameSeperator + "'.");
                 _ComputerNames = value;
             }
         }
+        // Can't store a List<string> in the DB, so store a string formed by joining all
+        // the names, delimiting with a seperator. Gettings/Setting this property creates
+        // the string by working on the list. This is the actual property stored in the DB
         public string ComputerNamesJoined
         {
             get { return string.Join("" + ComputerNameSeperator, ComputerNames); }
             set { ComputerNames = value.Split(ComputerNameSeperator).ToList(); }
         }
 
+        // Character used to delimit computer names in the joined string
         public const char ComputerNameSeperator = '|';
 
         public Room()
@@ -90,6 +81,7 @@ namespace Data.Models
             Department = r.Department;
         }
 
+        // Serialise properties and IDs
         public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
@@ -104,6 +96,7 @@ namespace Data.Models
             Bookings.ForEach(b => Out.Write(b.Id));
             Out.Write(Department.Id);
         }
+        // Deserialise properties and IDs
         protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);
@@ -118,6 +111,7 @@ namespace Data.Models
             Bookings.ForEach(b => b.Id = In.ReadInt32());
             Department = new Department() { Id = In.ReadInt32() };
         }
+        // Obtain references to related items
         public override bool Expand(IDataRepository Repo)
         {
             try
@@ -132,12 +126,14 @@ namespace Data.Models
             }
             return true;
         }
+        // Set references to this item
         public override void Attach()
         {
             Bookings.ForEach(b => b.Rooms.Add(this));
             if (Department != null)
                 Department.Rooms.Add(this);
         }
+        // Remove references to this item
         public override void Detach()
         {
             Bookings.ForEach(b => { if (b != null) b.Rooms.RemoveAll(i => i.Id == Id); });

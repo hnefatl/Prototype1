@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Data.Entity;
 
 using NetCore.Client;
 using NetCore.Messages;
@@ -15,13 +14,17 @@ using Data.Models;
 
 namespace Client
 {
-    public delegate void UserChangeHandler(User NewUser);
+    // Delegate function signatures for the events described below
     public delegate void DataChangedHandler(Type ChangedType);
+
+    // Holds a copy of the data in the database that's synchronised with the server
     public class DataRepository
         : IDisposable, IDataRepository
     {
+        // Reference to the connection to the server used
         private static Connection Server { get; set; }
 
+        // List of all the Bookings
         List<Booking> IDataRepository.Bookings { get { return Bookings.ToList(); } }
         private static ObservableCollection<Booking> _Bookings = new ObservableCollection<Booking>();
         public ObservableCollection<Booking> Bookings
@@ -30,6 +33,7 @@ namespace Client
             set { _Bookings = value; }
         }
 
+        // All Departments
         List<Department> IDataRepository.Departments { get { return Departments.ToList(); } }
         private static ObservableCollection<Department> _Departments = new ObservableCollection<Department>();
         public ObservableCollection<Department> Departments
@@ -78,49 +82,74 @@ namespace Client
             set { _Classes = value; }
         }
 
-        private static object Lock = new object();
-        private static bool ReportModelChanges { get; set; } // Whether to inform the server of model changes
+        // Holds references to the tables by loosely typed IList collections.
+        // Reduces code bloat later on
+        private static readonly Dictionary<Type, IList> Tables = new Dictionary<Type, IList>()
+        {
+            { typeof(Booking), _Bookings },
+            { typeof(Department), _Departments },
+            { typeof(Room), _Rooms },
+            { typeof(User), _Users },
+            { typeof(Subject), _Subjects },
+            { typeof(TimeSlot), _Periods },
+            { typeof(Class), _Classes },
+        };
 
+        // Internal locking object for thread safety
+        private static object Lock = new object();
+
+        // Whether to inform the server of model changes
+        private static bool ReportModelChanges { get; set; }
+
+        // Signals between threads indicating the completion of certain tasks
         private static ManualResetEvent InitialisedEvent { get; set; }
         private static ManualResetEvent UserEvent { get; set; }
+
+        // Reference to the current User and Room, set when an approriate message is received
         private static User CurrentUser { get; set; }
         private static Room CurrentRoom { get; set; }
 
-        public static event UserChangeHandler UserChange = delegate { };
-        protected static void OnUserChange(User New)
-        {
-            if (UserChange != null)
-                UserChange(New);
-        }
-
+        // Fired when any colelction of items is changed
         public static event DataChangedHandler DataChanged = delegate { };
 
+        // Whether this instance will check for thread safety before accessing the data
         private bool LockData;
 
         public DataRepository(bool LockData = true)
         {
+            // Optionally allow one DataRepository to be instantiated at a time.
+            // Block until all other ones are Disposed.
             this.LockData = LockData;
             if (LockData)
-                Monitor.Enter(Lock); // Only allow one DataRepository to be instantiated at a time. Block until all other ones are Disposed.
+                Monitor.Enter(Lock);
         }
+
+        // Initialise the database model from the server
         public static Tuple<User, Room> Initialise(Connection Server, ConnectMessage Msg)
         {
             try
             {
+                // Thread safe
                 Monitor.Enter(Lock);
 
+                // Reset the signal that's set when the data's received
                 if (InitialisedEvent == null)
                     InitialisedEvent = new ManualResetEvent(false);
                 InitialisedEvent.Reset();
+
+                // Reset the signal that's set when the user information's received
                 if (UserEvent == null)
                     UserEvent = new ManualResetEvent(false);
                 UserEvent.Reset();
 
+                // Set the current server
                 DataRepository.Server = Server;
 
+                // Hook up network events
                 Server.MessageReceived += MessageReceived;
                 Server.Disconnect += Disconnected;
 
+                // Hook up data changed events
                 _Bookings.CollectionChanged += Data_CollectionChanged;
                 _Departments.CollectionChanged += Data_CollectionChanged;
                 _Rooms.CollectionChanged += Data_CollectionChanged;
@@ -129,6 +158,7 @@ namespace Client
                 _Periods.CollectionChanged += Data_CollectionChanged;
                 _Classes.CollectionChanged += Data_CollectionChanged;
 
+                // Send the connection message
                 Server.Send(Msg);
             }
             catch
@@ -137,11 +167,13 @@ namespace Client
             }
             finally
             {
+                // Release the lock
                 Monitor.Exit(Lock);
             }
 
             try
             {
+                // Wait for both signals to fire, signalling
                 InitialisedEvent.WaitOne();
                 UserEvent.WaitOne();
             }
@@ -151,15 +183,18 @@ namespace Client
                 return null;
             }
 
+            // Return the User and their Room (grouped together for easy return value)
             return new Tuple<User, Room>(CurrentUser, CurrentRoom);
         }
 
+        // Unlock the object on disposal
         public void Dispose()
         {
             if (LockData)
                 Monitor.Exit(Lock);
         }
 
+        // Take a frame of the information in the database model
         public static DataSnapshot TakeSnapshot(bool Lock = true)
         {
             DataSnapshot Frame = new DataSnapshot();
@@ -175,6 +210,8 @@ namespace Client
             }
             return Frame;
         }
+
+        // Load in a snapshot to the database model
         public static void LoadSnapshot(DataSnapshot Frame, bool Lock)
         {
             using (DataRepository Repo = new DataRepository(Lock))
@@ -200,39 +237,40 @@ namespace Client
                 Repo.Classes.Clear();
                 Frame.Classes.ForEach(c => Repo.Classes.Add(c));
 
-                foreach (Booking b in Repo.Bookings)
-                    b.Expand(Repo);
-                foreach (Department d in Repo.Departments)
-                    d.Expand(Repo);
-                foreach (TimeSlot t in Repo.Periods)
-                    t.Expand(Repo);
-                foreach (Room r in Repo.Rooms)
-                    r.Expand(Repo);
-                foreach (User u in Repo.Users)
-                    u.Expand(Repo);
-                foreach (Subject s in Repo.Subjects)
-                    s.Expand(Repo);
-                foreach (Class c in Repo.Classes)
-                    c.Expand(Repo);
+                // Run through all lists and expand the items within them
+                foreach (IList Table in Tables.Values)
+                {
+                    foreach (DataModel d in Table)
+                    {
+                        d.Expand(Repo);
+                    }
+                }
             }
         }
-        
+
+        // Handler for when the server receives a message
         private static void MessageReceived(Connection Sender, Message Msg)
         {
             bool Locked = true;
             Monitor.Enter(Lock);
 
-            ReportModelChanges = false; // We've just got this message from the server, don't echo the results back
+            // Don't echo chages back to the server - changes made in this
+            // function have been sent to us by the server
+            ReportModelChanges = false;
 
             if (Msg is InitialiseMessage)
             {
+                // Initialisation of the client - load in the data
                 LoadSnapshot((Msg as InitialiseMessage).Snapshot, false);
+
+                // Signal that we've received the initial data
                 InitialisedEvent.Set();
             }
             else if (Msg is UserInformationMessage)
             {
+                // Information on the User and their Room
+
                 UserInformationMessage m = (Msg as UserInformationMessage);
-                OnUserChange(m.User);
                 User User = m.User;
                 Room Room = m.Room;
 
@@ -241,125 +279,47 @@ namespace Client
                 if (Room == null)
                     throw new ArgumentNullException("Received a null room.");
 
+                // Acquire references to the actual user/room
                 DataSnapshot Frame = TakeSnapshot(false);
                 CurrentUser = Frame.Users.SingleOrDefault(u => u.Id == User.Id);
                 CurrentRoom = Frame.Rooms.SingleOrDefault(r => r.Id == Room.Id);
 
+                // Signal that we've received the user data
                 UserEvent.Set();
             }
             else if (Msg is DataMessage)
             {
                 DataMessage Data = (DataMessage)Msg;
 
-                #region Data parsing
                 using (DataRepository Repo = new DataRepository(false))
                     Data.Item.Expand(Repo);
+                
                 if (!Data.Delete)
                     Data.Item.Attach();
                 else
                     Data.Item.Detach();
 
-                if (Data.Item is Booking)
+                IList Table = Tables[Data.Item.GetType()];
+                
+                int Index = -1;
+                for (int x = 0; x < Table.Count; x++)
                 {
-                    if (!Data.Delete)
+                    if (((DataModel)Table[x]).Id == Data.Item.Id)
                     {
-                        int Index = _Bookings.IndexOf(_Bookings.SingleOrDefault(i => i.Id == Data.Item.Id));
-                        if (Index < 0)
-                            _Bookings.Add((Booking)Data.Item);
-                        else
-                            _Bookings[Index] = (Booking)Data.Item;
+                        Index = x;
+                        break;
                     }
-                    else
-                        _Bookings.Remove(_Bookings.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
                 }
-                else if (Data.Item is Class)
-                {
-                    if (!Data.Delete)
-                    {
-                        int Index = _Classes.IndexOf(_Classes.SingleOrDefault(i => i.Id == Data.Item.Id));
-                        if (Index < 0)
-                            _Classes.Add((Class)Data.Item);
-                        else
-                            _Classes[Index] = (Class)Data.Item;
-                    }
-                    else
-                        _Classes.Remove(_Classes.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
-                }
-                else if (Data.Item is Department)
-                {
-                    if (!Data.Delete)
-                    {
-                        int Index = _Departments.IndexOf(_Departments.SingleOrDefault(i => i.Id == Data.Item.Id));
-                        if (Index < 0)
-                            _Departments.Add((Department)Data.Item);
-                        else
-                            _Departments[Index] = (Department)Data.Item;
-                    }
-                    else
-                        _Departments.Remove(_Departments.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
-                }
-                else if (Data.Item is Room)
-                {
-                    if (!Data.Delete)
-                    {
-                        int Index = _Rooms.IndexOf(_Rooms.SingleOrDefault(r => r.Id == Data.Item.Id));
-                        if (Index < 0)
-                            _Rooms.Add((Room)Data.Item);
-                        else
-                            _Rooms[Index] = (Room)Data.Item;
-                    }
-                    else
-                        _Rooms.Remove(_Rooms.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
-                }
-                else if (Data.Item is User)
-                {
-                    if (!Data.Delete)
-                    {
-                        using (DataRepository Repo = new DataRepository(false))
-                            Data.Item.Expand(Repo);
 
-                        int Index = _Users.IndexOf(_Users.SingleOrDefault(i => i.Id == Data.Item.Id));
-                        if (Index < 0)
-                            _Users.Add((User)Data.Item);
-                        else
-                            _Users[Index] = (User)Data.Item;
-                    }
-                    else
-                        _Users.Remove(_Users.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
-                }
-                else if (Data.Item is Subject)
+                if (!Data.Delete)
                 {
-                    if (!Data.Delete)
-                    {
-                        using (DataRepository Repo = new DataRepository(false))
-                            Data.Item.Expand(Repo);
-
-                        int Index = _Subjects.IndexOf(_Subjects.SingleOrDefault(i => i.Id == Data.Item.Id));
-                        if (Index < 0)
-                            _Subjects.Add((Subject)Data.Item);
-                        else
-                            _Subjects[Index] = (Subject)Data.Item;
-                    }
+                    if (Index < 0)
+                        Table.Add((Booking)Data.Item);
                     else
-                        _Subjects.Remove(_Subjects.Where(b => b.Id == Data.Item.Id).SingleOrDefault());
+                        Table[Index] = (Booking)Data.Item;
                 }
-                else if (Data.Item is TimeSlot)
-                {
-                    if (!Data.Delete)
-                    {
-                        using (DataRepository Repo = new DataRepository(false))
-                            Data.Item.Expand(Repo);
-
-                        int Index = _Periods.IndexOf(_Periods.SingleOrDefault(i => i.Id == Data.Item.Id));
-                        if (Index < 0)
-                            _Periods.Add((TimeSlot)Data.Item);
-                        else
-                            _Periods[Index] = (TimeSlot)Data.Item;
-                    }
-                    else
-                        _Periods.Remove(_Periods.Where(b => b.Id == Data.Item.Id).Single());
-                }
-                #endregion
+                else
+                    Table.RemoveAt(Index);
 
                 Monitor.Exit(Lock);
                 Locked = false;
@@ -367,11 +327,13 @@ namespace Client
                 DataChanged(Data.Item.GetType());
             }
 
-            ReportModelChanges = true; // Continue reporting
+            ReportModelChanges = true; // Continue reporting changes
 
             if (Locked) // Unlock if necessary
                 Monitor.Exit(Lock);
         }
+
+        // On the server disconnecting
         private static void Disconnected(Connection Sender, DisconnectMessage Message)
         {
             Server.MessageReceived -= MessageReceived;
@@ -379,8 +341,11 @@ namespace Client
 
             InitialisedEvent.Dispose();
             InitialisedEvent = null;
+            UserEvent.Dispose();
+            UserEvent = null;
         }
 
+        // On a collection changing
         private static void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (ReportModelChanges)
@@ -392,7 +357,7 @@ namespace Client
                     {
                         foreach (DataModel d in e.NewItems)
                         {
-                            ((System.Collections.IList)sender).Remove(d);
+                            ((IList)sender).Remove(d);
                             Server.Send(new DataMessage(d, false));
                         }
                     }
@@ -400,7 +365,7 @@ namespace Client
                     {
                         foreach (DataModel d in e.OldItems)
                         {
-                            ((System.Collections.IList)sender).Add(d);
+                            ((IList)sender).Add(d);
                             Server.Send(new DataMessage(d, true));
                         }
                     }

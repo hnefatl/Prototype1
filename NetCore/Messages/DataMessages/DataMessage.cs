@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Data.Models;
 using Shared;
 
 namespace NetCore.Messages.DataMessages
 {
+    // Sent when an item in the database is changed somehow
     public class DataMessage
         : Message
     {
-        public virtual DataModel Item { get; set; }
+        // The item that was changed
+        public DataModel Item { get; set; }
+        // Whether or not the item was deleted
         public bool Delete { get; set; }
         
         public DataMessage()

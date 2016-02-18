@@ -9,14 +9,14 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.App">
-    <Position X="11" Y="10" Width="1.5" />
+    <Position X="11" Y="10.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAgAAAEAIAAAAEAAAAUAAAAAAAAIAAAAgAAAIAAAAA=</HashCode>
       <FileName>App.xaml.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Client.Checkable&lt;T&gt;" BaseTypeListCollapsed="true">
-    <Position X="0.5" Y="16" Width="1.5" />
+    <Position X="0.5" Y="16.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAABCAIAAAAAAAgAAAAACAAAAgAAAAAAA=</HashCode>
       <FileName>Checkable.cs</FileName>
@@ -26,13 +26,13 @@
   <Class Name="Client.DataRepository" BaseTypeListCollapsed="true">
     <Position X="12.75" Y="9.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>ACAQBGAARKGgQZAAACAAAiACCFAiAYwAEgAARwACACA=</HashCode>
+      <HashCode>AAAQBGAARKEgQZAAACAAAiACCFAiAYwAEgAARwACACA=</HashCode>
       <FileName>DataRepository.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.MainWindow" BaseTypeListCollapsed="true">
-    <Position X="4" Y="10" Width="1.5" />
+    <Position X="4" Y="10.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAgBAIAAiAEAIAAQEAAAgAAQAAAAAAAAAIAABAA=</HashCode>
       <FileName>MainWindow.xaml.cs</FileName>
@@ -40,14 +40,14 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.Settings">
-    <Position X="9.25" Y="10" Width="1.5" />
+    <Position X="9.25" Y="10.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIAgMAAAAAABAJAAAAABAAAAAAAABAAAAAAAAJQEAA=</HashCode>
+      <HashCode>AAIAgMAAAAAABAJAAAAABAAAAAAAAAAAAAAAAAJQAAA=</HashCode>
       <FileName>Settings.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Client.TrayIcon" BaseTypeListCollapsed="true">
-    <Position X="0.5" Y="10" Width="1.5" />
+    <Position X="0.5" Y="10.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AIAAAAIAAJAAAAEAEEAUgAgABAAMCAAAAgBAAIAFAAA=</HashCode>
       <FileName>TrayIcon.xaml.cs</FileName>
@@ -55,7 +55,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.Converters.BookingTypeToStringConverter" BaseTypeListCollapsed="true">
-    <Position X="11" Y="17.5" Width="1.5" />
+    <Position X="7.5" Y="18" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Converters\BookingTypeToStringConverter.cs</FileName>
@@ -63,7 +63,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.Converters.BooleanToVisibilityConverter" BaseTypeListCollapsed="true">
-    <Position X="7.5" Y="16" Width="1.5" />
+    <Position X="4" Y="16.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Converters\BooleanToVisibilityConverter.cs</FileName>
@@ -71,7 +71,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.Converters.IntToStringConverter" BaseTypeListCollapsed="true">
-    <Position X="5.75" Y="17.5" Width="1.5" />
+    <Position X="2.25" Y="18" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Converters\IntToStringConverter.cs</FileName>
@@ -79,7 +79,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.Converters.InverseBooleanConverter" BaseTypeListCollapsed="true">
-    <Position X="7.5" Y="17.5" Width="1.5" />
+    <Position X="4" Y="18" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Converters\InverseBooleanConverter.cs</FileName>
@@ -87,7 +87,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.Converters.InverseNullableBooleanConverter" BaseTypeListCollapsed="true">
-    <Position X="9.25" Y="17.5" Width="1.5" />
+    <Position X="5.75" Y="18" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Converters\InverseNullableBooleanConverter.cs</FileName>
@@ -95,7 +95,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.Converters.NullableToBoolConverter" BaseTypeListCollapsed="true">
-    <Position X="11" Y="16" Width="1.5" />
+    <Position X="7.5" Y="16.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Converters\NullableToBoolConverter.cs</FileName>
@@ -103,7 +103,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.Converters.NullableToVisibilityConverter" BaseTypeListCollapsed="true">
-    <Position X="9.25" Y="16" Width="1.5" />
+    <Position X="5.75" Y="16.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Converters\NullableToVisibilityConverter.cs</FileName>
@@ -111,7 +111,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.Converters.StringToIntConverter" BaseTypeListCollapsed="true">
-    <Position X="5.75" Y="16" Width="1.5" />
+    <Position X="2.25" Y="16.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Converters\StringToIntConverter.cs</FileName>
@@ -119,7 +119,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.Converters.TimeToStringConverter" BaseTypeListCollapsed="true">
-    <Position X="4" Y="18" Width="1.5" />
+    <Position X="9.25" Y="16.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Converters\TimeToStringConverter.cs</FileName>
@@ -132,7 +132,7 @@
       <HashCode>AAAABFKgAYAIAEAQABQAAQACAAAQAAQAAEQAAgABIAA=</HashCode>
       <FileName>EditWindows\EditBooking.xaml.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.EditWindows.EditClass">
     <Position X="4" Y="3.25" Width="1.5" />
@@ -140,7 +140,7 @@
       <HashCode>AAEAAAAwAACAAEAAEQAAAQAAAEAAAAAAAAAAAgAAAAA=</HashCode>
       <FileName>EditWindows\EditClass.xaml.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.EditWindows.EditDepartment">
     <Position X="5.75" Y="3.25" Width="1.5" />
@@ -148,7 +148,7 @@
       <HashCode>AAAgAAAAAAAAgEAAEQAAAAACAEAAAIAAAQAAAgAAAAA=</HashCode>
       <FileName>EditWindows\EditDepartment.xaml.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.EditWindows.EditPeriod">
     <Position X="7.5" Y="3.25" Width="1.5" />
@@ -156,7 +156,7 @@
       <HashCode>AAIQAAAAACAAAEAAEQAAAAAAAAAAgAJAAAAQAAAAACA=</HashCode>
       <FileName>EditWindows\EditPeriod.xaml.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.EditWindows.EditRoom">
     <Position X="9.25" Y="3.25" Width="1.5" />
@@ -164,7 +164,7 @@
       <HashCode>AAAAAIACAAAiAUIAESAAAAAAGAAAARAAAAAAABAAAgA=</HashCode>
       <FileName>EditWindows\EditRoom.xaml.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.EditWindows.EditStudent">
     <Position X="11" Y="3.25" Width="1.5" />
@@ -172,7 +172,7 @@
       <HashCode>AAAAAEAABAEgAFAAEYEAAIAABAAAAAAAAAAAAAMCAAg=</HashCode>
       <FileName>EditWindows\EditStudent.xaml.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.EditWindows.EditTeacher">
     <Position X="2.25" Y="3.25" Width="1.5" />
@@ -180,7 +180,7 @@
       <HashCode>EAAAAEAAACEgBFAAEaEACIAAGAEAAAAAAAAAAAAAAAg=</HashCode>
       <FileName>EditWindows\EditTeacher.xaml.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.EditWindows.EditWindow&lt;T&gt;">
     <Position X="5.5" Y="0.5" Width="1.5" />
@@ -188,30 +188,18 @@
       <HashCode>AAAAAAAAAAAAAEAAIAAAAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>EditWindows\EditWindow.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.EditWindows.StudentSelector" BaseTypeListCollapsed="true">
-    <Position X="2.25" Y="10" Width="1.5" />
+    <Position X="2.25" Y="10.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAIAAAAAAAEAAAAAMIAgAAAAgEAAEAQAAAAAAEEAQAA=</HashCode>
       <FileName>EditWindows\StudentSelector.xaml.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="Client.Properties.Resources">
-    <Position X="2.25" Y="16" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAABEAAAAQAACAAAAAAAAAAAAIA=</HashCode>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Client.Properties.Settings">
-    <Position X="4" Y="16" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAABAAAAAAAAAAAAAAA=</HashCode>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Client.TimetableDisplay.TimetableDisplay" BaseTypeListCollapsed="true">
-    <Position X="7.5" Y="10" Width="1.5" />
+    <Position X="7.5" Y="10.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAYAAAACIAgAABAQIAAIAAAQAAAAA=</HashCode>
       <FileName>TimetableDisplay\TimetableDisplay.xaml.cs</FileName>
@@ -219,19 +207,13 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Client.TimetableDisplay.TimetableTile">
-    <Position X="5.75" Y="10" Width="1.5" />
+    <Position X="5.75" Y="10.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAEABAgAAAAoAABAAAAkAAABAIBAAAAAAAAAAAQg=</HashCode>
-      <FileName>TimetableDisplay\TimetableTile.cs</FileName>
+      <HashCode>AAAAAEABAgAAAAoAABAAAAkAAABAABAAAAAAAAAAAQg=</HashCode>
+      <FileName>TimetableDisplay\TimetableTile.xaml.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Delegate Name="Client.UserChangeHandler">
-    <Position X="4" Y="7.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
-      <FileName>DataRepository.cs</FileName>
-    </TypeIdentifier>
-  </Delegate>
   <Delegate Name="Client.DataChangedHandler">
     <Position X="7.5" Y="7.5" Width="1.5" />
     <TypeIdentifier>

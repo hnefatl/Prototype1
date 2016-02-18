@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Shared.Helpers">
-    <Position X="5" Y="0.5" Width="1.5" />
+    <Position X="2.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAQAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Helpers.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Shared.Reader">
-    <Position X="2.75" Y="0.5" Width="1.5" />
+    <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAQCACAAAAAAAAAAAAAgAAACAUAAAAAAAAAAQAA=</HashCode>
       <FileName>Reader.cs</FileName>
@@ -16,29 +16,71 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Shared.TextReader">
-    <Position X="2.75" Y="3.75" Width="1.5" />
+    <Position X="0.5" Y="4" Width="1.5" />
+    <InheritanceLine Type="Shared.Reader" FixedToPoint="true">
+      <Path>
+        <Point X="1.25" Y="3.594" />
+        <Point X="1.25" Y="4" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAQCACAAAAAAAAAAAAAAAAACAUAAABAAAAAAAAA=</HashCode>
       <FileName>TextReader.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Shared.TextWriter">
-    <Position X="0.5" Y="2.75" Width="1.5" />
+    <Position X="4" Y="4" Width="1.5" />
+    <InheritanceLine Type="Shared.Writer" FixedToPoint="true">
+      <Path>
+        <Point X="4.75" Y="2.44" />
+        <Point X="4.75" Y="4" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
       <FileName>TextWriter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Shared.Writer">
-    <Position X="0.5" Y="0.5" Width="1.5" />
+    <Position X="4" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAQAA=</HashCode>
       <FileName>Writer.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
+  <Class Name="Shared.NetReader">
+    <Position X="2.25" Y="4" Width="1.5" />
+    <InheritanceLine Type="Shared.Reader" FixedToPoint="true">
+      <Path>
+        <Point X="1.25" Y="3.594" />
+        <Point X="1.25" Y="3.76" />
+        <Point X="3" Y="3.76" />
+        <Point X="3" Y="4" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAQCAAgAAAAIAAAAAAAAAAjCAUEAAIABAkgAAAQ=</HashCode>
+      <FileName>NetReader.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shared.NetWriter">
+    <Position X="5.75" Y="4" Width="1.5" />
+    <InheritanceLine Type="Shared.Writer" ManuallyRouted="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.75" Y="2.44" />
+        <Point X="4.75" Y="3.625" />
+        <Point X="6.5" Y="3.625" />
+        <Point X="6.5" Y="4" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>NetWriter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Interface Name="Shared.ISerialisable">
-    <Position X="5" Y="2" Width="1.5" />
+    <Position X="2.25" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ISerialisable.cs</FileName>

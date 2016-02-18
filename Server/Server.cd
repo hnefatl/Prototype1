@@ -9,7 +9,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Server.MailHelper">
-    <Position X="2.25" Y="0.5" Width="1.5" />
+    <Position X="2.25" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAQAAAAAAEAAAAAAAAAAAEEAAAAAAgAAAAA=</HashCode>
       <FileName>MailHelper.cs</FileName>
@@ -17,9 +17,19 @@
   </Class>
   <Class Name="Server.Program">
     <Position X="4" Y="0.5" Width="1.5" />
+    <Members>
+      <Method Name="GenerateComputerNames" Hidden="true" />
+    </Members>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAAACAhEAABAAEAAA=</HashCode>
       <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Server.Settings">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgIAAAAAAgAIIAAAAAAAACAAAAAAAAAAAAAIACAA=</HashCode>
+      <FileName>Settings.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

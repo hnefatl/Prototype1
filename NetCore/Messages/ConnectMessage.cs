@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 
 using Shared;
 
 namespace NetCore.Messages
 {
+    // Message used when a client connects to the server
     public class ConnectMessage
         : Message
     {
+        // Logged on user's username
         public string Username { get; protected set; }
+        // Computer name of the client
         public string ComputerName { get; protected set; }
 
         public ConnectMessage()
@@ -35,11 +34,6 @@ namespace NetCore.Messages
         {
             Username = Reader.ReadString();
             ComputerName = Reader.ReadString();
-        }
-
-        protected override int GetMessageSize()
-        {
-            return base.GetMessageSize() + NetReader.NetworkLength(Username) + NetReader.NetworkLength(ComputerName);
         }
     }
 }

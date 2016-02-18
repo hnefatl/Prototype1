@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.IO;
 using System.Reflection;
 
 using Shared;
 
 namespace NetCore.Messages
 {
+    // Superclass for all types of message
     public abstract class Message
         : ISerialisable
     {
@@ -16,56 +14,55 @@ namespace NetCore.Messages
 
         public virtual void Serialise(Writer Writer)
         {
-            Writer.Write((byte)0); // Send a single byte as a notification of the message coming (needed for the async style reception).
+            // Send a single byte as a notification
+            Writer.Write((byte)0);
             Writer.Write(GetType().Name);
         }
         public abstract void Deserialise(Reader Reader);
 
-        protected virtual int GetMessageSize()
-        {
-            return NetReader.NetworkLength((byte)0) + NetReader.NetworkLength(GetType().Name);
-        }
-
         public static void RegenMessageTypes() // Only call if a new assembly has been loaded
         {
-            MessageTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => type.IsSubclassOf(typeof(Message))).ToArray();
+            // Load all the types that inherit from this class in the executing assembly
+            MessageTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Message))).ToArray();
         }
         public static Message ReadMessage(NetReader Reader)
         {
             try
             {
                 if (MessageTypes == null)
-                    RegenMessageTypes();
+                    RegenMessageTypes(); // Load message classes if necessary
 
-                string Id = Reader.ReadString();
+                string Id = Reader.ReadString(); // Read the type
 
                 foreach (Type t in MessageTypes)
                 {
-                    if (t.Name == Id)
+                    if (t.Name == Id) // Found the right class
                     {
+                        // Create an object of the class, deserialise to it and return
                         Message m = (Message)Activator.CreateInstance(t);
                         m.Deserialise(Reader);
                         return m;
                     }
                 }
 
-                return null;
+                throw new Exception("Invalid Type received"); // No matching class found
             }
             catch (MissingMethodException e)
             {
+                // MissingMethodException is thrown if a subclass of Message can't be constructed
                 throw new Exception("All Message subclasses must define a public parameterless constructor.", e);
             }
         }
-        public static T ReadMessage<T>(NetReader Reader)
-            where T : Message
+        // Read a generic Message
+        public static T ReadMessage<T>(NetReader Reader) where T : Message
         {
             try
             {
-                string Type = Reader.ReadString();
-                T Msg = Activator.CreateInstance<T>();
-                if (Msg.GetType().Name != Type)
-                    throw new Exception();
+                // Read the Type but ignore it
+                Reader.ReadString();
 
+                // Create and deserialise
+                T Msg = Activator.CreateInstance<T>();
                 Msg.Deserialise(Reader);
                 return Msg;
             }
@@ -73,14 +70,6 @@ namespace NetCore.Messages
             {
                 throw new Exception("Invalid message received.");
             }
-        }
-    }
-
-    public static class MessageExtensions
-    {
-        public static void Write(this NetWriter Writer, Message Message)
-        {
-            Message.Serialise(Writer);
         }
     }
 }

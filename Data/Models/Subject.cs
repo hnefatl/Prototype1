@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
-using System.Data.Entity;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Windows.Media;
 
@@ -12,39 +9,26 @@ using Shared;
 
 namespace Data.Models
 {
-    /// <summary>
-    /// Contains all subjects (eg Maths, Computing)
-    /// </summary>
+    // Contains all subjects (eg Maths, Computing)
     [Table("Subjects")]
     public class Subject
         : DataModel
     {
-        /// <summary>
-        /// Friendly name of the subject (Maths, Computing)
-        /// </summary>
+        // Friendly name of the subject (Maths, Computing)
         public string SubjectName { get; set; }
 
+        // Store the integer equivalent of the colour
         public int Argb
         {
-            get
-            {
-                return Helpers.ColorToInt(Colour);
-            }
-            set
-            {
-                Colour = Helpers.IntToColour(value);
-            }
+            get { return Helpers.ColorToInt(Colour); }
+            set { Colour = Helpers.IntToColour(value); }
         }
-
-        /// <summary>
-        /// Colour used to display bookings of this subject on the timetable
-        /// </summary>
+        
+        // Colour used to display bookings of this subject on the timetable
         [NotMapped]
         public Color Colour { get; set; }
-
-        /// <summary>
-        /// Bookings of this subject
-        /// </summary>
+        
+        // Bookings of this subject
         public virtual List<Booking> Bookings { get; set; }
 
         public Subject()
@@ -68,6 +52,7 @@ namespace Data.Models
             Bookings.AddRange(s.Bookings);
         }
 
+        // Write properties and IDs
         public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
@@ -77,6 +62,7 @@ namespace Data.Models
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
         }
+        // Read properties and IDs
         protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);
@@ -86,6 +72,7 @@ namespace Data.Models
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());
         }
+        // Obtain references to related entities
         public override bool Expand(IDataRepository Repo)
         {
             try
@@ -99,10 +86,12 @@ namespace Data.Models
             }
             return true;
         }
+        // Set references to this object
         public override void Attach()
         {
             Bookings.ForEach(b => b.Subject = this);
         }
+        // Remove references to this object
         public override void Detach()
         {
             Bookings.ForEach(b => { if (b != null) b.Subject = null; });

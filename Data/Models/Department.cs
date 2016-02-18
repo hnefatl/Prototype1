@@ -67,6 +67,7 @@ namespace Data.Models
             Rooms = Enumerable.Repeat(new Room(), In.ReadInt32()).ToList();
             Rooms.ForEach(r => r.Id = In.ReadInt32());
         }
+        // Obtain references to related items
         public override bool Expand(IDataRepository Repo)
         {
             try
@@ -82,11 +83,13 @@ namespace Data.Models
             }
             return true;
         }
+        // Set references to this item
         public override void Attach()
         {
             Teachers.ForEach(t => t.Department = this);
             Rooms.ForEach(r => r.Department = this);
         }
+        // Remove references to this item
         public override void Detach()
         {
             Teachers.ForEach(t => { if (t != null) t.Department = null; });

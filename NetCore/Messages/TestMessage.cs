@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 
 using Shared;
 
 namespace NetCore.Messages
 {
+    // Test message, used in debugging
     public class TestMessage
         : Message
     {
+        // Internal message
         public string Message { get; protected set; }
 
         public TestMessage()
@@ -31,11 +29,6 @@ namespace NetCore.Messages
         public override void Deserialise(Reader Reader)
         {
             Message = Reader.ReadString();
-        }
-
-        protected override int GetMessageSize()
-        {
-            return base.GetMessageSize() + NetReader.NetworkLength(Message);
         }
     }
 }

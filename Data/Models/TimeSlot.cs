@@ -1,27 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Data;
-using System.Data.Entity;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using Shared;
 
 namespace Data.Models
 {
-    /// <summary>
-    /// Used to tie a start/end time together for neatness.
-    /// The table of all established "periods", eg period 1-5, break, lunch. Bookings can be made outside of periods, they just need to be
-    /// manually created when making a booking and are only shown when relevant.
-    /// </summary>
+    // A timeslot is a school period - a start and end time of a lesson
     [Table("Periods")]
     public class TimeSlot
         : DataModel, INotifyPropertyChanged
     {
         private TimeSpan _Start;
+        // The Start time of the period
         public TimeSpan Start
         {
             get
@@ -34,9 +27,11 @@ namespace Data.Models
                 OnPropertyChanged("Start");
             }
         }
-        [NotMapped]
+        [NotMapped] // Start time in short time format (12:10), used for UI
         public string ShortStart { get { return new DateTime(Start.Ticks).ToShortTimeString(); } }
+
         private TimeSpan _End;
+        // The End time of the period
         public TimeSpan End
         {
             get
@@ -49,15 +44,13 @@ namespace Data.Models
                 OnPropertyChanged("End");
             }
         }
-        [NotMapped]
+        [NotMapped] // End time in short time format(13:10), used in UI
         public string ShortEnd { get { return new DateTime(End.Ticks).ToShortTimeString(); } }
 
-        /// <summary>
-        /// Should be null if not a period, else have the period name
-        /// </summary>
+        // Name of the period
         public string Name { get; set; }
 
-        [NotMapped]
+        [NotMapped] // Utility property for UI - range of times
         public string TimeRange
         {
             get
@@ -66,6 +59,7 @@ namespace Data.Models
             }
         }
 
+        // Bookings using this period
         public virtual List<Booking> Bookings { get; set; }
 
         public TimeSlot()
@@ -84,6 +78,7 @@ namespace Data.Models
             Name = string.Empty;
         }
 
+        // Returns if the provided Time's time is in this period
         public bool IsCurrent(DateTime Time)
         {
             TimeSpan Mod = Time - Time.Date;
@@ -106,6 +101,7 @@ namespace Data.Models
             Bookings.AddRange(t.Bookings);
         }
 
+        // Serialise properties and IDs
         public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
@@ -117,6 +113,7 @@ namespace Data.Models
             Out.Write(Bookings.Count);
             Bookings.ForEach(b => Out.Write(b.Id));
         }
+        // Deserialise properties and IDs
         protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);
@@ -128,6 +125,7 @@ namespace Data.Models
             Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
             Bookings.ForEach(b => b.Id = In.ReadInt32());
         }
+        // Obtain references to other items
         public override bool Expand(IDataRepository Repo)
         {
             try
@@ -141,10 +139,12 @@ namespace Data.Models
             }
             return true;
         }
+        // Add references to this to the related items
         public override void Attach()
         {
             Bookings.ForEach(b => b.TimeSlot = this);
         }
+        // Remove references to this from the related items
         public override void Detach()
         {
             Bookings.ForEach(b => { if (b != null) b.TimeSlot = null; });
@@ -160,18 +160,22 @@ namespace Data.Models
 
         public static bool operator ==(TimeSlot One, TimeSlot Two)
         {
+            // If both object references are actually the same object, return true
             if (ReferenceEquals(One, Two))
                 return true;
 
+            // Equal if the name, start and end times all match for two non-null objects
             return (object)One != null && (object)Two != null && One.Start == Two.Start && One.End == Two.End && One.Name == Two.Name;
         }
         public static bool operator !=(TimeSlot One, TimeSlot Two)
         {
+            // Required overload of !=, just invert the already overriden == operator
             return !(One == Two);
         }
 
         public override bool Equals(object obj)
         {
+            // Required overload, check for null then do a standard equality check
             TimeSlot Obj = obj as TimeSlot;
             if (Obj == null)
                 return false;
@@ -179,14 +183,17 @@ namespace Data.Models
         }
         public override int GetHashCode()
         {
+            // Required overload, just perform the base function
             return base.GetHashCode();
         }
 
+        // Utility function to fire the PropertyChanged event using less code
         protected void OnPropertyChanged(string PropertyName)
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
         }
+        // Event to be fired on a property changing - used for UI responsiveness
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

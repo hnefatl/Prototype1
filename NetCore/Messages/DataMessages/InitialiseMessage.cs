@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Shared;
 using Data;
-using Data.Models;
 
 namespace NetCore.Messages.DataMessages
 {
+    // Sent by Server on Client connection
     public class InitialiseMessage
         : Message
     {
+        // Frame of all data in the repository
         public DataSnapshot Snapshot { get; set; }
 
         public InitialiseMessage()

@@ -1,21 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using Shared;
 
 namespace Data.Models
 {
+    // Used to easily select multiple students from a pre-set list
+    // Links multiple students to a class name, with an owning teacher
     [Table("Classes")]
     public class Class
         : DataModel
     {
+        // Name of the class, used for selections
         public string ClassName { get; set; }
 
+        // Teacher that's responsible for the class
         public virtual Teacher Owner { get; set; }
+        // Students included in the class
         public virtual List<Student> Students { get; set; }
 
         public Class()
@@ -39,6 +42,7 @@ namespace Data.Models
             Students.AddRange(c.Students);
         }
 
+        // Output properties and IDs
         public override void Serialise(Writer Out)
         {
             base.Serialise(Out);
@@ -48,6 +52,7 @@ namespace Data.Models
             Out.Write(Students.Count);
             Students.ForEach(s => Out.Write(s.Id));
         }
+        // Input properties and IDs
         protected override void Deserialise(Reader In)
         {
             base.Deserialise(In);
@@ -58,6 +63,7 @@ namespace Data.Models
             for (int x = 0; x < Students.Capacity; x++)
                 Students.Add(new Student() { Id = In.ReadInt32() });
         }
+        // Acquire references
         public override bool Expand(IDataRepository Repo)
         {
             try
@@ -72,12 +78,14 @@ namespace Data.Models
             }
             return true;
         }
+        // Set references to this
         public override void Attach()
         {
             if (Owner != null)
                 Owner.Classes.Add(this);
             Students.ForEach(s => s.Classes.Add(this));
         }
+        // Remove references to this
         public override void Detach()
         {
             if (Owner != null)
