@@ -173,7 +173,7 @@ namespace Client
 
             try
             {
-                // Wait for both signals to fire, signalling
+                // Wait for both signals to fire, signalling completion
                 InitialisedEvent.WaitOne();
                 UserEvent.WaitOne();
             }
@@ -291,16 +291,20 @@ namespace Client
             {
                 DataMessage Data = (DataMessage)Msg;
 
+                // Get references to linked objects
                 using (DataRepository Repo = new DataRepository(false))
                     Data.Item.Expand(Repo);
                 
+                // If we're not deleting it, set references to this item
                 if (!Data.Delete)
                     Data.Item.Attach();
-                else
+                else // Otherwise remove references
                     Data.Item.Detach();
 
+                // Get the right table from the dictionary
                 IList Table = Tables[Data.Item.GetType()];
                 
+                // Find the index of the item in the table
                 int Index = -1;
                 for (int x = 0; x < Table.Count; x++)
                 {
@@ -313,51 +317,64 @@ namespace Client
 
                 if (!Data.Delete)
                 {
-                    if (Index < 0)
-                        Table.Add((Booking)Data.Item);
-                    else
-                        Table[Index] = (Booking)Data.Item;
+                    if (Index < 0) // Doesn't already exist, add it
+                        Table.Add(Data.Item);
+                    else // Already exists, update it
+                        ((DataModel)Table[Index]).Update(Data.Item);
                 }
-                else
+                else // Delete it
                     Table.RemoveAt(Index);
 
+                // Release the lock
                 Monitor.Exit(Lock);
+                // Note that we've already released it
                 Locked = false;
 
+                // Fire the change of data handler
                 DataChanged(Data.Item.GetType());
             }
 
             ReportModelChanges = true; // Continue reporting changes
 
-            if (Locked) // Unlock if necessary
+            if (Locked) // Release the lock if we haven't already
                 Monitor.Exit(Lock);
         }
 
         // On the server disconnecting
         private static void Disconnected(Connection Sender, DisconnectMessage Message)
         {
+            // Unhook handlers
             Server.MessageReceived -= MessageReceived;
             Server.Disconnect -= Disconnected;
 
+            // Reset the signals
             InitialisedEvent.Dispose();
             InitialisedEvent = null;
             UserEvent.Dispose();
             UserEvent = null;
         }
 
-        // On a collection changing
+        // On a collection changing somehow
         private static void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            // Only report if we're meant to
             if (ReportModelChanges)
             {
+                // Thread safe
                 lock (Lock)
                 {
+                    // Turn off reporting so we don't end up calling this function again
                     ReportModelChanges = false;
+
                     if (e.NewItems != null)
                     {
                         foreach (DataModel d in e.NewItems)
                         {
+                            // Remove the item that was just added, we wait for the
+                            // server to send it back to us
                             ((IList)sender).Remove(d);
+
+                            // Send the new item marked for insertion
                             Server.Send(new DataMessage(d, false));
                         }
                     }
@@ -365,19 +382,19 @@ namespace Client
                     {
                         foreach (DataModel d in e.OldItems)
                         {
+                            // Return the item to the list, wait for the server to
+                            // tell us to remove it
                             ((IList)sender).Add(d);
+
+                            // Send the new item marked for deletion
                             Server.Send(new DataMessage(d, true));
                         }
                     }
+
+                    // Turn reporting back on
                     ReportModelChanges = true;
                 }
             }
-        }
-
-        public void OnDataChanged(Type ChangedType)
-        {
-            if (DataChanged != null)
-                DataChanged(ChangedType);
         }
     }
 }

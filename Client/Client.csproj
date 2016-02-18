@@ -88,7 +88,6 @@
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\IntToStringConverter.cs" />
     <Compile Include="Converters\InverseVisibilityConverter.cs" />
-    <Compile Include="Converters\TimeToStringConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="Converters\InverseNullableBooleanConverter.cs" />
     <Compile Include="Converters\NullableToBoolConverter.cs" />

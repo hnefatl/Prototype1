@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Globalization;
 using System.Windows.Data;
 
@@ -23,6 +21,5 @@ namespace Client.Converters
                     return System.Convert.ToInt32(new string((value as string).Where(c => char.IsDigit(c)).ToArray()).PadLeft(1, '0'));
             return 0;
         }
-
     }
 }

@@ -10,58 +10,84 @@ using System.Windows.Media.Animation;
 
 namespace Client.TimetableDisplay
 {
+    // Represents a single Tile on the timetable display
     public partial class TimetableTile
         : UserControl
     {
+        // The time this tile represents
         public TimeSlot Time { get; protected set; }
+        // The room this tile represents
         public Room Room { get; protected set; }
+
+        // The Booking (or null) for the Booking in this slot
         public Booking Booking { get; protected set; }
-
-
+        
+        // The brush used to paint the background colour
         public SolidColorBrush Brush { get; protected set; }
+
+        // Function object that determines how dark a tile gets when hovered over
+        public Func<float, float> BrightnessCurve { get; set; }
 
         public TimetableTile(Booking Booking, TimeSlot Time, Room Room, User CurrentUser)
         {
+            // Sets UI bindings to reference this object
             DataContext = this;
 
             this.Booking = Booking;
             this.Time = Time;
             this.Room = Room;
 
+            // Set the default brightness function to the default
             BrightnessCurve = DefaultBrightnessCurve;
 
+            // Default to the background window colour
             Brush = SystemColors.WindowBrush;
-            if (Booking != null)
+            if (Booking != null) // If there's actually a booking in this slot, use its colour
                 Brush = new SolidColorBrush(Booking.Subject.Colour);
             Background = Brush;
 
+            // Initialise the UI
             InitializeComponent();
 
+            // Hook up mouse events
             MouseEnter += TimetableTile_MouseEnter;
             MouseLeave += TimetableTile_MouseLeave;
 
-            if (Booking != null && CurrentUser != null && (CurrentUser is Student) && Booking.Students.Any(s => s.Id == CurrentUser.Id))
+            // If there's a booking in this slot
+            if (Booking != null && CurrentUser != null)
             {
-                Storyboard PulseEffect = (Storyboard)Resources["PulseEffect"];
-                PulseEffect.Begin(Outer);
+                // If the current user is somehow involved in the booking (either 
+                // as a student or teacher)
+                if (((CurrentUser is Student) && Booking.Students.Any(s => s.Id == CurrentUser.Id)) ||
+                    ((CurrentUser is Teacher) && Booking.Teacher == CurrentUser))
+                {
+                    // Do a simple animation on the tiles to draw attention
+                    Storyboard PulseEffect = (Storyboard)Resources["PulseEffect"];
+                    PulseEffect.Begin(Outer);
+                }
             }
         }
 
+        // When the mouse hovers over the tile
         protected void TimetableTile_MouseEnter(object sender, MouseEventArgs e)
         {
+            // Change the background colour
             Background = new SolidColorBrush(ScaleLuminosity(Brush.Color));
         }
+        // When the mouse stops hovering over the tile
         protected void TimetableTile_MouseLeave(object sender, MouseEventArgs e)
         {
+            // Reset the background colour
             Background = new SolidColorBrush(Brush.Color);
         }
 
+        // Initial brightness curve
         public float DefaultBrightnessCurve(float Y)
         {
             return (float)Math.Pow(Y, 3);
         }
-        public Func<float, float> BrightnessCurve { get; set; }
 
+        // Changes the brightness of the given colour using the brightness curve
         private Color ScaleLuminosity(Color c)
         {
             // To scale a colour without weird results (as RGB components have different perceived strengths to the human eye),
@@ -75,7 +101,7 @@ namespace Client.TimetableDisplay
 
             byte[] YUV = RGBToYUV(new byte[] { c.R, c.G, c.B });
 
-            // Calculate the new brightness using the provided colour curve. The default is x^3
+            // Calculate the new brightness using the provided colour curve
             float NewBrightness = BrightnessCurve(YUV[0] / 255f);
 
             YUV[0] = Clamp((int)Math.Round(NewBrightness * 255f));
@@ -83,6 +109,8 @@ namespace Client.TimetableDisplay
 
             return new Color() { A = c.A, R = ScaledRGB[0], G = ScaledRGB[1], B = ScaledRGB[2] };
         }
+
+        // Converts an RGB array into a YUV array
         private byte[] RGBToYUV(byte[] RGB)
         {
             if (RGB.Length != 3)
@@ -98,6 +126,7 @@ namespace Client.TimetableDisplay
 
             return new byte[] { Clamp(Y), Clamp(U), Clamp(V) };
         }
+        // Converts a YUV array into an RGB array
         private byte[] YUVToRGB(byte[] YUV)
         {
             if (YUV.Length != 3)
@@ -113,6 +142,7 @@ namespace Client.TimetableDisplay
 
             return new byte[] { Clamp(R), Clamp(G), Clamp(B) };
         }
+        // Limits the values taken by the input
         private byte Clamp(int x)
         {
             if (x < byte.MinValue)

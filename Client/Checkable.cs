@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
 
 namespace Client
@@ -9,6 +6,7 @@ namespace Client
     public class Checkable<T>
         : INotifyPropertyChanged
     {
+        // Whether the object is selected
         protected bool _Checked;
         public bool Checked
         {
@@ -23,6 +21,7 @@ namespace Client
             }
         }
 
+        // The object that can be selected
         protected T _Value;
         public T Value
         {
@@ -38,7 +37,7 @@ namespace Client
         }
 
         public Checkable()
-            : this(default(T), false)
+            : this(Activator.CreateInstance<T>(), false)
         {
         }
         public Checkable(T Value)
