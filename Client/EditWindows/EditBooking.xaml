@@ -7,7 +7,6 @@
         xmlns:converters="clr-namespace:Client.Converters"
         xmlns:local="clr-namespace:Client.EditWindows"
         xmlns:data="clr-namespace:Data.Models;assembly=Data"
-        xmlns:coll="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Edit Booking" Height="800" Width="430"
         SizeToContent="Height"

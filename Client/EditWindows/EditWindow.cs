@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.ComponentModel;
 
@@ -9,6 +6,7 @@ using Data.Models;
 
 namespace Client.EditWindows
 {
+    // Provides a generic base class for all the edit windows, reduces their code
     public abstract class EditWindow<T>
         : Window, INotifyPropertyChanged where T : DataModel
     {
@@ -17,6 +15,7 @@ namespace Client.EditWindows
             PropertyChanged = delegate { };
         }
 
+        // Gets the item that's been constructed by the EditWindow
         public abstract T GetItem();
 
         public void OnPropertyChanged(string PropertyName)

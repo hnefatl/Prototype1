@@ -1,16 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
@@ -18,9 +9,14 @@ using Data.Models;
 
 namespace Client.EditWindows
 {
+    // Used to select students from a list
     public partial class StudentSelector
         : UserControl, INotifyPropertyChanged
     {
+        // Dictionary containing the name of the filter mapped to the actual filter function.
+        // Each function takes a Checkable<Student>, the filter text, and returns a bool indicating
+        // whether the Student should be included in the displayed list
+        // Functions are specified using lambda functions for simplicity
         public readonly Dictionary<string, Func<Checkable<Student>, string, bool>> Filters = new Dictionary<string, Func<Checkable<Student>, string, bool>>()
         {
             { "No Filter", (s, f) => true },
@@ -32,12 +28,17 @@ namespace Client.EditWindows
             { "Year", (s, f) => Convert.ToString(s.Value.Year).ToLower().Contains(f.ToLower()) }
         };
 
+        // The Keys from the dictionary, used for displaying in UI
         public List<string> FilterValues { get { return Filters.Keys.ToList(); } }
 
+        // The internal list of all students
         public List<Checkable<Student>> Students { get; set; }
+        // The list of students displayed after filtering
         public ObservableCollection<Checkable<Student>> FilteredStudents { get; set; }
+        // The list of students actually selected
         public List<Student> SelectedStudents { get { return Students.Where(s => s.Checked).Select(s => s.Value).ToList(); } }
 
+        // The list of classnames, and the respective Class objects
         public List<string> ClassNames { get; set; }
         public List<Class> Classes { get; set; }
 
@@ -45,47 +46,57 @@ namespace Client.EditWindows
         {
             using (DataRepository Repo = new DataRepository())
             {
+                // Get the classes
                 Classes = Repo.Classes.ToList();
+                // Get the names of the classes
                 ClassNames = Repo.Classes.Select(c => c.ClassName).ToList();
+                // Insert a "dummy" class which ignores the selection
                 ClassNames.Insert(0, "All students");
 
+                // Get the students
                 Students = Repo.Users.OfType<Student>().Select(s => new Checkable<Student>(s)).ToList();
+                // Initialise the filtered student list
                 FilteredStudents = new ObservableCollection<Checkable<Student>>(Students);
             }
 
             InitializeComponent();
         }
-        
+
+        // Call when the list of filtered students needs updating
         public void UpdateFilter()
         {
+            // Prevents calls before the UI is up and running
             if (!IsInitialized)
                 return;
 
+            // Check we're running on the UI thread
             if (!Dispatcher.CheckAccess())
                 Dispatcher.Invoke((Action)UpdateFilter);
             else
             {
+                // Grab the filter text from the UI
                 string Filter = Text_StudentFilter.Text;
+                // Grab the type of filter from the UI
                 string FilterType = FilterValues[Combo_FilterType.SelectedIndex];
 
-                IEnumerable<Checkable<Student>> Filtered = null;
-                if (Combo_Classes.SelectedIndex == 0) // First item is always "No class"
-                {
-                    Filtered = Students.Where(s => Filters[FilterType](s, Filter));
-                }
-                else
+                // Filter by the filter text
+                IEnumerable<Checkable<Student>> Filtered = Students.Where(s => Filters[FilterType](s, Filter));
+
+                // If we're filtering by class, run the secondary filetr
+                if (Combo_Classes.SelectedIndex != 0)
                 {
                     Class Class = Classes.Single(c => c.ClassName == (string)Combo_Classes.SelectedItem);
-                    Filtered = Students.Where(s => Filters[FilterType](s, Filter) && Class.Students.Contains(s.Value));
+                    Filtered = Filtered.Where(s => Class.Students.Contains(s.Value));
                 }
 
-
+                // Update the list of filtered students that the UI sees
                 FilteredStudents.Clear();
                 foreach (Checkable<Student> s in Filtered)
                     FilteredStudents.Add(s);
             }
         }
 
+        // These next 3 event handlers just update the filter if any relevant control was changed
         private void Combo_FilterType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateFilter();
