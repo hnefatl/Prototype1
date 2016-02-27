@@ -18,7 +18,23 @@ namespace Client
 
         protected Task NetTask { get; set; }
 
-        protected new TrayIcon MainWindow { get { return (TrayIcon)base.MainWindow; } set { base.MainWindow = value; } }
+        protected new TrayIcon MainWindow
+        {
+            get
+            {
+                if (!Dispatcher.CheckAccess())
+                    return (TrayIcon)Dispatcher.Invoke((Func<TrayIcon>)(() => { return this.MainWindow; }));
+                else
+                    return (TrayIcon)base.MainWindow;
+            }
+            set
+            {
+                if (!Dispatcher.CheckAccess())
+                    Dispatcher.Invoke((Action<TrayIcon>)((TrayIcon v) => { this.MainWindow = v; }), value);
+                else
+                    base.MainWindow = value;
+            }
+        }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -33,6 +49,9 @@ namespace Client
             NetHandler();
 
             MainWindow = new TrayIcon(Connection, CurrentUser, CurrentRoom);
+
+            MainWindow.ShowBalloon("Room Booking System started", "The Room Booking System client has started.",
+                System.Windows.Forms.ToolTipIcon.Info);
         }
 
         protected void NetHandler()
@@ -42,10 +61,11 @@ namespace Client
             string Address = Settings.Get<string>("ServerAddress");
             ushort Port = Settings.Get<ushort>("ServerPort");
 
-            while (true)
+            bool Connected = false;
+            while (!Connected)
             {
                 // Try to connect
-                bool Connected = Connection.Connect(Address, Port, new ConnectMessage(Environment.UserName, Environment.MachineName));
+                Connected = Connection.Connect(Address, Port, new ConnectMessage(Environment.UserName, Environment.MachineName));
 
                 if (Connected)
                 {
@@ -56,10 +76,15 @@ namespace Client
                         continue;
 
                     if (MainWindow != null)
+                    {
                         MainWindow.Show();
-                    break;
+
+                        MainWindow.ShowBalloon("Room Booking System started", "The Room Booking System client has started.",
+                            System.Windows.Forms.ToolTipIcon.Info);
+                    }
                 }
-                Thread.Sleep(1000); // Wait for an interval then try again
+                else
+                    Thread.Sleep(1000); // Wait for an interval then try again
             }
         }
 

@@ -241,9 +241,7 @@ namespace Client
                 foreach (IList Table in Tables.Values)
                 {
                     foreach (DataModel d in Table)
-                    {
                         d.Expand(Repo);
-                    }
                 }
             }
         }
@@ -254,7 +252,7 @@ namespace Client
             bool Locked = true;
             Monitor.Enter(Lock);
 
-            // Don't echo chages back to the server - changes made in this
+            // Don't echo changes back to the server - changes made in this
             // function have been sent to us by the server
             ReportModelChanges = false;
 
@@ -294,16 +292,18 @@ namespace Client
                 // Get references to linked objects
                 using (DataRepository Repo = new DataRepository(false))
                     Data.Item.Expand(Repo);
-                
+
                 // If we're not deleting it, set references to this item
                 if (!Data.Delete)
                     Data.Item.Attach();
                 else // Otherwise remove references
                     Data.Item.Detach();
 
-                // Get the right table from the dictionary
-                IList Table = Tables[Data.Item.GetType()];
-                
+                // Store the type of the received data
+                Type t = Data.Item.GetType();
+                // Get the right table from the dictionary (match received type to key)
+                IList Table = Tables.Single(p => t == p.Key || t.IsSubclassOf(p.Key)).Value;
+
                 // Find the index of the item in the table
                 int Index = -1;
                 for (int x = 0; x < Table.Count; x++)

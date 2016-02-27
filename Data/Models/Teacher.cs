@@ -22,12 +22,20 @@ namespace Data.Models
 
         public virtual Department Department { get; set; }
 
+        // All bookings the user's involved in
+        public virtual List<Booking> Bookings { get; set; }
+        // All classes the user's involved in
+        public virtual List<Class> Classes { get; set; }
+
         public Teacher()
         {
             Access = AccessMode.Teacher;
 
             Title = string.Empty;
             Email = string.Empty;
+
+            Bookings = new List<Booking>();
+            Classes = new List<Class>();
         }
 
         public override bool Conflicts(List<DataModel> Others)
@@ -47,6 +55,8 @@ namespace Data.Models
             Department = t.Department;
             Classes.Clear();
             Classes.AddRange(t.Classes);
+            Bookings.Clear();
+            Bookings.AddRange(t.Bookings);
         }
 
         public override void Serialise(Writer Out)
@@ -59,6 +69,9 @@ namespace Data.Models
             Out.Write(Classes.Count);
             Classes.ForEach(c => Out.Write(c.Id));
             Out.Write(Email);
+
+            Out.Write(Bookings.Count);
+            Bookings.ForEach(b => Out.Write(b.Id));
         }
         protected override void Deserialise(Reader In)
         {
@@ -70,17 +83,20 @@ namespace Data.Models
             Classes = Enumerable.Repeat(new Class(), In.ReadInt32()).ToList();
             Classes.ForEach(c => c.Id = In.ReadInt32());
             Email = In.ReadString();
+
+            Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
+            Bookings.ForEach(b => b.Id = In.ReadInt32());
         }
         // Obtain IDs of related objects
         public override bool Expand(IDataRepository Repo)
         {
-            base.Expand(Repo);
-
             try
             {
                 Department = Repo.Departments.SingleOrDefault(d => d.Id == Department.Id);
                 for (int x = 0; x < Classes.Count; x++)
                     Classes[x] = Repo.Classes.SingleOrDefault(c => c.Id == Classes[x].Id);
+                for (int x = 0; x < Bookings.Count; x++)
+                    Bookings[x] = Repo.Bookings.SingleOrDefault(b => b.Id == Bookings[x].Id);
             }
             catch
             {

@@ -37,7 +37,7 @@ namespace Server
                 Repo.Rooms.Add(new Room() { RoomName = "Sports Hall", SpecialSeats = 0, StandardSeats = 100, SpecialSeatType = "", Department = Repo.Departments.Single(d => d.Name == "Maths") });
 
                 //Repo.Periods.Add(new TimeSlot() { Name = "Period 1", Start = new TimeSpan(8, 50, 0), End = new TimeSpan(9, 50, 0) });
-                Repo.Periods.Add(new TimeSlot() { Name = "Period 1", Start = new TimeSpan(15, 0, 0), End = new TimeSpan(23, 0, 0) });
+                Repo.Periods.Add(new TimeSlot() { Name = "Period 1", Start = new TimeSpan(8, 50, 0), End = new TimeSpan(8, 50, 0) });
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 2", Start = new TimeSpan(9, 50, 0), End = new TimeSpan(10, 50, 0) });
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 3", Start = new TimeSpan(11, 10, 0), End = new TimeSpan(12, 10, 0) });
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 4", Start = new TimeSpan(12, 10, 0), End = new TimeSpan(13, 10, 0) });
@@ -45,10 +45,10 @@ namespace Server
 
                 string LogonName = DataRepository.Home ? "Keith" : "09135"; // For testing on home versus school computers
                 Repo.Students.Add(new Student() { FirstName = "Keith", LastName = "Collister", Form = "WT", Year = 13, LogonName = LogonName, Access = AccessMode.Admin });
-                Repo.Students.Add(new Student() { FirstName = "Max", LastName = "Norman", Form = "WT", Year = 13, LogonName = "Max" });
-                Repo.Students.Add(new Student() { FirstName = "Dan", LastName = "Wrenn", Form = "MB", Year = 13, LogonName = "Dan" });
-                Repo.Students.Add(new Student() { FirstName = "Peter", LastName = "Champion", Form = "WT", Year = 13, LogonName = "Peter" });
+                Repo.Students.Add(new Student() { FirstName = "Dan", LastName = "Wrenn", Form = "MB", Year = 13, LogonName = "09154", Access = AccessMode.Teacher });
                 Repo.Students.Add(new Student() { FirstName = "Euan", LastName = "Rossie", Form = "WT", Year = 13, LogonName = "09185" });
+                Repo.Students.Add(new Student() { FirstName = "Max", LastName = "Norman", Form = "WT", Year = 13, LogonName = "Max" });
+                Repo.Students.Add(new Student() { FirstName = "Peter", LastName = "Champion", Form = "WT", Year = 13, LogonName = "Peter" });
                 Repo.Students.Add(new Student() { FirstName = "Mia", LogonName = "Mia", LastName = "West", Form = "MB", Year = 13 });
                 Repo.Students.Add(new Student() { FirstName = "Matthew", LogonName = "Matthew", LastName = "Pilkington", Form = "WT", Year = 13 });
                 Repo.Students.Add(new Student() { FirstName = "Kaleb", LogonName = "Kaleb", LastName = "Poole", Form = "BR", Year = 11 });
@@ -253,9 +253,8 @@ namespace Server
                 // Get the relevant table
                 DbSet<T> Set = Repo.Set<T>();
 
-                // If we're not deleting, then we want references to related items
-                if (!Delete)
-                    Entry.Expand(Repo);
+                // We want references to related items
+                Entry.Expand(Repo);
 
                 if (Delete) // Remove if deleting
                     Set.Remove(Set.Single(e => e.Id == Entry.Id));
@@ -307,7 +306,7 @@ namespace Server
 
             for (int x = 6; x <= 12; x += 6)
                 for (int y = 0; y <= 40; y++)
-                    Results.Add("D" + x + "D" + y);
+                    Results.Add("D" + x + "D" + ("" + y).PadLeft(2, '0'));
             Results.Add("KEITH-PC");
 
             return Results;

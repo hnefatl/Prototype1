@@ -37,11 +37,6 @@ namespace Data.Models
 
         // Used to differentiate between Students and Teachers while storing both in the same table.
         public abstract UserType Discriminator { get; }
-        
-        // All bookings the user's involved in
-        public List<Booking> Bookings { get; set; }
-        // All classes the user's involved in
-        public virtual List<Class> Classes { get; set; }
 
         [NotMapped] // Helpful unmapped properties, good for UI bindings
         public virtual bool IsStudent { get { return Access == AccessMode.Student; } }
@@ -54,9 +49,6 @@ namespace Data.Models
         {
             FirstName = string.Empty;
             LastName = string.Empty;
-
-            Bookings = new List<Booking>();
-            Classes = new List<Class>();
         }
 
         public override bool Conflicts(List<DataModel> Others)
@@ -74,8 +66,6 @@ namespace Data.Models
             LastName = u.LastName;
             LogonName = u.LogonName;
             Access = u.Access;
-            Bookings.Clear();
-            Bookings.AddRange(u.Bookings);
         }
 
         // Serialise all required properties
@@ -87,9 +77,6 @@ namespace Data.Models
             Out.Write(FirstName);
             Out.Write(LastName);
             Out.Write(LogonName);
-
-            Out.Write(Bookings.Count);
-            Bookings.ForEach(b => Out.Write(b.Id));
         }
         // Deserialise all properties
         protected override void Deserialise(Reader In)
@@ -100,24 +87,6 @@ namespace Data.Models
             FirstName = In.ReadString();
             LastName = In.ReadString();
             LogonName = In.ReadString();
-
-            Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
-            Bookings.ForEach(b => b.Id = In.ReadInt32());
-        }
-
-        // Obtain references to all related items by ID
-        public override bool Expand(IDataRepository Repo)
-        {
-            try
-            {
-                for (int x = 0; x < Bookings.Count; x++)
-                    Bookings[x] = Repo.Bookings.SingleOrDefault(b => b.Id == Bookings[x].Id);
-            }
-            catch
-            {
-                return false;
-            }
-            return true;
         }
 
         public override string ToString()

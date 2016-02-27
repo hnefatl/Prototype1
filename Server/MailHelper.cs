@@ -49,7 +49,7 @@ namespace Server
                         "Students: " + Booking.Students.Count + "\r\n";
 
                     // Send off the message
-                    Client.Send(Message);
+                    Client.SendAsync(Message, null);
                 }
             }
             catch

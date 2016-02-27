@@ -87,6 +87,11 @@ namespace Client
             base.OnClosed(e);
         }
 
+        public void ShowBalloon(string Title, string Message, System.Windows.Forms.ToolTipIcon Icon)
+        {
+            ToolbarIcon.ShowBalloonTip(MessageDuration, Title, Message, Icon);
+        }
+
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             DataSnapshot Frame = DataRepository.TakeSnapshot();
@@ -168,13 +173,21 @@ namespace Client
 
         public new void Show()
         {
-            base.Show();
-            ToolbarIcon.Visible = true;
+            if (!Dispatcher.CheckAccess())
+                Dispatcher.Invoke((Action)Show);
+            else
+            {
+                ToolbarIcon.Visible = true;
+            }
         }
         public new void Hide()
         {
-            base.Hide();
-            ToolbarIcon.Visible = false;
+            if (!Dispatcher.CheckAccess())
+                Dispatcher.Invoke((Action)Show);
+            else
+            {
+                ToolbarIcon.Visible = false;
+            }
         }
     }
 }

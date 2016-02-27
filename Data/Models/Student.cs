@@ -23,11 +23,19 @@ namespace Data.Models
 
         public override UserType Discriminator { get { return UserType.Student; } }
 
+        // All bookings the user's involved in
+        public virtual List<Booking> Bookings { get; set; }
+        // All classes the user's involved in
+        public virtual List<Class> Classes { get; set; }
+
         public Student()
         {
             Access = AccessMode.Student;
 
             Form = string.Empty;
+
+            Bookings = new List<Booking>();
+            Classes = new List<Class>();
         }
 
         public override bool Conflicts(List<DataModel> Others)
@@ -44,6 +52,8 @@ namespace Data.Models
             Form = s.Form;
             Classes.Clear();
             Classes.AddRange(s.Classes);
+            Bookings.Clear();
+            Bookings.AddRange(s.Bookings);
         }
 
         // Serialise all properties to the stream
@@ -56,6 +66,9 @@ namespace Data.Models
             Out.Write(Form);
             Out.Write(Classes.Count);
             Classes.ForEach(c => Out.Write(c.Id));
+
+            Out.Write(Bookings.Count);
+            Bookings.ForEach(b => Out.Write(b.Id));
         }
         // Deserialise from the stream
         protected override void Deserialise(Reader In)
@@ -67,16 +80,19 @@ namespace Data.Models
 
             Classes = Enumerable.Repeat(new Class(), In.ReadInt32()).ToList();
             Classes.ForEach(c => c.Id = In.ReadInt32());
+
+            Bookings = Enumerable.Repeat(new Booking(), In.ReadInt32()).ToList();
+            Bookings.ForEach(b => b.Id = In.ReadInt32());
         }
         // Obtain references to related entities
         public override bool Expand(IDataRepository Repo)
         {
-            base.Expand(Repo);
-
             try
             {
                 for (int x = 0; x < Classes.Count; x++)
                     Classes[x] = Repo.Classes.SingleOrDefault(c => c.Id == Classes[x].Id);
+                for (int x = 0; x < Bookings.Count; x++)
+                    Bookings[x] = Repo.Bookings.SingleOrDefault(b => b.Id == Bookings[x].Id);
             }
             catch
             {
