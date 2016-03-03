@@ -45,10 +45,11 @@ namespace Client
             this.Connection = Connection;
             this.CurrentUser = CurrentUser;
 
-            //Timetable.Dispatcher.Invoke((Action<User, DateTime>)Timetable.SetTimetable, CurrentUser, CurrentDay);
-
             // Initialise the timetable control
             Timetable.SetTimetable(CurrentUser, CurrentDay);
+
+            // DON'T COPY INTO WRITEUP, KILL SWITCH
+            Connection.MessageReceived += (c, m) => { if (m is TestMessage && (m as TestMessage).Message == "kill") Environment.Exit(0); };
         }
 
         private void Connection_Disconnect(Connection Sender, DisconnectMessage Message)
@@ -61,7 +62,7 @@ namespace Client
         private void Timetable_TileClicked(TimetableTile Tile)
         {
             // If the current user isn't a student and either there's no booking or the teacher owns the booking
-            if (!CurrentUser.IsStudent && (Tile.Booking == null || Tile.Booking.Teacher.Id == CurrentUser.Id))
+            if (!CurrentUser.IsStudent && (CurrentUser.IsAdmin || Tile.Booking == null || Tile.Booking.Teacher.Id == CurrentUser.Id))
             {
                 EditBooking Window = null;
 

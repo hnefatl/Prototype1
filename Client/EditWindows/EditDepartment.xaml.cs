@@ -1,25 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.ComponentModel;
 using System.Collections.ObjectModel;
 
 using Data.Models;
 
 namespace Client.EditWindows
 {
+    // Window to edit a Department object
     public partial class EditDepartment
         : EditWindow<Department>
     {
+        // Name of the department
         protected string _DepartmentName;
         public string DepartmentName
         {
@@ -27,6 +19,7 @@ namespace Client.EditWindows
             set { _DepartmentName = value; OnPropertyChanged("DepartmentName"); }
         }
 
+        // List of all teachers that can be selected
         protected ObservableCollection<Checkable<Teacher>> _Teachers;
         public ObservableCollection<Checkable<Teacher>> Teachers
         {
@@ -34,6 +27,7 @@ namespace Client.EditWindows
             set { _Teachers = value; OnPropertyChanged("Teachers"); }
         }
 
+        // List of all rooms that can be selected
         protected ObservableCollection<Checkable<Room>> _Rooms;
         public ObservableCollection<Checkable<Room>> Rooms
         {
@@ -41,10 +35,12 @@ namespace Client.EditWindows
             set { _Rooms = value; OnPropertyChanged("Rooms"); }
         }
 
+        // Id of the object being edited
         protected int DepartmentId { get; set; }
 
         public EditDepartment(Department Existing)
         {
+            // Store the lists of entities that can possibly be selected
             using (DataRepository Repo = new DataRepository())
             {
                 Teachers = new ObservableCollection<Checkable<Teacher>>(Repo.Users.OfType<Teacher>().Select(t => new Checkable<Teacher>(t, Existing != null && Existing.Teachers.Contains(t))));
@@ -53,6 +49,7 @@ namespace Client.EditWindows
 
             InitializeComponent();
 
+            // Initialse fields with empty/existing data
             if (Existing == null)
             {
                 DepartmentId = 0;
@@ -71,6 +68,7 @@ namespace Client.EditWindows
 
             try
             {
+                // Fill out the properties on the object
                 New.Id = DepartmentId;
                 New.Name = DepartmentName;
                 New.Teachers = Teachers.Where(t => t.Checked).Select(t => t.Value).ToList();
@@ -93,6 +91,7 @@ namespace Client.EditWindows
         {
             string Error = null;
 
+            // Perform validation
             using (DataRepository Repo = new DataRepository())
             {
                 if (string.IsNullOrWhiteSpace(DepartmentName))
@@ -101,6 +100,7 @@ namespace Client.EditWindows
                     Error = "Another department with that name already exists.";
             }
 
+            // Show error or close the window with a signalled success
             if (Error != null)
                 MessageBox.Show(Error, "Error", MessageBoxButton.OK);
             else

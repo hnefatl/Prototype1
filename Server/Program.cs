@@ -37,7 +37,7 @@ namespace Server
                 Repo.Rooms.Add(new Room() { RoomName = "Sports Hall", SpecialSeats = 0, StandardSeats = 100, SpecialSeatType = "", Department = Repo.Departments.Single(d => d.Name == "Maths") });
 
                 //Repo.Periods.Add(new TimeSlot() { Name = "Period 1", Start = new TimeSpan(8, 50, 0), End = new TimeSpan(9, 50, 0) });
-                Repo.Periods.Add(new TimeSlot() { Name = "Period 1", Start = new TimeSpan(8, 50, 0), End = new TimeSpan(8, 50, 0) });
+                Repo.Periods.Add(new TimeSlot() { Name = "Period 1", Start = new TimeSpan(8, 50, 0), End = new TimeSpan(9, 50, 0) });
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 2", Start = new TimeSpan(9, 50, 0), End = new TimeSpan(10, 50, 0) });
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 3", Start = new TimeSpan(11, 10, 0), End = new TimeSpan(12, 10, 0) });
                 Repo.Periods.Add(new TimeSlot() { Name = "Period 4", Start = new TimeSpan(12, 10, 0), End = new TimeSpan(13, 10, 0) });
@@ -124,7 +124,14 @@ namespace Server
                 Print("Listener started...", ConsoleColor.Green);
 
                 // Wait for a keypress (to signal exit)
-                Console.ReadKey(true);
+                while (true)
+                {
+                    ConsoleKey Key = Console.ReadKey(true).Key;
+                    if (Key == ConsoleKey.Escape)
+                        break;
+                    else if (Key == ConsoleKey.K)
+                        Listener.Send(new TestMessage("kill"));
+                }
 
                 // Shut down the server, unhook the handlers
                 Closing = true;

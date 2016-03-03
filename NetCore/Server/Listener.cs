@@ -57,8 +57,6 @@ namespace NetCore.Server
         }
         public Listener(IPEndPoint Endpoint, IList<Client> ClientListType)
         {
-            Clients = new List<Client>();
-
             // Create a new TCP/IP socket
             Inner = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             Inner.Bind(Endpoint); // Bind to the local endpoint
@@ -95,15 +93,18 @@ namespace NetCore.Server
         public void Stop()
         {
             Run = false;
-            foreach (Client c in Clients)
+            lock (Clients)
             {
-                try
+                foreach (Client c in Clients)
                 {
-                    // Send a disconnect message, then dispose the connection
-                    c.Send(new DisconnectMessage(DisconnectType.Expected));
-                    c.Dispose();
+                    try
+                    {
+                        // Send a disconnect message, then dispose the connection
+                        c.Send(new DisconnectMessage(DisconnectType.Expected));
+                        c.Dispose();
+                    }
+                    catch { }
                 }
-                catch { }
             }
             Inner.Dispose();
 

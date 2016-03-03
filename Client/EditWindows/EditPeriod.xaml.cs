@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.ComponentModel;
 
 using Data.Models;
 
@@ -19,54 +9,38 @@ namespace Client.EditWindows
     public partial class EditPeriod
         : EditWindow<TimeSlot>
     {
+        // Name of the period being edited
         protected string _PeriodName;
         public string PeriodName
         {
-            get
-            {
-                return _PeriodName;
-            }
-            set
-            {
-                _PeriodName = value;
-                OnPropertyChanged("PeriodName");
-            }
+            get { return _PeriodName; }
+            set { _PeriodName = value; OnPropertyChanged("PeriodName"); }
         }
 
+        // String representation of the start time
         protected string _Start;
         public string Start
         {
-            get
-            {
-                return _Start;
-            }
-            set
-            {
-                _Start = value;
-                OnPropertyChanged("Start");
-            }
+            get { return _Start; }
+            set { _Start = value; OnPropertyChanged("Start"); }
         }
 
+        // String representation of the end time
         protected string _End;
         public string End
         {
-            get
-            {
-                return _End;
-            }
-            set
-            {
-                _End = value;
-                OnPropertyChanged("End");
-            }
+            get { return _End; }
+            set { _End = value; OnPropertyChanged("End"); }
         }
 
+        // ID of the period being edited
         public int PeriodId { get; set; }
 
         public EditPeriod(TimeSlot Existing)
         {
             InitializeComponent();
 
+            // Initialise with new/existing data
             if (Existing == null)
             {
                 PeriodName = string.Empty;
@@ -77,8 +51,10 @@ namespace Client.EditWindows
             else
             {
                 PeriodName = Existing.Name;
+                // Convert the TimeSpan objects into hh:mm format by padding and concatenating srings
                 Start = Convert.ToString(Existing.Start.Hours).PadLeft(2, '0') + ":" + Convert.ToString(Existing.Start.Minutes).PadLeft(2, '0');
                 End = Convert.ToString(Existing.End.Hours).PadLeft(2, '0') + ":" + Convert.ToString(Existing.End.Minutes).PadLeft(2, '0');
+
                 PeriodId = Existing.Id;
             }
         }
@@ -88,6 +64,7 @@ namespace Client.EditWindows
             TimeSlot New = new TimeSlot();
             try
             {
+                // Fill out the fields, parsing data
                 New.Name = PeriodName;
                 New.Start = TimeSpan.Parse(Start);
                 New.End = TimeSpan.Parse(End);
@@ -111,6 +88,7 @@ namespace Client.EditWindows
 
             using (DataRepository Repo = new DataRepository())
             {
+                // Validation
                 TimeSpan StartOut;
                 TimeSpan EndOut;
                 if (string.IsNullOrWhiteSpace(PeriodName))
@@ -124,6 +102,8 @@ namespace Client.EditWindows
                 else if (Repo.Periods.Any(p => p.Name == PeriodName))
                     Error = "Another Period with that name already exists.";
             }
+
+            // Error message or close window
             if (!string.IsNullOrWhiteSpace(Error))
                 MessageBox.Show(Error, "Error", MessageBoxButton.OK);
             else
@@ -133,6 +113,7 @@ namespace Client.EditWindows
             }
         }
 
+        // Simple validation function that checks the timespan is represents a valid time
         private bool CompatibleTime(TimeSpan t)
         {
             return t.Hours < 24 && t.Hours >= 0 && t.Minutes >= 0 && t.Seconds >= 0;

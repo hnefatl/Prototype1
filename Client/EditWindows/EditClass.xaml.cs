@@ -1,25 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 
 using Data.Models;
 
 namespace Client.EditWindows
 {
+    // Window for editing a a Class object
     public partial class EditClass
         : EditWindow<Class>
     {
+        // Name of the class
         protected string _ClassName;
         public string ClassName
         {
@@ -27,19 +19,24 @@ namespace Client.EditWindows
             set { _ClassName = value; OnPropertyChanged("ClassName"); }
         }
 
+        // Name of the teacher teaching the class
         protected string _Teacher;
         public string Teacher
         {
             get { return _Teacher; }
             set { _Teacher = value; OnPropertyChanged("Teacher"); }
         }
+        // Internal array of all teacher names
         public string[] Teachers { get; set; }
+        // Parallel array to the above holding the IDs of the teachers
         public int[] TeacherIds { get; set; }
 
+        // ID of the Class being edited/created
         public int ClassId { get; set; }
 
         public EditClass(Class Existing)
         {
+            // Store the values that can be selected
             using (DataRepository Repo = new DataRepository())
             {
                 IEnumerable<Teacher> ts = Repo.Users.OfType<Teacher>();
@@ -49,21 +46,22 @@ namespace Client.EditWindows
 
             InitializeComponent();
 
+            // If new Class, enter default values
             if (Existing == null)
             {
                 ClassName = string.Empty;
                 Teacher = string.Empty;
                 ClassId = 0;
             }
-            else
+            else // Existing class, load the values from it
             {
                 ClassName = Existing.ClassName;
                 Teacher = Existing.Owner.InformalName;
                 ClassId = Existing.Id;
-            }
 
-            if (Existing != null)
+                // Select already involved students in advance
                 Students.Students.Where(s => Existing.Students.Contains(s.Value)).ToList().ForEach(s => s.Checked = true);
+            }
         }
 
         public override Class GetItem()
@@ -72,13 +70,15 @@ namespace Client.EditWindows
 
             try
             {
+                // Fill in values
                 New.Id = ClassId;
                 New.ClassName = ClassName;
+                New.Students = Students.SelectedStudents;
 
                 using (DataRepository Repo = new DataRepository())
                 {
+                    // Find the selected teacher
                     New.Owner = Repo.Users.OfType<Teacher>().Single(t => t.Id == TeacherIds[Combo_Teacher.SelectedIndex]);
-                    New.Students = Students.SelectedStudents;
                 }
             }
             catch
@@ -91,6 +91,7 @@ namespace Client.EditWindows
 
         private void Button_Back_Click(object sender, RoutedEventArgs e)
         {
+            // Set the "cancel" flag and close
             DialogResult = false;
             Close();
         }
@@ -98,6 +99,7 @@ namespace Client.EditWindows
         {
             string Error = null;
 
+            // Perform validation 
             using (DataRepository Repo = new DataRepository())
             {
                 if (string.IsNullOrWhiteSpace(ClassName))
@@ -108,6 +110,7 @@ namespace Client.EditWindows
                     Error = "Another class with that name already exists.";
             }
 
+            // Error or close window
             if (Error != null)
                 MessageBox.Show(Error, "Error", MessageBoxButton.OK);
             else

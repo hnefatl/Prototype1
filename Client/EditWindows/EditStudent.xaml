@@ -18,7 +18,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -44,7 +43,7 @@
         <TextBlock Text="Access:" Margin="5" Grid.Row="5"/>
         <ComboBox ItemsSource="{Binding AccessModes}" SelectedItem="{Binding Access, UpdateSourceTrigger=PropertyChanged}" Margin="3" Grid.Row="5" Grid.Column="1"/>
 
-        <Button Name="Button_Back" Content="Back" Width="50" Height="20" Margin="5,5,60,5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="7" Grid.Column="1" Click="Button_Back_Click"/>
-        <Button Name="Button_Save" Content="Save" Width="50" Height="20" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="7" Grid.Column="1" Click="Button_Save_Click"/>
+        <Button Name="Button_Back" Content="Back" Width="50" Height="20" Margin="5,5,60,5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="6" Grid.Column="1" Click="Button_Back_Click"/>
+        <Button Name="Button_Save" Content="Save" Width="50" Height="20" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="6" Grid.Column="1" Click="Button_Save_Click"/>
     </Grid>
 </local:EditWindow>

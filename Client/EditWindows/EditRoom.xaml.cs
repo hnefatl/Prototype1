@@ -1,16 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.ComponentModel;
 
 using Data.Models;
 
@@ -19,93 +10,73 @@ namespace Client.EditWindows
     public partial class EditRoom
         : EditWindow<Room>
     {
+        // Name of the room being edited
         protected string _RoomName;
         public string RoomName
         {
-            get
-            {
-                return _RoomName;
-            }
-            set
-            {
-                _RoomName = value;
-                OnPropertyChanged("RoomName");
-            }
+            get { return _RoomName; }
+            set { _RoomName = value; OnPropertyChanged("RoomName"); }
         }
 
+        // String representation of the number of standard seats in the room
         protected string _StandardSeats;
         public string StandardSeats
         {
-            get
-            {
-                return _StandardSeats;
-            }
-            set
-            {
-                _StandardSeats = value;
-                OnPropertyChanged("StandardSeats");
-            }
+            get { return _StandardSeats; }
+            set { _StandardSeats = value; OnPropertyChanged("StandardSeats"); }
         }
 
-        protected string _SpecialSeatType;
-        public string SpecialSeatType
-        {
-            get
-            {
-                return _SpecialSeatType;
-            }
-            set
-            {
-                _SpecialSeatType = value;
-                OnPropertyChanged("SpecialSeatType");
-            }
-        }
-
+        // String representation of the number of special seats in the room
         protected string _SpecialSeats;
         public string SpecialSeats
         {
-            get
-            {
-                return _SpecialSeats;
-            }
-            set
-            {
-                _SpecialSeats = value;
-                OnPropertyChanged("SpecialSeats");
-            }
+            get { return _SpecialSeats; }
+            set { _SpecialSeats = value; OnPropertyChanged("SpecialSeats"); }
         }
 
+        // The type of special seat (eg Computer, Workbench)
+        protected string _SpecialSeatType;
+        public string SpecialSeatType
+        {
+            get { return _SpecialSeatType; }
+            set { _SpecialSeatType = value; OnPropertyChanged("SpecialSeatType"); }
+        }
+
+        // Name of the Department this room belnogs to
         protected string _Department;
         public string Department
         {
             get { return _Department; }
-            set
-            {
-                _Department = value;
-                OnPropertyChanged("Department");
-            }
+            set { _Department = value; OnPropertyChanged("Department"); }
         }
+        // The names of the departments that this room can belong to
         public string[] Departments { get; set; }
 
+        // The (long) string holding all the computers in the room, line delimited
         protected string _Computers;
         public string Computers
         {
             get { return _Computers; }
             set { _Computers = value; OnPropertyChanged("Computers"); }
         }
+        // Utility property to get the individual computer names from the long string
         public string[] ComputerLines { get { return Computers.Split('\n'); } }
 
+        // The ID of this room
         protected int RoomId { get; set; }
 
+        // The list of bookings using this room (can't be edited)
         protected List<Booking> Bookings { get; set; }
 
         public EditRoom(Room Current)
         {
+            // Store the names of all available departments
             using (DataRepository Repo = new DataRepository())
                 Departments = Repo.Departments.Select(d => d.Name).ToArray();
 
             InitializeComponent();
 
+            // Initialise with empty/existing details
             if (Current == null)
             {
                 RoomName = string.Empty;
@@ -124,6 +95,7 @@ namespace Client.EditWindows
                 SpecialSeats = Convert.ToString(Current.SpecialSeats);
                 Department = Current.Department.Name;
                 Bookings = Current.Bookings;
+                // Get the list of computer names in the room and line-separate the computer names
                 Computers = Current.ComputerNamesJoined.Replace(Room.ComputerNameSeperator, '\n');
                 RoomId = Current.Id;
             }
@@ -135,6 +107,7 @@ namespace Client.EditWindows
 
             try
             {
+                // Fill out all the details
                 New.RoomName = RoomName;
                 New.StandardSeats = Convert.ToInt32(StandardSeats);
                 New.SpecialSeatType = SpecialSeatType;
@@ -143,6 +116,7 @@ namespace Client.EditWindows
                 New.Bookings = Bookings;
                 New.ComputerNames = ComputerLines.ToList();
 
+                // Select the correct department
                 using (DataRepository Repo = new DataRepository())
                     New.Department = Repo.Departments.Single(d => d.Name == Department);
             }
@@ -163,6 +137,7 @@ namespace Client.EditWindows
         {
             string Error = null;
 
+            // Validate
             int Temp;
             if (string.IsNullOrWhiteSpace(RoomName))
                 Error = "You must enter a room name.";
@@ -178,11 +153,13 @@ namespace Client.EditWindows
                 Error = "You must select a department.";
             else
             {
+                // Check for naming conflicts
                 using (DataRepository Repo = new DataRepository())
                     if (Repo.Rooms.Any(r => r.Id != RoomId && r.RoomName == RoomName))
                         Error = "Another room with that name already exists.";
             }
 
+            // Show an error message or close the window
             if (Error != null)
                 MessageBox.Show(Error, "Error", MessageBoxButton.OK);
             else

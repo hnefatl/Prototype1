@@ -1,16 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.ComponentModel;
 
 using Data.Models;
 
@@ -19,36 +9,71 @@ namespace Client.EditWindows
     public partial class EditStudent
         : EditWindow<Student>
     {
+        // First name of the student being edited
         protected string _FirstName;
-        public string FirstName { get { return _FirstName; } set { _FirstName = value; OnPropertyChanged("FirstName"); } }
+        public string FirstName
+        {
+            get { return _FirstName; }
+            set { _FirstName = value; OnPropertyChanged("FirstName"); }
+        }
 
+        // Last name of the student being edited
         protected string _LastName;
-        public string LastName { get { return _LastName; } set { _LastName = value; OnPropertyChanged("LastName"); } }
+        public string LastName
+        {
+            get { return _LastName; }
+            set { _LastName = value; OnPropertyChanged("LastName"); }
+        }
 
+        // Username of the student being edited
         protected string _LogonName;
-        public string LogonName { get { return _LogonName; } set { _LogonName = value; OnPropertyChanged("LogonName"); } }
+        public string LogonName
+        {
+            get { return _LogonName; }
+            set { _LogonName = value; OnPropertyChanged("LogonName"); }
+        }
 
+        // Year the student's in
         protected string _Year;
-        public string Year { get { return _Year; } set { _Year = value; OnPropertyChanged("Year"); } }
+        public string Year
+        {
+            get { return _Year; }
+            set { _Year = value; OnPropertyChanged("Year"); }
+        }
 
+        // Form the student's in
         protected string _Form;
-        public string Form { get { return _Form; } set { _Form = value; OnPropertyChanged("Form"); } }
+        public string Form
+        {
+            get { return _Form; }
+            set { _Form = value; OnPropertyChanged("Form"); }
+        }
 
+        // Access level of the student
         protected string _Access;
-        public string Access { get { return _Access; } set { _Access = value; OnPropertyChanged("Access"); } }
+        public string Access
+        {
+            get { return _Access; }
+            set { _Access = value; OnPropertyChanged("Access"); }
+        }
+        // List of possible access modes
         public string[] AccessModes { get; set; }
 
+        // Bookings and classes can't be edited from this window but need storing
         protected List<Booking> Bookings { get; set; }
         protected List<Class> Classes { get; set; }
 
+        // ID of the student being edited
         public int StudentId { get; set; }
 
         public EditStudent(Student Existing)
         {
+            // Fill out the types of AccessMode
             AccessModes = Enum.GetNames(typeof(AccessMode));
 
             InitializeComponent();
 
+            // Initialise with empty/existing information
             if (Existing != null)
             {
                 FirstName = Existing.FirstName;
@@ -81,6 +106,7 @@ namespace Client.EditWindows
 
             try
             {
+                // Fill out the new details, parsing where necessary
                 New.FirstName = FirstName;
                 New.LastName = LastName;
                 New.LogonName = LogonName;
@@ -108,6 +134,7 @@ namespace Client.EditWindows
         {
             string Error = null;
 
+            // Perform validation
             AccessMode OutAccess;
             int OutInt;
             if (string.IsNullOrWhiteSpace(FirstName))
@@ -123,6 +150,7 @@ namespace Client.EditWindows
             else if (!Enum.TryParse(Access, out OutAccess)) // Should never happen, we're using a combobox
                 Error = "Invalid access mode.";
 
+            // Print the error message or close 
             if (!string.IsNullOrWhiteSpace(Error))
                 MessageBox.Show(Error, "Error", MessageBoxButton.OK);
             else

@@ -1,16 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.ComponentModel;
 using System.Text.RegularExpressions;
 
 using Data.Models;
@@ -20,41 +11,81 @@ namespace Client.EditWindows
     public partial class EditTeacher
         : EditWindow<Teacher>
     {
+        // The first name of the teacher being edited
         protected string _FirstName;
-        public string FirstName { get { return _FirstName; } set { _FirstName = value; OnPropertyChanged("FirstName"); } }
+        public string FirstName
+        {
+            get { return _FirstName; }
+            set { _FirstName = value; OnPropertyChanged("FirstName"); }
+        }
 
+        // The last name of the teacher being edited
         protected string _LastName;
-        public string LastName { get { return _LastName; } set { _LastName = value; OnPropertyChanged("LastName"); } }
+        public string LastName
+        {
+            get { return _LastName; }
+            set { _LastName = value; OnPropertyChanged("LastName"); }
+        }
 
+        // The title of the teacher being edited (eg Mr, Mrs)
         protected string _TeacherTitle;
-        public string TeacherTitle { get { return _TeacherTitle; } set { _TeacherTitle = value; OnPropertyChanged("TeacherTitle"); } }
+        public string TeacherTitle
+        {
+            get { return _TeacherTitle; }
+            set { _TeacherTitle = value; OnPropertyChanged("TeacherTitle"); }
+        }
 
+        // The username of the teacher being edited
         protected string _LogonName;
-        public string LogonName { get { return _LogonName; } set { _LogonName = value; OnPropertyChanged("LogonName"); } }
+        public string LogonName
+        { get
+            { return _LogonName; }
+            set { _LogonName = value; OnPropertyChanged("LogonName"); }
+        }
 
+        // The access level of the teacher
         protected string _Access;
-        public string Access { get { return _Access; } set { _Access = value; OnPropertyChanged("Access"); } }
+        public string Access
+        { get
+            { return _Access; }
+            set { _Access = value; OnPropertyChanged("Access"); }
+        }
         public string[] AccessModes { get { return Enum.GetNames(typeof(AccessMode)); } }
 
+        // The email address of the teacher
         protected string _Email;
-        public string Email { get { return _Email; } set { _Email = value; OnPropertyChanged("Email"); } }
+        public string Email
+        {
+            get { return _Email; }
+            set { _Email = value; OnPropertyChanged("Email"); }
+        }
 
+        // Name of the department the teacher belongs to
         protected string _Department;
-        public string Department { get { return _Department; } set { _Department = value; OnPropertyChanged("Department"); } }
+        public string Department
+        {
+            get { return _Department; }
+            set { _Department = value; OnPropertyChanged("Department"); }
+        }
+        // Names of departments that can be selected
         public string[] Departments { get; set; }
 
+        // Classes and Bookings can't be edited but need to be stored
         protected List<Class> Classes { get; set; }
         protected List<Booking> Bookings { get; set; }
 
+        // The ID of the teacher being edited
         public int TeacherId { get; set; }
 
         public EditTeacher(Teacher Existing)
         {
+            // Store the names of departments that can be chosen
             using (DataRepository Repo = new DataRepository())
                 Departments = Repo.Departments.Select(d => d.Name).ToArray();
 
             InitializeComponent();
 
+            // Initialise with empty values/existing values
             if (Existing == null)
             {
                 FirstName = string.Empty;
@@ -89,12 +120,14 @@ namespace Client.EditWindows
 
             try
             {
+                // Fill out the details 
                 New.FirstName = FirstName;
                 New.LastName = LastName;
                 New.Title = TeacherTitle;
                 New.LogonName = LogonName;
                 New.Access = (AccessMode)Enum.Parse(typeof(AccessMode), Access);
                 New.Email = Email;
+                // Get a reference to the actual department
                 using (DataRepository Repo = new DataRepository())
                     New.Department = Repo.Departments.Single(d => d.Name == Department);
                 New.Classes = Classes;
@@ -118,6 +151,7 @@ namespace Client.EditWindows
         {
             string Error = null;
 
+            // Validate
             AccessMode Out;
             if (string.IsNullOrWhiteSpace(FirstName))
                 Error = "You must enter a first name.";
@@ -134,6 +168,7 @@ namespace Client.EditWindows
             else if (!string.IsNullOrEmpty(Email) && !Regex.IsMatch(Email, @"[\w.-]+@[\w]+\.[.\w]+"))
                 Error = "Invalid email address.";
 
+            // Show an error or close
             if (!string.IsNullOrWhiteSpace(Error))
                 MessageBox.Show(Error, "Error", MessageBoxButton.OK);
             else
