@@ -59,7 +59,7 @@ namespace Client.TimetableDisplay
                 // If the current user is somehow involved in the booking (either 
                 // as a student or teacher)
                 if (((CurrentUser is Student) && Booking.Students.Any(s => s.Id == CurrentUser.Id)) ||
-                    ((CurrentUser is Teacher) && Booking.Teacher == CurrentUser))
+                    ((CurrentUser is Teacher) && Booking.Teacher.Id == CurrentUser.Id))
                 {
                     // Do a simple animation on the tiles to draw attention
                     Storyboard PulseEffect = (Storyboard)Resources["PulseEffect"];
