@@ -7,12 +7,13 @@
         xmlns:local="clr-namespace:Client.EditWindows"
         xmlns:data="clr-namespace:Data.Models;assembly=Data"
         mc:Ignorable="d"
-        Title="Edit Subject" Height="300" Width="300"
+        Title="Edit Subject" Height="Auto" Width="Auto"
+                  SizeToContent="WidthAndHeight"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -37,21 +38,21 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Red:" Margin="5,7,5,5" Grid.Row="0" Grid.Column="0"/>
-                <TextBox Text="{Binding ColourRed, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="50" Grid.Row="0" Grid.Column="1"/>
+                <TextBox Text="{Binding ColourRed, UpdateSourceTrigger=PropertyChanged}" PreviewTextInput="ComponentTextBox_TextChanged" Margin="5" Width="50" Height="22" Grid.Row="0" Grid.Column="1"/>
 
                 <TextBlock Text="Green:" Margin="5,7,5,5" Grid.Row="1" Grid.Column="0"/>
-                <TextBox Text="{Binding ColourGreen, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="50" Grid.Row="1" Grid.Column="1"/>
+                <TextBox Text="{Binding ColourGreen, UpdateSourceTrigger=PropertyChanged}" PreviewTextInput="ComponentTextBox_TextChanged" Margin="5" Width="50" Height="22" Grid.Row="1" Grid.Column="1"/>
 
                 <TextBlock Text="Blue:" Margin="5,7,5,5" Grid.Row="2" Grid.Column="0"/>
-                <TextBox Text="{Binding ColourBlue, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="50" Grid.Row="2" Grid.Column="1"/>
+                <TextBox Text="{Binding ColourBlue, UpdateSourceTrigger=PropertyChanged}" PreviewTextInput="ComponentTextBox_TextChanged" Margin="5" Width="50" Height="22" Grid.Row="2" Grid.Column="1"/>
 
-                <Rectangle Name="Rect_Demo" Fill="{Binding Colour, UpdateSourceTrigger=PropertyChanged}" Width="100" Height="100" Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"/>
+                <Rectangle Name="Rect_Demo" Fill="{Binding Colour, UpdateSourceTrigger=PropertyChanged}" Margin="5" HorizontalAlignment="Right" Width="100" Height="100" Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"/>
                 
             </Grid>
         </GroupBox>
 
-        <Button Name="Button_Back" Content="Back" Margin="5,5,50,5" Grid.Row="2" Grid.Column="1" Width="40" HorizontalAlignment="Right"/>
-        <Button Name="Button_Save" Content="Save" Margin="5" Grid.Row="2" Grid.Column="1" Width="40" HorizontalAlignment="Right"/>
+        <Button Name="Button_Back" Content="Back" Margin="5,5,50,5" Grid.Row="2" Grid.Column="1" Width="40" HorizontalAlignment="Right" Click="Button_Back_Click"/>
+        <Button Name="Button_Save" Content="Save" Margin="5" Grid.Row="2" Grid.Column="1" Width="40" HorizontalAlignment="Right" Click="Button_Save_Click"/>
         
     </Grid>
 </local:EditWindow>

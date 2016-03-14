@@ -68,6 +68,13 @@ namespace Client.Admin
             set { _Classes = value; OnPropertyChanged("Classes"); }
         }
 
+        protected ObservableCollection<Subject> _Subjects = new ObservableCollection<Subject>();
+        public ObservableCollection<Subject> Subjects
+        {
+            get { return _Subjects; }
+            set { _Subjects = value; OnPropertyChanged("Subjects"); }
+        }
+
         public AdminWindow(Connection Connection, User CurrentUser)
         {
             InitializeComponent();
@@ -85,6 +92,7 @@ namespace Client.Admin
                 Students = new ObservableCollection<Student>(Repo.Users.OfType<Student>());
                 Departments = new ObservableCollection<Department>(Repo.Departments);
                 Classes = new ObservableCollection<Class>(Repo.Classes);
+                Subjects = new ObservableCollection<Subject>(Repo.Subjects);
             }
         }
 
@@ -109,6 +117,8 @@ namespace Client.Admin
                     Departments = new ObservableCollection<Department>(Repo.Departments);
                 else if (ChangedType == typeof(Class))
                     Classes = new ObservableCollection<Class>(Repo.Classes);
+                else if (ChangedType == typeof(Subject))
+                    Subjects = new ObservableCollection<Subject>(Repo.Subjects);
             }
         }
 
@@ -260,7 +270,7 @@ namespace Client.Admin
                 Repo.Departments.Remove(d);
             }
         }
-        
+
         private void Button_AddClass_Click(object sender, RoutedEventArgs e)
         {
             EditData(new EditClass(null));
@@ -280,6 +290,28 @@ namespace Client.Admin
             using (DataRepository Repo = new DataRepository())
             {
                 Repo.Classes.Remove(c);
+            }
+        }
+
+        private void Button_AddSubject_Click(object sender, RoutedEventArgs e)
+        {
+            EditData(new EditSubject(null));
+        }
+        private void Button_EditSubject_Click(object sender, RoutedEventArgs e)
+        {
+            EditData(new EditSubject((Subject)List_Subjects.SelectedItem));
+        }
+        private void Button_DeleteSubject_Click(object sender, RoutedEventArgs e)
+        {
+            Subject c = (Subject)List_Subjects.SelectedItem;
+
+            if (MessageBox.Show("Deleting this Subject will remove it from " + c.Bookings.Count + " bookings.\n" +
+                "Please confirm this action.", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                return;
+
+            using (DataRepository Repo = new DataRepository())
+            {
+                Repo.Subjects.Remove(c);
             }
         }
 

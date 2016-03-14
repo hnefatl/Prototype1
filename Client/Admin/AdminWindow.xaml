@@ -224,7 +224,7 @@
                             <GridView>
                                 <GridView.Columns>
                                     <GridViewColumn DisplayMemberBinding="{Binding ClassName}" Width="200" Header="Name"/>
-                                    <GridViewColumn DisplayMemberBinding="{Binding Owner.InformalName}" Width="200" Header="Owner"/>                                    
+                                    <GridViewColumn DisplayMemberBinding="{Binding Owner.InformalName}" Width="200" Header="Owner"/>
                                 </GridView.Columns>
                             </GridView>
                         </ListView.View>
@@ -240,6 +240,41 @@
                         <Button Name="Button_AddClass" Content="Add Class" Height="25" Width="110" Margin="5" Grid.Column="0" Click="Button_AddClass_Click"/>
                         <Button Name="Button_EditClass" Content="Edit Class" IsEnabled="{Binding ElementName=List_Classes, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="110" Margin="5" Grid.Column="1" Click="Button_EditClass_Click"/>
                         <Button Name="Button_DeleteClass" Content="Delete Class" IsEnabled="{Binding ElementName=List_Classes, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="110" Margin="5" Grid.Column="2" Click="Button_DeleteClass_Click"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Subjects">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ListView Name="List_Subjects" SelectionMode="Single" ItemsSource="{Binding Subjects, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="0">
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn DisplayMemberBinding="{Binding SubjectName}" Width="200" Header="Subject Name"/>
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Name="Button_AddSubject" Content="Add Subject" Height="25" Width="110" Margin="5" Grid.Column="0" Click="Button_AddSubject_Click"/>
+                        <Button Name="Button_EditSubject" Content="Edit Subject" IsEnabled="{Binding ElementName=List_Subjects, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="110" Margin="5" Grid.Column="1" Click="Button_EditSubject_Click"/>
+                        <Button Name="Button_DeleteSubject" Content="Delete Subject" IsEnabled="{Binding ElementName=List_Subjects, Path=SelectedItem, Converter={StaticResource NullToBool}}" Height="25" Width="110" Margin="5" Grid.Column="2" Click="Button_DeleteSubject_Click"/>
                     </Grid>
                 </Grid>
             </TabItem>
