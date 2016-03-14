@@ -120,11 +120,11 @@ namespace Client.EditWindows
             if (string.IsNullOrWhiteSpace(SubjectName))
                 Error = "You must enter a subject name.";
             else if (!byte.TryParse(ColourRed, out Temp))
-                Error = "Invalid value for Red component";
+                Error = "Invalid value for Red component.";
             else if (!byte.TryParse(ColourGreen, out Temp))
-                Error = "Invalid value for Green component";
+                Error = "Invalid value for Green component.";
             else if (!byte.TryParse(ColourBlue, out Temp))
-                Error = "Invalid value for Blue component";
+                Error = "Invalid value for Blue component.";
             else
             {
                 using (DataRepository Repo = new DataRepository())
