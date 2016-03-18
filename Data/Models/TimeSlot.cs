@@ -17,15 +17,8 @@ namespace Data.Models
         // The Start time of the period
         public TimeSpan Start
         {
-            get
-            {
-                return _Start;
-            }
-            set
-            {
-                _Start = value;
-                OnPropertyChanged("Start");
-            }
+            get { return _Start; }
+            set { _Start = value; OnPropertyChanged("Start"); }
         }
         [NotMapped] // Start time in short time format (12:10), used for UI
         public string ShortStart { get { return new DateTime(Start.Ticks).ToShortTimeString(); } }
@@ -34,15 +27,8 @@ namespace Data.Models
         // The End time of the period
         public TimeSpan End
         {
-            get
-            {
-                return _End;
-            }
-            set
-            {
-                _End = value;
-                OnPropertyChanged("End");
-            }
+            get { return _End; }
+            set { _End = value; OnPropertyChanged("End"); }
         }
         [NotMapped] // End time in short time format(13:10), used in UI
         public string ShortEnd { get { return new DateTime(End.Ticks).ToShortTimeString(); } }
@@ -53,10 +39,7 @@ namespace Data.Models
         [NotMapped] // Utility property for UI - range of times
         public string TimeRange
         {
-            get
-            {
-                return ShortStart + " - " + ShortEnd;
-            }
+            get { return ShortStart + " - " + ShortEnd; }
         }
 
         // Bookings using this period

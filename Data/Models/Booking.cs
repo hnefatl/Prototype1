@@ -8,6 +8,19 @@ using Shared;
 
 namespace Data.Models
 {
+    // Recurrence type of the booking
+    public enum BookingType
+    {
+        // A one off booking
+        Single,
+        // Occurs every 7 days
+        Weekly,
+        // Occurs every 14 days
+        Fortnightly,
+        // Occurs every 4 weeks
+        Monthly,
+    }
+
     // A Booking is a effectively a single lesson.
     [Table("Bookings")]
     public class Booking
@@ -17,14 +30,8 @@ namespace Data.Models
         [NotMapped]
         public DateTime Date
         {
-            get
-            {
-                return DateTime.FromBinary(Ticks).Date;
-            }
-            set
-            {
-                Ticks = value.Date.ToBinary();
-            }
+            get { return DateTime.FromBinary(Ticks).Date; }
+            set { Ticks = value.Date.ToBinary(); }
         }
         // Representation of the Date as a primitive datatype for storage in the database
         public long Ticks { get; set; }
@@ -196,18 +203,5 @@ namespace Data.Models
         {
             return base.GetHashCode();
         }
-    }
-
-    // Recurrence type of the booking
-    public enum BookingType
-    {
-        // A one off booking
-        Single,
-        // Occurs every 7 days
-        Weekly,
-        // Occurs every 14 days
-        Fortnightly,
-        // Occurs every 4 weeks
-        Monthly,
     }
 }

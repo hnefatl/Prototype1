@@ -101,9 +101,9 @@ namespace NetCore.Server
                     {
                         // Send a disconnect message, then dispose the connection
                         c.Send(new DisconnectMessage(DisconnectType.Expected));
-                        c.Dispose();
                     }
                     catch { }
+                    finally { c.Dispose(); }
                 }
             }
             Inner.Dispose();
