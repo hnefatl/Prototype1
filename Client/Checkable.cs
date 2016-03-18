@@ -10,30 +10,16 @@ namespace Client
         protected bool _Checked;
         public bool Checked
         {
-            get
-            {
-                return _Checked;
-            }
-            set
-            {
-                _Checked = value;
-                OnPropertyChanged("Checked");
-            }
+            get { return _Checked; }
+            set { _Checked = value; OnPropertyChanged("Checked"); }
         }
 
         // The object that can be selected
         protected T _Value;
         public T Value
         {
-            get
-            {
-                return _Value;
-            }
-            set
-            {
-                _Value = value;
-                OnPropertyChanged("Value");
-            }
+            get { return _Value; }
+            set { _Value = value; OnPropertyChanged("Value"); }
         }
 
         public Checkable()

@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Timers;
 
 using NetCore.Client;
@@ -23,21 +15,31 @@ namespace Client
     public partial class TrayIcon
         : Window
     {
+        // Reference to the connection to the Server
         public Connection Connection { get; protected set; }
+        // Reference to the current user logged on
         public User CurrentUser { get; protected set; }
+        // Reference to the current room
         public Room CurrentRoom { get; protected set; }
 
+        // The Winforms icon, this class is a wrapper around it
         protected System.Windows.Forms.NotifyIcon ToolbarIcon { get; set; }
+        // The Winforms context menu attached to the icon
         protected System.Windows.Forms.ContextMenu Menu { get; set; }
 
+        // The timetable window, only one allowed to be opened
         protected MainWindow MainWindow { get; set; }
         protected bool MainWindowShown { get; set; }
 
+        // The Admin window, only one allowed to be opened
         protected AdminWindow AdminWindow { get; set; }
         protected bool AdminWindowShown { get; set; }
 
+        // Timer used for booking checks
         protected Timer Timer { get; set; }
+        // Timeslot that the program was running during in the last timer update
         protected TimeSlot LastSlot { get; set; }
+        // How long the balloon message will linger for
         protected const int MessageDuration = 5000;
 
         public TrayIcon(Connection Connection, User CurrentUser, Room CurrentRoom)
@@ -58,17 +60,22 @@ namespace Client
             ToolbarIcon.Icon = Properties.Resources.ToolbarIcon;
             ToolbarIcon.Visible = true;
 
+            // Construct the context menu so that it contains relevant options for the user
+
             Menu = new System.Windows.Forms.ContextMenu();
             Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("View Bookings", (s, e) => ToolbarIcon_Click(s, null)));
 
+            // Admins can customise
             if (CurrentUser.Access == AccessMode.Admin)
                 Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Customise system", (s, e) => ShowAdminWindow()));
 
+            // Admins and teachers can exit
             if (CurrentUser.Access == AccessMode.Admin || CurrentUser.Access == AccessMode.Teacher)
                 Menu.MenuItems.Add(new System.Windows.Forms.MenuItem("Exit", ExitClick));
             ToolbarIcon.ContextMenu = Menu;
 
-            Timer = new Timer(TimeSpan.FromSeconds(30).TotalMilliseconds); // Every 30 seconds, fire an event
+            // Every 30 seconds, fire an event
+            Timer = new Timer(TimeSpan.FromSeconds(30).TotalMilliseconds);
             Timer.Elapsed += Timer_Elapsed;
             Timer.Start();
 
@@ -87,23 +94,29 @@ namespace Client
             base.OnClosed(e);
         }
 
+        // Displays a balloon message
         public void ShowBalloon(string Title, string Message, System.Windows.Forms.ToolTipIcon Icon)
         {
             ToolbarIcon.ShowBalloonTip(MessageDuration, Title, Message, Icon);
         }
 
+        // Every 30 seconds evaluate the bookings to see if a message needs displaying
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             DataSnapshot Frame = DataRepository.TakeSnapshot();
+            // Get the current timeslot
             TimeSlot CurrentSlot = Frame.Periods.SingleOrDefault(t => t.IsCurrent(DateTime.Now));
             if (CurrentSlot == null)
                 return;
 
+            // Get any matching bookings
             Booking Booking = Frame.Bookings.SingleOrDefault(b => b.MatchesDay(DateTime.Now.Date) && b.TimeSlot == CurrentSlot && b.Rooms.Contains(CurrentRoom));
             if (Booking != null)
             {
+                // If we haven't already shown this message
                 if (LastSlot == null || LastSlot != CurrentSlot)
                 {
+                    // Display the message
                     LastSlot = CurrentSlot;
                     ToolbarIcon.Visible = true;
                     ToolbarIcon.ShowBalloonTip(MessageDuration, "Scheduled booking", "A lesson is taking place in this room this period (" + CurrentSlot.Name + ").\n" +
@@ -113,11 +126,13 @@ namespace Client
             }
         }
 
+        // Open the window if clicked
         private void ToolbarIcon_Click(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e == null || (e != null && e.Button != System.Windows.Forms.MouseButtons.Right))
                 ShowMainWindow();
         }
+        // Handle opening the window if it's closed, or bring it to the front if it's hidden
         private void ShowMainWindow()
         {
             if (MainWindow != null && !MainWindow.Dispatcher.CheckAccess())
@@ -139,6 +154,7 @@ namespace Client
                     MainWindow.Activate();
             }
         }
+        // Same as ShowMainWindow but for the AdminWindow
         private void ShowAdminWindow()
         {
             if (AdminWindow != null && !AdminWindow.Dispatcher.CheckAccess())
@@ -157,12 +173,14 @@ namespace Client
             }
         }
 
+        // Send a D/C message on exiting
         private void ExitClick(object sender, EventArgs e)
         {
             Connection.Close(DisconnectType.Expected);
             Environment.Exit(0);
         }
 
+        // Close all windows if the server disconnects
         private void Connection_Disconnect(Connection Sender, NetCore.Messages.DisconnectMessage Message)
         {
             if (MainWindowShown)
@@ -171,6 +189,7 @@ namespace Client
                 AdminWindow.Dispatcher.Invoke((Action)Close);
         }
 
+        // Replace the existing show method with one that shows the icon
         public new void Show()
         {
             if (!Dispatcher.CheckAccess())
@@ -180,6 +199,7 @@ namespace Client
                 ToolbarIcon.Visible = true;
             }
         }
+        // Hides the icon, opposite of Show
         public new void Hide()
         {
             if (!Dispatcher.CheckAccess())

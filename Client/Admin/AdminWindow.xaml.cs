@@ -1,15 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 
@@ -23,9 +14,12 @@ namespace Client.Admin
     public partial class AdminWindow
         : Window, INotifyPropertyChanged
     {
+        // Reference to the connection to the server
         public Connection Connection { get; set; }
+        // Reference to the current user
         public User CurrentUser { get; set; }
 
+        // List of all rooms in the system
         protected ObservableCollection<Room> _Rooms = new ObservableCollection<Room>();
         public ObservableCollection<Room> Rooms
         {
@@ -33,6 +27,7 @@ namespace Client.Admin
             set { _Rooms = value; OnPropertyChanged("Rooms"); }
         }
 
+        // List of all periods in the system
         protected ObservableCollection<TimeSlot> _Periods = new ObservableCollection<TimeSlot>();
         public ObservableCollection<TimeSlot> Periods
         {
@@ -40,6 +35,7 @@ namespace Client.Admin
             set { _Periods = value; OnPropertyChanged("Periods"); }
         }
 
+        // List of all teachers in the system
         protected ObservableCollection<Teacher> _Teachers = new ObservableCollection<Teacher>();
         public ObservableCollection<Teacher> Teachers
         {
@@ -47,6 +43,7 @@ namespace Client.Admin
             set { _Teachers = value; OnPropertyChanged("Teachers"); }
         }
 
+        // List of all students in the system
         protected ObservableCollection<Student> _Students = new ObservableCollection<Student>();
         public ObservableCollection<Student> Students
         {
@@ -54,6 +51,7 @@ namespace Client.Admin
             set { _Students = value; OnPropertyChanged("Students"); }
         }
 
+        // List of all departments in the system
         protected ObservableCollection<Department> _Departments = new ObservableCollection<Department>();
         public ObservableCollection<Department> Departments
         {
@@ -61,6 +59,7 @@ namespace Client.Admin
             set { _Departments = value; OnPropertyChanged("Departments"); }
         }
 
+        // List of all classes in the system
         protected ObservableCollection<Class> _Classes = new ObservableCollection<Class>();
         public ObservableCollection<Class> Classes
         {
@@ -68,6 +67,7 @@ namespace Client.Admin
             set { _Classes = value; OnPropertyChanged("Classes"); }
         }
 
+        // List of all subjects in the system
         protected ObservableCollection<Subject> _Subjects = new ObservableCollection<Subject>();
         public ObservableCollection<Subject> Subjects
         {
@@ -82,8 +82,7 @@ namespace Client.Admin
             this.Connection = Connection;
             this.CurrentUser = CurrentUser;
 
-            DataRepository.DataChanged += DataRepository_DataChanged;
-
+            // Take a snapshot of the contents of the database
             using (DataRepository Repo = new DataRepository())
             {
                 Rooms = new ObservableCollection<Room>(Repo.Rooms);
@@ -96,41 +95,22 @@ namespace Client.Admin
             }
         }
 
-        private void DataRepository_DataChanged(Type ChangedType)
-        {
-            using (DataRepository Repo = new DataRepository(false))
-            {
-                if (ChangedType == typeof(Room))
-                    Rooms = new ObservableCollection<Room>(Repo.Rooms);
-                else if (ChangedType == typeof(TimeSlot))
-                    Periods = new ObservableCollection<TimeSlot>(Repo.Periods);
-                else if (ChangedType == typeof(Teacher))
-                    Teachers = new ObservableCollection<Teacher>(Repo.Users.OfType<Teacher>());
-                else if (ChangedType == typeof(Student))
-                    Students = new ObservableCollection<Student>(Repo.Users.OfType<Student>());
-                else if (ChangedType == typeof(User))
-                {
-                    Teachers = new ObservableCollection<Teacher>(Repo.Users.OfType<Teacher>());
-                    Students = new ObservableCollection<Student>(Repo.Users.OfType<Student>());
-                }
-                else if (ChangedType == typeof(Department))
-                    Departments = new ObservableCollection<Department>(Repo.Departments);
-                else if (ChangedType == typeof(Class))
-                    Classes = new ObservableCollection<Class>(Repo.Classes);
-                else if (ChangedType == typeof(Subject))
-                    Subjects = new ObservableCollection<Subject>(Repo.Subjects);
-            }
-        }
-
+        // Utility function that customises a generic item
+        // Importantly, makes use of generics to reduce code bloat
+        // Takes the abstract EditWindow to actually use (determines the type)
         private void EditData<T>(EditWindow<T> Wnd) where T : DataModel
         {
+            // Show the window and store the close result
             bool? Result = Wnd.ShowDialog();
 
+            // If closed succesfully, process the item
             if (Result.HasValue && Result.Value)
             {
+                // Acquire the (generic) item
                 T New = Wnd.GetItem();
                 if (New != null)
                 {
+                    // Add the item to the relevant table
                     Type t = typeof(T);
                     using (DataRepository Repo = new DataRepository())
                     {
@@ -155,6 +135,7 @@ namespace Client.Admin
             }
         }
 
+        // Button handlers for the Room section
         private void Button_AddRoom_Click(object sender, RoutedEventArgs e)
         {
             EditData(new EditRoom(null));
@@ -178,6 +159,7 @@ namespace Client.Admin
             }
         }
 
+        // Button handlers for the Period section
         private void Button_AddPeriod_Click(object sender, RoutedEventArgs e)
         {
             EditData(new EditPeriod(null));;
@@ -201,6 +183,7 @@ namespace Client.Admin
             }
         }
 
+        // Button handlers for the Teacher section
         private void Button_AddTeacher_Click(object sender, RoutedEventArgs e)
         {
             EditData(new EditTeacher(null));;
@@ -225,6 +208,7 @@ namespace Client.Admin
             }
         }
 
+        // Button handlers for the Student section
         private void Button_AddStudent_Click(object sender, RoutedEventArgs e)
         {
             EditData(new EditStudent(null));;
@@ -242,11 +226,10 @@ namespace Client.Admin
                 return;
 
             using (DataRepository Repo = new DataRepository())
-            {
                 Repo.Users.Remove(s);
-            }
         }
-        
+
+        // Button handlers for the Department section
         private void Button_AddDepartment_Click(object sender, RoutedEventArgs e)
         {
             EditData(new EditDepartment(null));;
@@ -271,6 +254,7 @@ namespace Client.Admin
             }
         }
 
+        // Button handlers for the Class section
         private void Button_AddClass_Click(object sender, RoutedEventArgs e)
         {
             EditData(new EditClass(null));
@@ -288,11 +272,10 @@ namespace Client.Admin
                 return;
 
             using (DataRepository Repo = new DataRepository())
-            {
                 Repo.Classes.Remove(c);
-            }
         }
 
+        // Button handlers for the Subject section
         private void Button_AddSubject_Click(object sender, RoutedEventArgs e)
         {
             EditData(new EditSubject(null));
@@ -310,9 +293,7 @@ namespace Client.Admin
                 return;
 
             using (DataRepository Repo = new DataRepository())
-            {
                 Repo.Subjects.Remove(c);
-            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -7,7 +7,8 @@
         xmlns:data="clr-namespace:Data.Models;assembly=Data"
         xmlns:local="clr-namespace:Client.EditWindows"
         mc:Ignorable="d"
-        Title="Edit Room" Height="300" Width="300"
+        Title="Edit Room" Width="300"
+        SizeToContent="WidthAndHeight"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Grid>
         <Grid.RowDefinitions>
@@ -46,7 +47,7 @@
             </Grid.RowDefinitions>
             
             <TextBlock Text="Computer Names (one per row): " Margin="5"/>
-            <TextBox Text="{Binding Computers, UpdateSourceTrigger=PropertyChanged}" Margin="5" Grid.Row="1"/>
+            <TextBox Text="{Binding Computers, UpdateSourceTrigger=PropertyChanged}" Height="100" VerticalScrollBarVisibility="Auto" Margin="5" Grid.Row="1"/>
         </Grid>
         
         <Button Name="Button_Back" Content="Back" Width="50" Height="20" Margin="5,5,60,5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="6" Grid.Column="1" Click="Button_Back_Click"/>

@@ -39,6 +39,7 @@ namespace Client.EditWindows
                 ColourRed = Convert.ToString(value.Color.R);
                 ColourGreen = Convert.ToString(value.Color.G);
                 ColourBlue = Convert.ToString(value.Color.B);
+                OnPropertyChanged("Colour");
             }
         }
 
