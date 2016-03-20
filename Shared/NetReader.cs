@@ -77,8 +77,6 @@ namespace Shared
             if (Read != Buffer.Length)
                 throw new Exception("Bad read (read " + Read + " of " + Buffer.Length + " bytes).");
 
-            //Handle.AsyncWaitHandle.Dispose(); // Cleanup
-
             return Buffer;
         }
 
