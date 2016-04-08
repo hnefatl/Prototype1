@@ -63,7 +63,7 @@ namespace Server
                 Repo.SaveChanges();
 
                 Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "mb", FirstName = "Mary", LastName = "Bogdiukiewicz", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single(), Email = "hnefatl@gmail.com" });
-                Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "pc", FirstName = "Patrick", LastName = "Count", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single(), Email = "hnefatl@gmail.com" });
+                Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "cn", FirstName = "Patrick", LastName = "Count", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("Computing")).Single(), Email = "hnefatl@gmail.com" });
                 Repo.Teachers.Add(new Teacher() { Title = "Mr", LogonName = "jk", FirstName = "James", LastName = "Kenny", Department = Repo.Departments.Where(d => d.Name == "Science").Single(), Email = "hnefatl@gmail.com" });
                 Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "rb", FirstName = "Rosemary", LastName = "Britton", Department = Repo.Departments.Where(d => d.Name == "Maths").Single(), Email = "hnefatl@gmail.com" });
                 Repo.Teachers.Add(new Teacher() { Title = "Mrs", LogonName = "ed", FirstName = "Emma", LastName = "Denny", Department = Repo.Departments.ToList().Where(d => d.Name.Contains("History")).Single(), Email = "hnefatl@gmail.com" });

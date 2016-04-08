@@ -34,7 +34,7 @@ namespace Data.Models
         public Subject()
         {
             Bookings = new List<Booking>();
-
+            Bookings.Where(b => b.Date == DateTime.Now.Date).SelectMany(b => b.Students).Distinct().OrderBy(s => s.FirstName);
             SubjectName = string.Empty;
         }
 
