@@ -1,9 +1,0 @@
-UI Diagrams
-
-Data entry in current system
-Valid output in current system
-
-Order tests
-Test evidence
-
-Maintainability section
